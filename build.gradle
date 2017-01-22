@@ -1,0 +1,120 @@
+buildscript {
+    ext {
+        ver = [
+                junitPlugin   : '1.0.0-M3',
+                flywayPlugin  : '4.0.3',
+                versionsPlugin: '0.13.0',
+                shadowPlugin  : '1.2.4'
+        ]
+    }
+
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        jcenter()
+    }
+
+    dependencies {
+        classpath "org.junit.platform:junit-platform-gradle-plugin:$ver.junitPlugin"
+        classpath "org.flywaydb:flyway-gradle-plugin:$ver.flywayPlugin"
+        classpath "com.github.ben-manes:gradle-versions-plugin:$ver.versionsPlugin"
+        classpath "com.github.jengelman.gradle.plugins:shadow:$ver.shadowPlugin"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: "org.flywaydb.flyway"
+apply plugin: 'org.junit.platform.gradle.plugin'
+apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+version = '0.0.1'
+
+repositories {
+    jcenter()
+}
+
+compileJava {
+    options.compilerArgs << '-Xlint:all'
+    options.warnings = true
+    options.deprecation = true
+    options.encoding = 'utf-8'
+    options.incremental = true
+}
+
+mainClassName = 'com.cosmoport.core.App'
+
+ext {
+    ver = [
+            resteasy    : '3.1.0.Final',
+            guice       : '4.1.0',
+            jackson     : '2.8.6',
+            sqlite      : '3.16.1',
+            hikaricp    : '2.5.1',
+            flyway      : '4.0.3',
+            logback     : '1.1.9',
+            slf4j       : '1.7.22',
+            log4j       : '2.7',
+            junitJupiter: '5.0.0-M3',
+            palomino    : '1.1.2',
+            jetty       : '9.4.0.RC3',
+            jbcrypt     : '0.4-atlassian-1',
+            iocommons   : '2.5'
+    ]
+}
+
+dependencies {
+    // Server
+    compile("com.palominolabs.http:jetty-http-server-wrapper:$ver.palomino") {
+        exclude group: 'org.eclipse.jetty', module: 'jetty-servlet'
+    }
+    compile "org.eclipse.jetty:jetty-servlet:$ver.jetty"
+
+    // JAX-RS
+    compile "org.jboss.resteasy:resteasy-jaxrs:$ver.resteasy"
+    compile("org.jboss.resteasy:resteasy-guice:$ver.resteasy") {
+        exclude group: "org.jboss.resteasy", module: "resteasy-client"
+    }
+    compile "org.jboss.resteasy:resteasy-multipart-provider:$ver.resteasy"
+
+    // JSON
+    compile "com.fasterxml.jackson.core:jackson-databind:$ver.jackson"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$ver.jackson"
+    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$ver.jackson"
+
+    // DI
+    compile "com.google.inject:guice:$ver.guice"
+    compile "com.google.inject.extensions:guice-servlet:$ver.guice"
+
+    // Scheduler
+    compile "de.skuzzle.inject:guice-async-extension:1.0.0"
+
+    // Database
+    // Main database
+    compile "org.xerial:sqlite-jdbc:$ver.sqlite"
+    // Database pool
+    compile "com.zaxxer:HikariCP:$ver.hikaricp"
+    // Database migrations tool
+    compile "org.flywaydb:flyway-core:$ver.flyway"
+
+    // File
+    compile "commons-io:commons-io:$ver.iocommons"
+
+    // Security
+    // Password hashing
+    compile "org.mindrot:jbcrypt:$ver.jbcrypt"
+
+    // Logging
+    runtime "ch.qos.logback:logback-classic:$ver.logback"
+    runtime "org.slf4j:log4j-over-slf4j:$ver.slf4j"
+    compile "org.slf4j:jul-to-slf4j:$ver.slf4j"
+
+    // Test
+    testCompile "org.junit.jupiter:junit-jupiter-api:$ver.junitJupiter"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:$ver.junitJupiter"
+    testCompile "org.jboss.resteasy:resteasy-jackson2-provider:$ver.resteasy"
+    testCompile "org.apache.logging.log4j:log4j-core:$ver.log4j"
+    testCompile "org.apache.logging.log4j:log4j-jul:$ver.log4j"
+}
