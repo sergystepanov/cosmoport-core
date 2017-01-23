@@ -2,7 +2,6 @@ buildscript {
     ext {
         ver = [
                 junitPlugin   : '1.0.0-M3',
-                flywayPlugin  : '4.0.3',
                 versionsPlugin: '0.13.0',
                 shadowPlugin  : '1.2.4'
         ]
@@ -17,7 +16,6 @@ buildscript {
 
     dependencies {
         classpath "org.junit.platform:junit-platform-gradle-plugin:$ver.junitPlugin"
-        classpath "org.flywaydb:flyway-gradle-plugin:$ver.flywayPlugin"
         classpath "com.github.ben-manes:gradle-versions-plugin:$ver.versionsPlugin"
         classpath "com.github.jengelman.gradle.plugins:shadow:$ver.shadowPlugin"
     }
@@ -53,7 +51,6 @@ ext {
             jackson     : '2.8.6',
             sqlite      : '3.16.1',
             hikaricp    : '2.5.1',
-            flyway      : '4.0.3',
             logback     : '1.1.9',
             slf4j       : '1.7.22',
             log4j       : '2.7',
@@ -96,8 +93,6 @@ dependencies {
     compile "org.xerial:sqlite-jdbc:$ver.sqlite"
     // Database pool
     compile "com.zaxxer:HikariCP:$ver.hikaricp"
-    // Database migrations tool
-    compile "org.flywaydb:flyway-core:$ver.flyway"
 
     // File
     compile "commons-io:commons-io:$ver.iocommons"
