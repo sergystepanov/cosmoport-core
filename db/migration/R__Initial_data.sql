@@ -5,7 +5,7 @@
 --
 
 INSERT INTO TIMETABLE
-(departure_time, type, duration, destinition, cost, status, gate_no, passangers_max, bought) VALUES
+(departure_time, type, duration, destination, cost, status, gate_no, passengers_max, bought) VALUES
   (540, 'МАСТЕР-КЛАСС/ЭКЗОБИОЛОГИЯ', 30, 'ЛУНА', 20, 'inactive', 1, 10, 5),
   (570, 'ЭКСКУРСИЯ/ЗАПУСК СТАНЦИИ', 80, 'ВОКРУГ ЗЕМЛИ', 30, 'inactive', 1, 20, 10),
   (600, 'МИССИЯ/НА КРАЙ ВСЕЛЕННОЙ', 45, 'МАРС', 45, 'boarding', 2, 20, 10),

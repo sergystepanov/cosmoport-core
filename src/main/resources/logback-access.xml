@@ -1,0 +1,9 @@
+<configuration>
+    <appender name="ACCESS-CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [_%s{}_] %3D{}ms "%r" "%i{User-Agent}"</pattern>
+        </encoder>
+    </appender>
+
+    <appender-ref ref="ACCESS-CONSOLE"/>
+</configuration>
