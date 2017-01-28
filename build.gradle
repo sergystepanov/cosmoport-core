@@ -49,16 +49,17 @@ ext {
             guice       : '4.1.0',
             jackson     : '2.8.6',
             sqlite      : '3.16.1',
-            hikaricp    : '2.5.1',
+            hikaricp    : '2.6.0',
             logback     : '1.1.9',
+            mbassador   : '1.3.0',
             slf4j       : '1.7.22',
-            log4j       : '2.7',
+            log4j       : '2.8',
             junitJupiter: '5.0.0-M3',
             palomino    : '1.1.2',
             jetty       : '9.4.1.v20170120',
-            jettyWs     : '9.4.0.v20161208',
             jbcrypt     : '0.4-atlassian-1',
-            iocommons   : '2.5'
+            iocommons   : '2.5',
+            websocketApi: '1.1'
     ]
 }
 
@@ -68,10 +69,10 @@ dependencies {
         exclude group: 'org.eclipse.jetty', module: 'jetty-servlet'
     }
     compile "org.eclipse.jetty:jetty-servlet:$ver.jetty"
-    compile "org.eclipse.jetty.websocket:websocket-api:$ver.jettyWs"
-    compile "org.eclipse.jetty.websocket:websocket-server:$ver.jettyWs"
-    compile "org.eclipse.jetty.websocket:websocket-client:$ver.jettyWs"
-    compile "javax.websocket:javax.websocket-api:1.0"
+    compile "org.eclipse.jetty.websocket:websocket-api:$ver.jetty"
+    compile "org.eclipse.jetty.websocket:websocket-server:$ver.jetty"
+    compile "org.eclipse.jetty.websocket:websocket-client:$ver.jetty"
+    compile "javax.websocket:javax.websocket-api:$ver.websocketApi"
 
     // JAX-RS
     compile "org.jboss.resteasy:resteasy-jaxrs:$ver.resteasy"
@@ -91,6 +92,9 @@ dependencies {
 
     // Scheduler
     compile "de.skuzzle.inject:guice-async-extension:1.0.0"
+
+    // Event bus
+    compile "net.engio:mbassador:$ver.mbassador"
 
     // Database
     // Main database
