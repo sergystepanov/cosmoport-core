@@ -3,12 +3,14 @@ package com.cosmoport.core;
 import com.cosmoport.core.api.ApiV0Module;
 import com.cosmoport.core.api.error.ApiExceptionMapper;
 import com.cosmoport.core.config.Config;
+import com.cosmoport.core.event.MessageHub;
 import com.cosmoport.core.module.JsonModule;
 import com.cosmoport.core.module.LoggerModule;
-import com.cosmoport.core.scheduler.SchedulerModule;
 import com.cosmoport.core.socket.EventServlet;
+import com.cosmoport.core.statics.StaticsEndpoint;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.*;
 import com.google.inject.servlet.ServletModule;
 import com.palominolabs.http.server.HttpServerWrapperModule;
@@ -19,9 +21,15 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.jboss.resteasy.plugins.guice.GuiceResteasyBootstrapServletContextListener;
 import org.jboss.resteasy.plugins.interceptors.GZIPEncodingInterceptor;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.slf4j.bridge.SLF4JBridgeHandler;
+
+import java.util.logging.LogManager;
 
 public class App {
     public static void main(String[] args) throws Exception {
+        LogManager.getLogManager().reset();
+        SLF4JBridgeHandler.install();
+
         Injector injector = Guice.createInjector(new ServiceModule());
 
         injector.getAllBindings();
@@ -35,7 +43,6 @@ public class App {
         ServletHolder sh = new ServletHolder(HttpServletDispatcher.class);
         servletHandler.addServlet(sh, "/*");
 
-
         // Add a websocket to a specific path spec
         ServletHolder holderEvents = new ServletHolder("ws-events", EventServlet.class);
         servletHandler.addServlet(holderEvents, "/events/*");
@@ -46,6 +53,8 @@ public class App {
     }
 
     private static class ServiceModule extends AbstractModule {
+        final EventBus eventBus = new EventBus("Default EventBus");
+
         @Override
         protected void configure() {
             binder().requireExplicitBindings();
@@ -54,9 +63,14 @@ public class App {
 
             install(new HttpServerWrapperModule());
             install(new JsonModule());
-            install(new LoggerModule(App00.class));
+            install(new LoggerModule(App.class));
             install(new ApiV0Module());
-            install(new SchedulerModule());
+//            install(new SchedulerModule());
+
+            bind(EventBus.class).toInstance(eventBus);
+            eventBus.register(new MessageHub());
+
+            bind(StaticsEndpoint.class).asEagerSingleton();
 
             bind(GuiceResteasyBootstrapServletContextListener.class);
             bind(ApiExceptionMapper.class);

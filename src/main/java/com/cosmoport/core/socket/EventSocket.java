@@ -3,12 +3,19 @@ package com.cosmoport.core.socket;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 
+import java.io.IOException;
+
 public class EventSocket extends WebSocketAdapter
 {
+    private Session session;
+
     @Override
     public void onWebSocketConnect(Session sess)
     {
         super.onWebSocketConnect(sess);
+
+        this.session = sess;
+
         System.out.println("Socket Connected: " + sess);
     }
 
@@ -17,6 +24,11 @@ public class EventSocket extends WebSocketAdapter
     {
         super.onWebSocketText(message);
         System.out.println("Received TEXT message: " + message);
+        try {
+            this.session.getRemote().sendString("yolo");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
