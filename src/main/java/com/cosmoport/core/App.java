@@ -7,6 +7,7 @@ import com.cosmoport.core.event.MessageHub;
 import com.cosmoport.core.module.JsonModule;
 import com.cosmoport.core.module.LoggerModule;
 import com.cosmoport.core.socket.EventServlet;
+import com.cosmoport.core.socket.EventSocket;
 import com.cosmoport.core.statics.StaticsEndpoint;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
@@ -69,6 +70,7 @@ public class App {
 
             bind(EventBus.class).toInstance(eventBus);
             eventBus.register(new MessageHub());
+            eventBus.register(new EventSocket());
 
             bind(StaticsEndpoint.class).asEagerSingleton();
 

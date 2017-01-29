@@ -1,5 +1,6 @@
 package com.cosmoport.core.api;
 
+import com.cosmoport.core.event.message.TestMessage;
 import com.cosmoport.core.persistence.TestPersistenceService;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -48,7 +49,7 @@ public class TestResource {
     @GET
     @Path("/event")
     public String event() {
-//       eventBus.post(new TestMessage());
+       eventBus.post(new TestMessage());
 
 
         return "an event";
