@@ -21,5 +21,6 @@ public class ApiV0Module extends AbstractModule {
 
         bind(TestPersistenceService.class);
         bind(TestResource.class).asEagerSingleton();
+        bind(DateTimeEndpoint.class).asEagerSingleton();
     }
 }
