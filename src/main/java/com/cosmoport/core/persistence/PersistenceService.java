@@ -33,7 +33,7 @@ public abstract class PersistenceService<T> {
         return ds.get().getConnection();
     }
 
-    protected List<T> getAll(final String sql) {
+    List<T> getAll(final String sql) {
         List<T> objects = new ArrayList<>();
 
         Connection conn = null;

@@ -66,6 +66,7 @@ ext {
             jackson     : '2.8.6',
             sqlite      : '3.16.1',
             hikaricp    : '2.6.0',
+            flyway      : '4.0.3',
             logback     : '1.1.9',
             slf4j       : '1.7.22',
             log4j       : '2.8',
@@ -113,6 +114,8 @@ dependencies {
     compile "org.xerial:sqlite-jdbc:$ver.sqlite"
     // Database pool
     compile "com.zaxxer:HikariCP:$ver.hikaricp"
+    // Database migrations tool
+    compile "org.flywaydb:flyway-core:$ver.flyway"
 
     // File
     compile "commons-io:commons-io:$ver.iocommons"
