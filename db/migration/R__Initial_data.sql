@@ -4,15 +4,44 @@
 -- @encoding UTF-8
 --
 
-INSERT INTO TIMETABLE
-(departure_time, type, duration, destination, cost, status, gate_no, passengers_max, bought) VALUES
-  (540, 'МАСТЕР-КЛАСС/ЭКЗОБИОЛОГИЯ', 30, 'ЛУНА', 20, 'inactive', 1, 10, 5),
-  (570, 'ЭКСКУРСИЯ/ЗАПУСК СТАНЦИИ', 80, 'ВОКРУГ ЗЕМЛИ', 30, 'inactive', 1, 20, 10),
-  (600, 'МИССИЯ/НА КРАЙ ВСЕЛЕННОЙ', 45, 'МАРС', 45, 'boarding', 2, 20, 10),
-  (660, 'МАСТЕР-КЛАСС/ЭКЗОБИОЛОГИЯ', 120, 'ЮПИТЕР', 12, 'pending', 2, 10, 10),
-  (750, 'МИССИЯ/ЗАПУСК СТАНЦИИ', 90, 'ЛУНА', 45, 'pending', 3, 10, 2),
-  (840, 'МИССИЯ ЗАПУСК СТАНЦИИ', 30, 'ВОКРУГ ЗЕМЛИ', 67, 'canceled', 3, 10, 2),
-  (900, 'МАСТЕР-КЛАСС/ЭКЗОБИОЛОГИЯ', 80, 'МАРС', 23, 'preorder', 4, 100, 22),
-  (1005, 'ЭКСКУРСИЯ/ЗАПУСК СТАНЦИИ', 45, 'ЮПИТЕР', 45, 'pending', 4, 200, 10),
-  (1020, 'МИССИЯ/ЗАПУСК СТАНЦИИ', 120, 'ЛУНА', 68, 'pending', 5, 3, 1),
-  (1080, 'ЭКСКУРСИЯ/ЗАПУСК СТАНЦИИ', 90, 'ВОКРУГ ЗЕМЛИ', 34, 'pending', 6, 30, 20);
+INSERT INTO EVENT_TYPE (id, event_type_name, event_type_subname, event_type_description,
+                        default_duration, default_repeat_interval) VALUES
+  (1, 'Excursion', 'Station launch', '', 40, 5),
+  (2, 'Masterclass', 'Xenobiology', '', 90, 0),
+  (3, 'Mission', 'To the edge of the universe', '', 120, 0),
+  (4, 'Mission', 'Station launch', '', 120, 0);
+
+INSERT INTO EVENT_STATUS (id, status) VALUES
+  (1, 'opened'), (2, 'closed'), (3, 'canceled'), (4, 'boarding'), (5, 'departed'),
+  (7, 'returned'), (8, 'preorder');
+
+INSERT INTO EVENT_DESTINATION (id, event_destination_name) VALUES
+  (1, 'Moon'),
+  (2, 'Around the Earth'),
+  (3, 'Mars'),
+  (4, 'Jupiter');
+
+INSERT INTO GATE (id, number, gate_name) VALUES
+  (1, 1, ''),
+  (2, 2, ''),
+  (3, 3, ''),
+  (4, 4, ''),
+  (5, 5, ''),
+  (6, 6, ''),
+  (7, 7, ''),
+  (8, 8, ''),
+  (9, 9, ''),
+  (10, 10, '');
+
+INSERT INTO TIMETABLE (event_date, event_type_id, event_status_id, event_destination_id, gate_id, start_time,
+  duration_time, cost, people_limit, contestants) VALUES
+  ('2017-02-05', 2, 7, 1, 1, 540, 30, 20, 10, 1),
+  ('2017-02-05', 1, 1, 2, 1, 570, 80, 30, 10, 2),
+  ('2017-02-05', 3, 4, 3, 1, 600, 45, 45, 10, 3),
+  ('2017-02-05', 2, 1, 4, 1, 660, 120, 12, 10, 4),
+  ('2017-02-05', 4, 1, 1, 1, 750, 90, 45, 10, 5),
+  ('2017-02-05', 4, 3, 2, 1, 840, 30, 67, 10, 6),
+  ('2017-02-05', 2, 9, 3, 1, 900, 80, 23, 10, 7),
+  ('2017-02-05', 1, 1, 4, 1, 1005, 45, 45, 10, 8),
+  ('2017-02-05', 4, 1, 1, 1, 1020, 120, 68, 10, 9),
+  ('2017-02-05', 1, 1, 2, 1, 1080, 90, 34, 10, 10);
