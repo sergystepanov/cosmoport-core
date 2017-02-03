@@ -2,14 +2,13 @@ image: java:8-jdk
 
 stages:
   - build
-  - test
+#  - test
 #  - deploy
 
 before_script:
 #  - echo `pwd` # debug
-  - echo "$CI_BUILD_NAME, $CI_BUILD_REF_NAME $CI_BUILD_STAGE, $CI_BUILD_TOKEN" # debug
+#  - echo "$CI_BUILD_NAME, $CI_BUILD_REF_NAME $CI_BUILD_STAGE, $CI_BUILD_TOKEN" # debug
   - export GRADLE_USER_HOME=`pwd`/.gradle
-  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
 
 cache:
   paths:
@@ -19,7 +18,7 @@ cache:
 build:
   stage: build
   script:
-    - ./gradlew assemble
+    - ./gradlew clean build
   artifacts:
     paths:
       - build/libs/*.jar
@@ -27,10 +26,10 @@ build:
   only:
     - master
 
-test:
-  stage: test
-  script:
-    - ./gradlew check
+#test:
+#  stage: test
+#  script:
+#    - ./gradlew check
 #
 #deploy:
 #  stage: deploy
