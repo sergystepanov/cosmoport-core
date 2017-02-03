@@ -9,10 +9,7 @@ import org.jboss.resteasy.annotations.GZIP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -46,10 +43,28 @@ public class TestResource {
                 .build();
     }
 
+    @POST
+    @Path("/event")
+    public String post() throws Exception {
+        final long id = testPersistenceService.save();
+        eventBus.post(new TestMessage());
+        return "{\"message\": \"ok\", \"id\": " + id + "}";
+
+    }
+
+    @GET
+    @Path("/delete")
+    public String delete(@QueryParam("id") int id) {
+        testPersistenceService.remove(id);
+        eventBus.post(new TestMessage());
+
+        return "{\"r\":\"ok\"}";
+    }
+
     @GET
     @Path("/event")
     public String event() {
-       eventBus.post(new TestMessage());
+        eventBus.post(new TestMessage());
 
 
         return "an event";

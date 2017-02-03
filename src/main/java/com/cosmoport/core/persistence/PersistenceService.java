@@ -230,7 +230,7 @@ public abstract class PersistenceService<T> {
     /**
      * Checks on duplicate key. ! Database dependent
      */
-    private static boolean isUniqueViolation(SQLException e) {
+    public static boolean isUniqueViolation(SQLException e) {
         return
                 // SQLite
                 e.getErrorCode() == 19 ||

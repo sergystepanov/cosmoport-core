@@ -27,7 +27,7 @@ apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'com.github.johnrengelman.shadow'
 
-version = '0.0.1'
+version = '0.1.0'
 
 repositories {
     jcenter()
@@ -42,6 +42,22 @@ compileJava {
 }
 
 mainClassName = 'com.cosmoport.core.App'
+
+shadowJar {
+    classifier = null
+}
+
+installShadowApp {
+    distributions {
+        contents {
+            from(file("$projectDir/db")) {
+                into 'db'
+                include('**/*.db')
+                includeEmptyDirs = false
+            }
+        }
+    }
+}
 
 ext {
     ver = [

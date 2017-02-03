@@ -1,13 +1,13 @@
 package com.cosmoport.core.persistence;
 
 import com.cosmoport.core.dto.TestDto;
+import com.cosmoport.core.persistence.exception.UniqueConstraintException;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.slf4j.Logger;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 public class TestPersistenceService extends PersistenceService<TestDto> {
@@ -34,5 +34,58 @@ public class TestPersistenceService extends PersistenceService<TestDto> {
 
     public List<TestDto> getAll() {
         return getAll("SELECT * FROM TIMETABLE");
+    }
+
+    public void remove(final long id) {
+        deleteByIdWithParams("DELETE FROM TIMETABLE WHERE id = ?", id);
+    }
+
+    public long save() throws Exception {
+        long newId = 0;
+        Connection conn = null;
+        PreparedStatement statement = null;
+
+        final String uniqueId = "event001";
+
+        try {
+            conn = getConnection();
+
+            final String sql = "INSERT INTO TIMETABLE (departure_time, type, duration, destination, cost, status," +
+                    " gate_no, passengers_max, bought) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+            statement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            statement.setInt(1, 111);
+            statement.setString(2, "text/text");
+            statement.setInt(3, 222);
+            statement.setString(4, "sedna");
+            statement.setDouble(5, 33.33);
+            statement.setString(6, "pending");
+            statement.setInt(7, 1);
+            statement.setInt(8, 100);
+            statement.setInt(9, 10);
+
+            if (statement.executeUpdate() < 0) {
+                throw new Exception();
+            }
+
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    newId = generatedKeys.getLong(1);
+                } else {
+                    throw new Exception();
+                }
+            }
+        } catch (SQLException sqlexception) {
+            if (isUniqueViolation(sqlexception)) {
+                throw new UniqueConstraintException(uniqueId);
+            }
+            throwServerApiException(sqlexception);
+        } catch (Exception e) {
+            throwServerApiException(e);
+        } finally {
+            close(statement, conn);
+        }
+
+        return newId;
     }
 }
