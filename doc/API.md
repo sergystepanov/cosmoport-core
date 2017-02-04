@@ -1,5 +1,5 @@
-# Cosmoport core API
-> version 1 (0.0.1)
+# Core API (Cosmoport)
+> version 1 (0.1.0)
 
 API version 1 uses HTTP/1.1 protocol and JSON type transport.
 
@@ -19,81 +19,133 @@ an error object (“error”)
 {"code": 000, "message": "a message"}
 ```
 
-### Endpoints
-- events
+**General error responses**
+----
 
-    Gets all events for today (from 0:00 to 23:59)
-    
-    ***Request:***
-    ```text
-    GET /events
-    ```
-    ***Response:***
-    ```text
-    HTTP/1.1 200 OK
-    [{event 1}, {event 2}, ... {event n}]
-    ```
-    
-    Gets all events from a day in format (yyyy-mm-dd)  
+* **Code:** 500 INTERNAL SERVER ERROR <br />
+  **Content:** `{"code": 003, "message": "Server internal error"}`
 
-    ***Request:***
-    ```text
-    GET /events?for=2017-01-01
-    ```
-    ***Response:***
-    ```text
-    HTTP/1.1 200 OK
-    [{event 1}, {event 2}, ... {event n}]
-    ```
-    
-    Adds a new event for today's schedule
+**Show timetable**
+----
+  Returns json data with timetable.
 
-    ***Request:***
-    ```text
-    POST /event
-    {event}
-    ```
-    ***Responses:***   
-    ```text
-    HTTP/1.1 200 OK ...
-    ```
-    ```text
-    HTTP/1.1 400 Bad Request
-    {"code": 001, "message": "Duplicate event time"}
-    ```
-    
-    Sets a whole day schedule of events for a time period (***replaces all data***)
-    
-    ***Request:***
-    ```text
-    POST /events?from=2017-01-01&to=2017-01-10
-    ```
-    ***Responses:***   
-    ```text
-    HTTP/1.1 200 OK ...
-    ```
-    ```text
-    HTTP/1.1 400 Bad Request
-    {"code": 002, "message": "Invalid input period"}
-    ```
-    ```text
-    HTTP/1.1 500 Internal Server Error
-    {"code": 003, "message": "Server internal error"}
-    ```
+* **URL**
 
-- event types
-    Gets all event types
-    ***Request:***
-    ```text
-    GET /event/types
-    ```
-    ***Response:***
-    ```text
-    HTTP/1.1 200 OK
-    [{event_type 1}, {event_type 2}, ... {event_type n}]
-    ```
+  /timetable?date=yyyy-mm-dd
 
-- time and date
-    ```text
-    GET /time → {timestamp: 1387330857}
-    ```
+* **Method:**
+
+  `GET`
+  
+*  **URL Params**
+
+   **Optional:**
+ 
+   `date=[alphanumeric]`
+
+* **Data Params**
+
+  None
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** `[`event`, `event`, ..., `event`]`
+ 
+* **Error Response:**
+
+  * **Code:** 404 NOT FOUND <br />
+    **Content:** `{ error : "User doesn't exist" }`
+
+  OR
+
+  * **Code:** 401 UNAUTHORIZED <br />
+    **Content:** `{ error : "You are unauthorized to make this request." }`
+
+* **Sample Call:**
+
+  ```javascript
+    $.ajax({
+      url: "/users/1",
+      dataType: "json",
+      type : "GET",
+      success : function(r) {
+        console.log(r);
+      }
+    });
+  ```
+
+**Create new event for timetable**
+----
+  Creates new event for timetable.
+
+* **URL**
+
+  /timetable?date=yyyy-mm-dd
+
+* **Method:**
+
+  `POST`
+  
+*  **URL Params**
+
+   **Required:**
+ 
+   `date=[alphanumeric]`
+
+* **Data Params**
+
+  **Required:**
+   
+  `event=[`event`]`
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** `{id: 123}`
+ 
+* **Error Response:**
+
+  * **Code:** 400 BAD REQUEST <br />
+    **Content:** `{"code": 001, "message": "Wrong input params."}`
+
+  * **Code:** 400 BAD REQUEST <br />
+    **Content:** `{"code": 002, "message": "Duplicate event time."}`
+
+**Show server time**
+----
+  Returns json data with server current timestamp.
+
+* **URL**
+
+  /time
+
+* **Method:**
+
+  `GET`
+  
+*  **URL Params**
+
+  None
+
+* **Data Params**
+
+  None
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** `{timestamp: 1387330857}`
+ 
+* **Sample Call:**
+
+  ```javascript
+    $.ajax({
+      url: "/time",
+      dataType: "json",
+      type : "GET",
+      success : function(r) {
+        console.log(r);
+      }
+    });
+  ```
