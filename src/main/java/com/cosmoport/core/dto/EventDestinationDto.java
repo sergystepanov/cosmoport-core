@@ -9,7 +9,9 @@ public final class EventDestinationDto extends Entity implements Serializable {
     private final String eventDestinationName;
 
     @JsonCreator
-    public EventDestinationDto(@JsonProperty("event_destination_name") String eventDestinationName) {
+    public EventDestinationDto(@JsonProperty("id") long id,
+                               @JsonProperty("event_destination_name") String eventDestinationName) {
+        this.id = id;
         this.eventDestinationName = eventDestinationName;
     }
 

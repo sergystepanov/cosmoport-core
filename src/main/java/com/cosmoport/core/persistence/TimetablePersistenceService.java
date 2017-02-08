@@ -2,6 +2,7 @@ package com.cosmoport.core.persistence;
 
 import com.cosmoport.core.dto.TimetableDto;
 import com.cosmoport.core.persistence.exception.UniqueConstraintException;
+import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.slf4j.Logger;
 
@@ -15,7 +16,8 @@ import java.util.List;
  * @since 0.1.0
  */
 public class TimetablePersistenceService extends PersistenceService<TimetableDto> {
-    protected TimetablePersistenceService(Logger logger, Provider<DataSource> ds) {
+    @Inject
+    TimetablePersistenceService(Logger logger, Provider<DataSource> ds) {
         super(logger, ds);
     }
 

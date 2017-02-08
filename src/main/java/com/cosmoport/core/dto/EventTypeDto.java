@@ -13,11 +13,13 @@ public final class EventTypeDto extends Entity implements Serializable {
     private int defaultRepeatInterval;
 
     @JsonCreator
-    public EventTypeDto(@JsonProperty("event_type_name") String eventTypeName,
+    public EventTypeDto(@JsonProperty("id") long id,
+                        @JsonProperty("event_type_name") String eventTypeName,
                         @JsonProperty("event_type_subname") String eventTypeSubname,
                         @JsonProperty("event_type_description") String eventTypeDescription,
                         @JsonProperty("default_duration") int defaultDuration,
                         @JsonProperty("default_repeat_interval") int defaultRepeatInterval) {
+        this.id = id;
         this.eventTypeName = eventTypeName;
         this.eventTypeSubname = eventTypeSubname;
         this.eventTypeDescription = eventTypeDescription;

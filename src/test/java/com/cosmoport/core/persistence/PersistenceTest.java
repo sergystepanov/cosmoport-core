@@ -13,15 +13,12 @@ import java.util.Properties;
 
 public class PersistenceTest {
     private static final Logger logger = LoggerFactory.getLogger(PersistenceTest.class);
-
     private final Provider<DataSource> dataSource;
-    private Flyway flyway;
 
-    public PersistenceTest() {
+    PersistenceTest() {
         dataSource = new DatasourceServiceTestProvider();
 
-        flyway = new Flyway();
-
+        Flyway flyway = new Flyway();
         // We init flyway this way because of some SQLite / Flyway incompatibilities
         Properties p = new Properties();
         p.setProperty("flyway.url", DatasourceServiceTestParams.memUrl);
@@ -29,21 +26,21 @@ public class PersistenceTest {
         p.setProperty("flyway.password", "");
         p.setProperty("flyway.locations", "filesystem:" + System.getProperty("user.dir") + "/db/migration");
         p.setProperty("flyway.baselineOnMigrate", "true");
-
         flyway.configure(p);
+        flyway.migrate();
     }
 
     @BeforeEach
     public void before() {
-        flyway.clean();
-        flyway.migrate();
+//        flyway.clean();
+//        flyway.migrate();
     }
 
-    protected Provider<DataSource> getDataSource() {
+    Provider<DataSource> getDataSource() {
         return dataSource;
     }
 
-    protected Logger getLogger() {
+    Logger getLogger() {
         return logger;
     }
 }

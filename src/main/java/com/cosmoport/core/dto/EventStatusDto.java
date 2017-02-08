@@ -9,7 +9,8 @@ public final class EventStatusDto extends Entity implements Serializable {
     private final String status;
 
     @JsonCreator
-    public EventStatusDto(@JsonProperty("status") String status) {
+    public EventStatusDto(@JsonProperty("id") long id, @JsonProperty("status") String status) {
+        this.id = id;
         this.status = status;
     }
 

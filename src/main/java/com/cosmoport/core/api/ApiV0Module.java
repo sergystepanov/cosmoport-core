@@ -2,7 +2,7 @@ package com.cosmoport.core.api;
 
 import com.cosmoport.core.db.DatasourceServiceProvider;
 import com.cosmoport.core.file.FileSystem;
-import com.cosmoport.core.persistence.TestPersistenceService;
+import com.cosmoport.core.persistence.*;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import com.google.inject.name.Names;
@@ -22,5 +22,12 @@ public class ApiV0Module extends AbstractModule {
         bind(TestPersistenceService.class);
         bind(TestResource.class).asEagerSingleton();
         bind(DateTimeEndpoint.class).asEagerSingleton();
+        bind(TimetableEndpoint.class).asEagerSingleton();
+        bind(TimetablePersistenceService.class);
+        bind(TimeEventsEndpoint.class).asEagerSingleton();
+        bind(EventTypePersistenceService.class);
+        bind(EventStatusPersistenceService.class);
+        bind(EventDestinationPersistenceService.class);
+        bind(EventPersistenceService.class);
     }
 }
