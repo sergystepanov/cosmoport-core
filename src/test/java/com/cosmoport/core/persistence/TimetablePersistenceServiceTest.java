@@ -10,7 +10,7 @@ final class TimetablePersistenceServiceTest extends PersistenceTest {
     @Test
     @DisplayName("Should be able to execute getAll()")
     public void getAll() throws Exception {
-        service = new TimetablePersistenceService(getLogger(), getDataSource());
+        service = new TimetablePersistenceService(getLogger(), getDataSourceProvider());
 
         Assertions.assertEquals(10, service.getAll().size());
     }

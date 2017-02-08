@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 
 public final class EventDestinationDto extends Entity implements Serializable {
+    private static final long serialVersionUID = -1706846634689840968L;
+
     private final String eventDestinationName;
 
     @JsonCreator

@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 
 public final class TimetableDto extends Entity implements Serializable {
+    private static final long serialVersionUID = -5204432920845515270L;
+
     private String eventDate;
     private long eventTypeId;
     private long eventStatusId;

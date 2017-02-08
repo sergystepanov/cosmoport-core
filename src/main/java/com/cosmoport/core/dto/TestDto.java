@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 
 public final class TestDto extends Entity implements Serializable {
+    private static final long serialVersionUID = 4278429126310424089L;
+
     private final int departureTime;
     private final String type;
     private final int duration;

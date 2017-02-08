@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 
 public final class EventTypeDto extends Entity implements Serializable {
+    private static final long serialVersionUID = 3477232786787312639L;
+
     private String eventTypeName;
     private String eventTypeSubname;
     private String eventTypeDescription;

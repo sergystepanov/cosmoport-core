@@ -14,7 +14,7 @@ final class EventTypePersistenceServiceTest extends PersistenceTest {
     @DisplayName("Should be able to execute getAll()")
     void getAll() {
         EventTypePersistenceService service =
-                new EventTypePersistenceService(getLogger(), getDataSource());
+                new EventTypePersistenceService(getLogger(), getDataSourceProvider());
 
         Assertions.assertEquals(4, service.getAll().size());
     }

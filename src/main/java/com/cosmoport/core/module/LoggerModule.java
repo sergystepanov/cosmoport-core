@@ -4,8 +4,6 @@ import com.google.inject.AbstractModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -16,7 +14,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class LoggerModule extends AbstractModule {
     private final Logger logger;
 
-    public LoggerModule(@Nonnull Logger logger) {
+    public LoggerModule(Logger logger) {
         this.logger = checkNotNull(logger, "logger");
     }
 
@@ -24,7 +22,7 @@ public class LoggerModule extends AbstractModule {
      * @param loggerClass A class to get logger for.
      * @since 1.0.0
      */
-    public LoggerModule(@Nonnull Class<?> loggerClass) {
+    public LoggerModule(Class<?> loggerClass) {
         this(LoggerFactory.getLogger(checkNotNull(loggerClass, "loggerClass")));
     }
 

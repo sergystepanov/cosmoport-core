@@ -9,7 +9,7 @@ final class EventDestinationPersistenceServiceTest extends PersistenceTest {
     @DisplayName("Should be able to execute getAll()")
     void getAll() {
         EventDestinationPersistenceService service =
-                new EventDestinationPersistenceService(getLogger(), getDataSource());
+                new EventDestinationPersistenceService(getLogger(), getDataSourceProvider());
 
         Assertions.assertEquals(4, service.getAll().size());
     }

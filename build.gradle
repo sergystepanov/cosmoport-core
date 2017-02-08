@@ -2,7 +2,7 @@ buildscript {
     ext {
         ver = [
                 junitPlugin   : '1.0.0-M3',
-                versionsPlugin: '0.13.0',
+                versionsPlugin: '0.14.0',
                 shadowPlugin  : '1.2.4'
         ]
     }
@@ -67,10 +67,11 @@ ext {
             sqlite      : '3.16.1',
             hikaricp    : '2.6.0',
             flyway      : '4.0.3',
-            logback     : '1.1.9',
+            logback     : '1.1.10',
             slf4j       : '1.7.22',
             log4j       : '2.8',
             junitJupiter: '5.0.0-M3',
+            springJdbc  : '4.3.6.RELEASE',
             palomino    : '1.1.2',
             jetty       : '9.4.1.v20170120',
             jbcrypt     : '0.4-atlassian-1',
@@ -130,6 +131,7 @@ dependencies {
     compile "org.slf4j:jul-to-slf4j:$ver.slf4j"
 
     // Test
+    compile "org.springframework:spring-jdbc:$ver.springJdbc"
     testCompile "org.junit.jupiter:junit-jupiter-api:$ver.junitJupiter"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:$ver.junitJupiter"
     testCompile "org.jboss.resteasy:resteasy-jackson2-provider:$ver.resteasy"

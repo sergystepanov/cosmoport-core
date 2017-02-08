@@ -11,6 +11,8 @@ import java.io.Serializable;
  * @since 0.0.1
  */
 public final class ApiErrorDto implements Serializable {
+    private static final long serialVersionUID = -4626928791739990148L;
+
     private final String code;
     private final String message;
 

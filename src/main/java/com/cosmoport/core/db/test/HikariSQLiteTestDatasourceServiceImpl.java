@@ -1,8 +1,7 @@
 package com.cosmoport.core.db.test;
 
 import com.cosmoport.core.db.DatasourceService;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import javax.sql.DataSource;
 
@@ -12,11 +11,13 @@ public class HikariSQLiteTestDatasourceServiceImpl implements DatasourceService 
     @Override
     public DataSource getSource() {
         if (ds == null) {
-            HikariConfig config = new HikariConfig();
-            config.setDataSourceClassName("org.sqlite.SQLiteDataSource");
-            config.addDataSourceProperty("url", DatasourceServiceTestParams.memUrl);
+            SingleConnectionDataSource dss = new SingleConnectionDataSource(DatasourceServiceTestParams.memUrl, true);
+//            HikariConfig config = new HikariConfig();
+//            config.setDataSourceClassName("org.sqlite.SQLiteDataSource");
+//            config.addDataSourceProperty("url", DatasourceServiceTestParams.memUrl);
 
-            ds = new HikariDataSource(config);
+//            ds = new HikariDataSource(config);
+            ds = dss;
         }
 
         return ds;
