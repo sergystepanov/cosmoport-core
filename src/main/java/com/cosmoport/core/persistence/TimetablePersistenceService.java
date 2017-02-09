@@ -25,6 +25,15 @@ public class TimetablePersistenceService extends PersistenceService<TimetableDto
         return getAll("SELECT * FROM TIMETABLE");
     }
 
+    /**
+     * Fetches all events from the table.
+     * Uses hardcoded params, oh well.
+     *
+     * @param date   null or the date string to filter with formatted in yyyy-mm-dd supposedly.
+     * @param gateId null or the id number to filter by a gate id.
+     * @return A collection of {@code TimetableDto} objects or an empty array.
+     * @since 0.1.0
+     */
     public List<TimetableDto> getAllWithFilter(final String date, final Long gateId) {
         final boolean hasDate = date != null;
         final boolean hasGate = gateId != null;
@@ -32,15 +41,9 @@ public class TimetablePersistenceService extends PersistenceService<TimetableDto
 
         final StringBuilder sql = new StringBuilder("SELECT * FROM TIMETABLE");
         if (hasParams) {
-            if (hasDate && hasGate) {
-                sql.append(" WHERE event_date = ? AND gate_id = ?");
-            } else {
-                if (hasDate) {
-                    sql.append(" WHERE event_date = ?");
-                } else {
-                    sql.append(" WHERE gate_id = ?");
-                }
-            }
+            sql.append(" WHERE ");
+            sql.append(hasDate && hasGate ? "event_date = ? AND gate_id = ?" :
+                    hasDate ? "event_date = ?" : "gate_id = ?");
         }
 
         return getAllByParams(sql.toString(), date, gateId);

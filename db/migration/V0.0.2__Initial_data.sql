@@ -4,6 +4,43 @@
 -- @encoding UTF-8
 --
 
+INSERT INTO LOCALE (id, code, is_default, locale_description) VALUES
+  (1, 'en', 1, 'English'),
+  (2, 'ru', 0, 'Русский'),
+  (3, 'el', 0, 'Ελληνική');
+
+INSERT INTO I18N (id, tag, external, description, params) VALUES
+  (1, 'ui_caption_gate', 1, 'Interface caption for gate.', ''),
+  (2, 'ui_caption_type', 1, 'Interface caption for type.', ''),
+  (3, 'ui_caption_destination', 1, '', ''),
+  (4, 'ui_caption_status', 1, '', ''),
+  (5, 'ui_caption_time_etd', 1, '', ''),
+  (6, 'ui_caption_next_event', 1, '', ''),
+  (7, 'ui_months_names', 1, '', 'json_array');
+
+INSERT INTO TRANSLATION (i18n_id, locale_id, tr_text) VALUES
+  (1, 1, 'Gate'),
+  (1, 2, 'Ворота'),
+  (1, 3, 'Πύλη'),
+  (2, 1, 'Type'),
+  (2, 2, 'Тип'),
+  (2, 3, 'Τύπος'),
+  (3, 1, 'Destination'),
+  (3, 2, 'Назначение'),
+  (3, 3, 'Προορισμός'),
+  (4, 1, 'Status'),
+  (4, 2, 'Статус'),
+  (4, 3, 'Κατάσταση'),
+  (5, 1, 'Time to ETD'),
+  (5, 2, 'Время прибытия'),
+  (5, 3, 'Ωρα άφιξης'),
+  (6, 1, 'Next event'),
+  (6, 2, 'Далее'),
+  (6, 3, 'επόμενος'),
+  (7, 1, '["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Nov", "Dec"]'),
+  (7, 2, '["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"]'),
+  (7, 3, '["Ιαν", "Φεβ", "Μάρ", "Απρ", "Μάι", "Ιούν", "Ιούλ", "Αύγ", "Σεπ", "Οκτ", "Νοέ", "Δεκ"]');
+
 INSERT INTO EVENT_TYPE (id, event_type_name, event_type_subname, event_type_description,
                         default_duration, default_repeat_interval) VALUES
   (1, 'Excursion', 'Station launch', '', 40, 5),
@@ -34,7 +71,7 @@ INSERT INTO GATE (id, number, gate_name) VALUES
   (10, 10, '');
 
 INSERT INTO TIMETABLE (event_date, event_type_id, event_status_id, event_destination_id, gate_id, start_time,
-  duration_time, cost, people_limit, contestants) VALUES
+                       duration_time, cost, people_limit, contestants) VALUES
   ('2017-02-05', 2, 7, 1, 1, 540, 30, 20, 10, 1),
   ('2017-02-05', 1, 1, 2, 1, 570, 80, 30, 10, 2),
   ('2017-02-05', 3, 4, 3, 1, 600, 45, 45, 10, 3),

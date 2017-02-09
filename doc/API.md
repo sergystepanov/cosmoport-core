@@ -50,8 +50,8 @@ an error object (“error”)
    filter timetable events by a gate id
 
 * **Data Params**
-
-  None
+    
+    None
 
 * **Success Response:**
 

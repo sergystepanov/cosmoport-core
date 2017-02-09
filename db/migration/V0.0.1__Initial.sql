@@ -9,7 +9,12 @@
 --
 -- The reference id of the translated value to use in tables
 CREATE TABLE I18N (
-  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
+  id          INTEGER NOT NULL PRIMARY KEY          AUTOINCREMENT,
+  tag         TEXT    NOT NULL                      DEFAULT (''),
+  -- A flag of the translation which shows that the value is used externally
+  external    BOOLEAN NOT NULL                      DEFAULT (0),
+  description TEXT    NOT NULL                      DEFAULT (''),
+  params TEXT NOT NULL DEFAULT ('')
 );
 -- Language locales (EN, RU, DE, etc.)
 CREATE TABLE LOCALE (
@@ -23,15 +28,12 @@ CREATE TABLE LOCALE (
 );
 -- The main translation table of translated values to use internally and externally
 CREATE TABLE TRANSLATION (
-  id          INTEGER     NOT NULL PRIMARY KEY AUTOINCREMENT,
-  tr_code     VARCHAR(42) NOT NULL,
-  i18n_id     INTEGER     NOT NULL,
-  locale_id   INTEGER     NOT NULL,
-  tr_text     TEXT        NOT NULL             DEFAULT (''),
-  -- The flag of the translation value which shows that this value is used externally
-  tr_external BOOLEAN     NOT NULL             DEFAULT (0),
+  id          INTEGER NOT NULL PRIMARY KEY          AUTOINCREMENT,
+  i18n_id     INTEGER NOT NULL,
+  locale_id   INTEGER NOT NULL,
+  tr_text     TEXT    NOT NULL                      DEFAULT (''),
+  tr_token_id INTEGER                               DEFAULT (NULL),
 
-  CONSTRAINT unique_tr_code UNIQUE (tr_code),
   CONSTRAINT unique_i18n_locale UNIQUE (i18n_id, locale_id),
 
   FOREIGN KEY (i18n_id) REFERENCES I18N (id) ON DELETE CASCADE ON UPDATE CASCADE,
