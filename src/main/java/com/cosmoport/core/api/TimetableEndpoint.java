@@ -6,10 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.jboss.resteasy.annotations.GZIP;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
@@ -28,7 +25,7 @@ public final class TimetableEndpoint {
 
     @GET
     @Path("/")
-    public List<TimetableDto> get() {
-        return timetablePersistenceService.getAll();
+    public List<TimetableDto> get(@QueryParam("date") String date, @QueryParam("gate") long gateId) {
+        return timetablePersistenceService.getAllWithFilter(date, gateId);
     }
 }

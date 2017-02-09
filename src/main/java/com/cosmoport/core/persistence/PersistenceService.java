@@ -11,7 +11,6 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public abstract class PersistenceService<T> {
     private final Provider<DataSource> ds;
@@ -57,8 +56,8 @@ public abstract class PersistenceService<T> {
         return objects;
     }
 
-    protected Optional<T> getByStringParams(final String sql, final String... params) {
-        Optional<T> object = Optional.empty();
+    List<T> getAllByParams(final String sql, final Object... params) {
+        List<T> values = new ArrayList<>();
 
         Connection conn = null;
         PreparedStatement statement = null;
@@ -69,14 +68,24 @@ public abstract class PersistenceService<T> {
             statement = conn.prepareStatement(sql);
 
             byte index = 1;
-            for (String param : params) {
-                statement.setString(index++, param);
+            for (Object param : params) {
+                if (param instanceof String) {
+                    statement.setString(index++, (String) param);
+                } else {
+                    if (param instanceof Long) {
+                        statement.setLong(index++, (Long) param);
+                    } else {
+                        if (param instanceof Integer) {
+                            statement.setInt(index++, (Integer) param);
+                        }
+                    }
+                }
             }
 
             rs = statement.executeQuery();
 
-            if (rs.next()) {
-                object = Optional.ofNullable(map(rs));
+            while (rs.next()) {
+                values.add(map(rs));
             }
         } catch (Exception e) {
             throwServerApiException(e);
@@ -84,7 +93,7 @@ public abstract class PersistenceService<T> {
             close(rs, statement, conn);
         }
 
-        return object;
+        return values;
     }
 
     protected long insertStringById(final String sql, final String value, final long id)

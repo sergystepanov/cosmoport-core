@@ -25,7 +25,7 @@ an error object (“error”)
 * **Code:** 500 INTERNAL SERVER ERROR <br />
   **Content:** `{"code": 003, "message": "Server internal error"}`
 
-**Show timetable**
+**Get timetable events**
 ----
   Returns json data with timetable.
 
@@ -42,6 +42,12 @@ an error object (“error”)
    **Optional:**
  
    `date=[alphanumeric]`
+   
+   filter timetable events by a date
+   
+   `gate=[number]`
+   
+   filter timetable events by a gate id
 
 * **Data Params**
 
@@ -55,18 +61,13 @@ an error object (“error”)
 * **Error Response:**
 
   * **Code:** 404 NOT FOUND <br />
-    **Content:** `{ error : "User doesn't exist" }`
-
-  OR
-
-  * **Code:** 401 UNAUTHORIZED <br />
-    **Content:** `{ error : "You are unauthorized to make this request." }`
+    **Content:** `{"code": 004, "message": "Wrong filter params."}`
 
 * **Sample Call:**
 
   ```javascript
     $.ajax({
-      url: "/users/1",
+      url: "/timetable?gate=1",
       dataType: "json",
       type : "GET",
       success : function(r) {
@@ -112,9 +113,9 @@ an error object (“error”)
   * **Code:** 400 BAD REQUEST <br />
     **Content:** `{"code": 002, "message": "Duplicate event time."}`
 
-**Show server time**
+**Get server time**
 ----
-  Returns json data with server current timestamp.
+  Returns json data with the current server timestamp.
 
 * **URL**
 

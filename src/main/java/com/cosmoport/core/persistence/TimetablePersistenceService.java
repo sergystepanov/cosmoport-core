@@ -25,6 +25,27 @@ public class TimetablePersistenceService extends PersistenceService<TimetableDto
         return getAll("SELECT * FROM TIMETABLE");
     }
 
+    public List<TimetableDto> getAllWithFilter(final String date, final Long gateId) {
+        final boolean hasDate = date != null;
+        final boolean hasGate = gateId != null;
+        final boolean hasParams = hasDate || hasGate;
+
+        final StringBuilder sql = new StringBuilder("SELECT * FROM TIMETABLE");
+        if (hasParams) {
+            if (hasDate && hasGate) {
+                sql.append(" WHERE event_date = ? AND gate_id = ?");
+            } else {
+                if (hasDate) {
+                    sql.append(" WHERE event_date = ?");
+                } else {
+                    sql.append(" WHERE gate_id = ?");
+                }
+            }
+        }
+
+        return getAllByParams(sql.toString(), date, gateId);
+    }
+
     private void validate(final TimetableDto record) {
 
     }
