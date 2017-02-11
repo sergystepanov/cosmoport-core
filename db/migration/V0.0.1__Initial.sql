@@ -14,7 +14,7 @@ CREATE TABLE I18N (
   -- A flag of the translation which shows that the value is used externally
   external    BOOLEAN NOT NULL                      DEFAULT (0),
   description TEXT    NOT NULL                      DEFAULT (''),
-  params TEXT NOT NULL DEFAULT ('')
+  params      TEXT    NOT NULL                      DEFAULT ('')
 );
 -- Language locales (EN, RU, DE, etc.)
 CREATE TABLE LOCALE (
@@ -46,21 +46,29 @@ CREATE TABLE TRANSLATION (
 -- The type of the event
 CREATE TABLE EVENT_TYPE (
   id                      INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  event_type_name         TEXT    NOT NULL,
-  event_type_subname      TEXT    NOT NULL,
+  i18n_event_type_name    INTEGER,
+  i18n_event_type_subname INTEGER,
   event_type_description  TEXT    NOT NULL,
   default_duration        INTEGER NOT NULL             DEFAULT (1),
-  default_repeat_interval INTEGER NOT NULL             DEFAULT (0)
+  default_repeat_interval INTEGER NOT NULL             DEFAULT (0),
+
+  FOREIGN KEY (i18n_event_type_name) REFERENCES I18N(id) ON DELETE SET NULL ON UPDATE CASCADE,
+  FOREIGN KEY (i18n_event_type_subname) REFERENCES I18N(id) ON DELETE SET NULL ON UPDATE CASCADE
+
 );
 -- The event status
 CREATE TABLE EVENT_STATUS (
   id     INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  status TEXT    NOT NULL
+  i18n_status INTEGER,
+
+  FOREIGN KEY (i18n_status) REFERENCES I18N(id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 -- The point of destination of the travel event if present
 CREATE TABLE EVENT_DESTINATION (
   id                     INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  event_destination_name TEXT    NOT NULL
+  i18n_event_destination_name INTEGER,
+
+  FOREIGN KEY (i18n_event_destination_name) REFERENCES I18N(id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 -- The gates for travel events if present
 CREATE TABLE GATE (

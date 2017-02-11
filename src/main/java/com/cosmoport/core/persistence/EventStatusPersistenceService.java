@@ -23,7 +23,7 @@ public final class EventStatusPersistenceService extends PersistenceService<Even
 
     @Override
     protected EventStatusDto map(final ResultSet rs) throws SQLException {
-        return new EventStatusDto(rs.getLong("id"), rs.getString("status"));
+        return new EventStatusDto(rs.getLong("id"), rs.getLong("i18n_status"));
     }
 
     public List<EventStatusDto> getAll() {

@@ -27,6 +27,6 @@ public final class EventDestinationPersistenceService extends PersistenceService
 
     @Override
     protected EventDestinationDto map(final ResultSet rs) throws SQLException {
-        return new EventDestinationDto(rs.getLong("id"), rs.getString("event_destination_name"));
+        return new EventDestinationDto(rs.getLong("id"), rs.getLong("i18n_event_destination_name"));
     }
 }
