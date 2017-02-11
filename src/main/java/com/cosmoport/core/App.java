@@ -6,6 +6,7 @@ import com.cosmoport.core.config.Config;
 import com.cosmoport.core.event.MessageHub;
 import com.cosmoport.core.module.JsonModule;
 import com.cosmoport.core.module.LoggerModule;
+import com.cosmoport.core.persistence.module.PersistenceModule;
 import com.cosmoport.core.socket.EventServlet;
 import com.cosmoport.core.socket.EventSocket;
 import com.cosmoport.core.statics.StaticsEndpoint;
@@ -66,6 +67,7 @@ public class App {
             install(new JsonModule());
             install(new LoggerModule(App.class));
             install(new ApiV0Module());
+            install(new PersistenceModule());
 //            install(new SchedulerModule());
 
             bind(EventBus.class).toInstance(eventBus);
