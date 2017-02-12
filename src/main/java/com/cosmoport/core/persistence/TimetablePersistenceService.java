@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,9 +36,19 @@ public class TimetablePersistenceService extends PersistenceService<TimetableDto
      * @since 0.1.0
      */
     public List<TimetableDto> getAllWithFilter(final String date, final Long gateId) {
-        final boolean hasDate = date != null;
-        final boolean hasGate = gateId != null;
+        getLogger().debug("date={}, gateId={}", date, gateId);
+
+        final boolean hasDate = date != null && !date.equals("");
+        final boolean hasGate = gateId != null && gateId != 0;
         final boolean hasParams = hasDate || hasGate;
+
+        final List<Object> params = new ArrayList<>();
+        if (hasDate) {
+            params.add(date);
+        }
+        if (hasGate) {
+            params.add(gateId);
+        }
 
         final StringBuilder sql = new StringBuilder("SELECT * FROM TIMETABLE");
         if (hasParams) {
@@ -45,8 +56,9 @@ public class TimetablePersistenceService extends PersistenceService<TimetableDto
             sql.append(hasDate && hasGate ? "event_date = ? AND gate_id = ?" :
                     hasDate ? "event_date = ?" : "gate_id = ?");
         }
+        getLogger().debug("sql={}", sql.toString());
 
-        return getAllByParams(sql.toString(), date, gateId);
+        return getAllByParams(sql.toString(), params.toArray());
     }
 
     private void validate(final TimetableDto record) {

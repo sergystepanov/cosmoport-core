@@ -249,6 +249,10 @@ public abstract class PersistenceService<T> {
                         e.getErrorCode() == 23000;
     }
 
+    public Logger getLogger() {
+        return logger;
+    }
+
     public void setKeepConnection(boolean keepConnection_) {
         keepConnection = keepConnection_;
     }

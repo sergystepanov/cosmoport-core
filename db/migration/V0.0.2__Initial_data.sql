@@ -34,7 +34,11 @@ INSERT INTO I18N (id, tag, external, description, params) VALUES
   (21, 'event_status_name_4', 0, '', ''),
   (22, 'event_status_name_5', 0, '', ''),
   (23, 'event_status_name_6', 0, '', ''),
-  (24, 'event_status_name_7', 0, '', '');
+  (24, 'event_status_name_7', 0, '', ''),
+  (25, 'ui_caption_duration', 1, '', ''),
+  (26, 'ui_caption_hours', 1, '', ''),
+  (27, 'ui_caption_minutes', 1, '', ''),
+  (28, 'event_type_description_1', 0, '', '');
 
 INSERT INTO TRANSLATION (i18n_id, locale_id, tr_text) VALUES
   (1, 1, 'Gate'),
@@ -108,14 +112,29 @@ INSERT INTO TRANSLATION (i18n_id, locale_id, tr_text) VALUES
   (23, 3, 'επέστρεψαν'),
   (24, 1, 'Preorder'),
   (24, 2, 'Предзаказ'),
-  (24, 3, 'Προπαραγγελία');
+  (24, 3, 'Προπαραγγελία'),
+  (25, 1, 'Duration'),
+  (25, 2, 'Продолжительность'),
+  (25, 3, 'Διάρκεια'),
+  (26, 1, 'h'),
+  (26, 2, 'ч.'),
+  (26, 3, 'ώ'),
+  (27, 1, 'm'),
+  (27, 2, 'м.'),
+  (27, 3, 'λ'),
+  (28, 1,
+   'You will find a fascinating journey of discovery and a real space station, you''ll learn how it works from the inside, what mechanisms and systems are needed for full protection of human life in space. You will find a fascinating journey of discovery and a real space station.'),
+  (28, 2,
+   'Вас ждёт увлекательное и познавательное путешествие на настоящую космическую станцию, Вы узнаете как она работает изнутри, какие механизмы и системы необходимы для полного обеспечения жизни человека в космосе. Вас ждёт увлекательное и познавательное путешествие на настоящую космическую станцию.'),
+  (28, 3,
+   'Θα βρείτε ένα συναρπαστικό ταξίδι ανακάλυψης και ένα πραγματικό διαστημικό σταθμό, θα μάθετε πώς λειτουργεί από μέσα, ποιους μηχανισμούς και τα συστήματα που απαιτούνται για την πλήρη προστασία της ανθρώπινης ζωής στο διάστημα. Θα βρείτε ένα συναρπαστικό ταξίδι ανακάλυψης και ένα πραγματικό διαστημικό σταθμό.');
 
-INSERT INTO EVENT_TYPE (id, i18n_event_type_name, i18n_event_type_subname, event_type_description,
+INSERT INTO EVENT_TYPE (id, i18n_event_type_name, i18n_event_type_subname, i18n_event_type_description,
                         default_duration, default_repeat_interval) VALUES
-  (1, 8, 11, '', 40, 5),
-  (2, 9, 12, '', 90, 0),
-  (3, 10, 13, '', 120, 0),
-  (4, 10, 11, '', 120, 0);
+  (1, 8, 11, 28, 40, 5),
+  (2, 9, 12, 28, 90, 0),
+  (3, 10, 13, 28, 120, 0),
+  (4, 10, 11, 28, 120, 0);
 
 INSERT INTO EVENT_STATUS (id, i18n_status) VALUES
   (1, 18), (2, 19), (3, 20), (4, 21), (5, 22), (6, 23), (7, 24);

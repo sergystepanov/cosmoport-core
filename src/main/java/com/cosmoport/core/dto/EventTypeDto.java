@@ -10,7 +10,7 @@ public final class EventTypeDto extends Entity implements Serializable {
 
     private long i18nEventTypeName;
     private long i18nEventTypeSubname;
-    private String eventTypeDescription;
+    private long i18nEventTypeDescription;
     private int defaultDuration;
     private int defaultRepeatInterval;
 
@@ -18,13 +18,13 @@ public final class EventTypeDto extends Entity implements Serializable {
     public EventTypeDto(@JsonProperty("id") long id,
                         @JsonProperty("i18n_event_type_name") long i18nEventTypeName,
                         @JsonProperty("i18n_event_type_subname") long i18nEventTypeSubname,
-                        @JsonProperty("event_type_description") String eventTypeDescription,
+                        @JsonProperty("i18n_event_type_description") long i18nEventTypeDescription,
                         @JsonProperty("default_duration") int defaultDuration,
                         @JsonProperty("default_repeat_interval") int defaultRepeatInterval) {
         this.id = id;
         this.i18nEventTypeName = i18nEventTypeName;
         this.i18nEventTypeSubname = i18nEventTypeSubname;
-        this.eventTypeDescription = eventTypeDescription;
+        this.i18nEventTypeDescription = i18nEventTypeDescription;
         this.defaultDuration = defaultDuration;
         this.defaultRepeatInterval = defaultRepeatInterval;
     }
@@ -41,8 +41,8 @@ public final class EventTypeDto extends Entity implements Serializable {
         return i18nEventTypeSubname;
     }
 
-    public String getEventTypeDescription() {
-        return eventTypeDescription;
+    public long getI18nEventTypeDescription() {
+        return i18nEventTypeDescription;
     }
 
     public int getDefaultDuration() {

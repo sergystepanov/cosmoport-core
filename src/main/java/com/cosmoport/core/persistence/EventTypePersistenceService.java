@@ -27,7 +27,7 @@ public final class EventTypePersistenceService extends PersistenceService<EventT
                 rs.getLong("id"),
                 rs.getLong("i18n_event_type_name"),
                 rs.getLong("i18n_event_type_subname"),
-                rs.getString("event_type_description"),
+                rs.getLong("i18n_event_type_description"),
                 rs.getInt("default_duration"),
                 rs.getInt("default_repeat_interval")
         );
