@@ -7,6 +7,8 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
+ * A simple translation data object.
+ *
  * @since 0.1.0
  */
 public final class TranslationDto implements Serializable {
@@ -31,9 +33,6 @@ public final class TranslationDto implements Serializable {
 
     @Override
     public String toString() {
-        return "TranslationDto{" +
-                "id=" + id +
-                ", values=" + values +
-                '}';
+        return "TranslationDto{" + "id=" + id + ", values=" + values + '}';
     }
 }
