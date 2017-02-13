@@ -1,38 +1,42 @@
 package com.cosmoport.core.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.Serializable;
-import java.util.List;
 
-/**
- * A simple translation data object.
- *
- * @since 0.1.0
- */
-public final class TranslationDto implements Serializable {
-    private static final long serialVersionUID = 6579459848250643959L;
+public final class TranslationDto extends Entity implements Serializable {
+    private static final long serialVersionUID = 6700819328646792540L;
 
-    private final long id;
-    private final List<String> values;
+    private final long i18nId;
+    private final long localeId;
+    private final String text;
+    private final I18nDto i18n;
 
-    @JsonCreator
-    public TranslationDto(@JsonProperty("id") long id, @JsonProperty("values") List<String> values) {
+    public TranslationDto(long id, long i18nId, long localeId, String text, I18nDto i18n) {
         this.id = id;
-        this.values = values;
+        this.i18nId = i18nId;
+        this.localeId = localeId;
+        this.text = text;
+        this.i18n = i18n;
     }
 
-    public long getId() {
-        return id;
+    public long getI18nId() {
+        return i18nId;
     }
 
-    public List<String> getValues() {
-        return values;
+    public long getLocaleId() {
+        return localeId;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public I18nDto getI18n() {
+        return i18n;
     }
 
     @Override
     public String toString() {
-        return "TranslationDto{" + "id=" + id + ", values=" + values + '}';
+        return "TranslationDto{" + "i18nId=" + i18nId + ", localeId=" + localeId + ", text='" + text + '\'' +
+                ", i18n=" + i18n + '}';
     }
 }

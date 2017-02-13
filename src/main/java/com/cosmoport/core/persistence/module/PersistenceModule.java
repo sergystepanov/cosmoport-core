@@ -20,5 +20,6 @@ public final class PersistenceModule extends AbstractModule {
         bind(EventPersistenceService.class);
         bind(LocalePersistenceService.class);
         bind(TranslationPersistenceService.class);
+        bind(I18nPersistenceService.class);
     }
 }

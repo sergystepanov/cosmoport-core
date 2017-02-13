@@ -22,6 +22,7 @@ public final class LocaleDto extends Entity implements Serializable {
                      @JsonProperty("code") String code,
                      @JsonProperty("is_default") boolean isDefault,
                      @JsonProperty("locale_description") String localeDescription) {
+        this.id = id;
         this.code = code;
         this.isDefault = isDefault;
         this.localeDescription = localeDescription;
@@ -31,7 +32,7 @@ public final class LocaleDto extends Entity implements Serializable {
         return code;
     }
 
-    public boolean isDefault() {
+    public boolean isDefaultLocale() {
         return isDefault;
     }
 

@@ -1,6 +1,7 @@
 package com.cosmoport.core.persistence;
 
 import com.cosmoport.core.dto.TranslationDto;
+import com.cosmoport.core.dto.TranslationLightDto;
 import com.cosmoport.core.persistence.constant.Constants;
 import com.cosmoport.core.persistence.exception.JsonConvertException;
 import com.cosmoport.core.persistence.trait.HasClosableResources;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
@@ -25,18 +27,64 @@ import java.util.*;
 public final class TranslationPersistenceService implements HasClosableResources {
     private static Logger logger = LoggerFactory.getLogger(TranslationPersistenceService.class.getCanonicalName());
     private final Provider<DataSource> ds;
+    private final I18nPersistenceService i18nPersistenceService;
 
     @Inject
-    public TranslationPersistenceService(Provider<DataSource> ds) {
+    public TranslationPersistenceService(Provider<DataSource> ds, I18nPersistenceService i18nPersistenceService) {
         this.ds = ds;
+        this.i18nPersistenceService = i18nPersistenceService;
     }
 
     /**
+     * Returns all translation data for specified locale id.
      *
-     * @return
+     * @param localeId The locale id number.
+     * @since 0.1.0
      */
-    public Map<String, Map<String, TranslationDto>> getAll() {
-        final Map<String, Map<String, TranslationDto>> map = new HashMap<>();
+    public List<TranslationDto> getAllByLocaleId(final long localeId) {
+        final List<TranslationDto> translations = new ArrayList<>();
+
+        Connection conn = null;
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            conn = ds.get().getConnection();
+
+            final String sql =
+                    "SELECT t.*, i.id i_id, i.tag, i.external, i.description, i.params FROM TRANSLATION t " +
+                            "LEFT JOIN I18N i ON t.i18n_id = i.id WHERE t.locale_id = ?";
+            statement = conn.prepareStatement(sql);
+            statement.setLong(1, localeId);
+            rs = statement.executeQuery();
+
+            while (rs.next()) {
+                translations.add(
+                        new TranslationDto(
+                                rs.getLong("id"),
+                                rs.getLong("i18n_id"),
+                                rs.getLong("locale_id"),
+                                rs.getString("tr_text"),
+                                i18nPersistenceService.mapObject(rs, "i_id")
+                        )
+                );
+            }
+        } catch (Exception e) {
+            getLogger().error(e.getMessage());
+            throw new RuntimeException();
+        } finally {
+            close(rs, statement, conn);
+        }
+
+        return translations;
+    }
+
+    /**
+     * Returns all translation data in a tree structure.
+     *
+     * @since 0.1.0
+     */
+    public Map<String, Map<String, TranslationLightDto>> getAll() {
+        final Map<String, Map<String, TranslationLightDto>> map = new HashMap<>();
 
         Connection conn = null;
         Statement statement = null;
@@ -62,7 +110,7 @@ public final class TranslationPersistenceService implements HasClosableResources
 
             // Build uber object
             for (final TranslationRecord record : records) {
-                final TranslationDto translation = new TranslationDto(record.gettId(), getValues(record));
+                final TranslationLightDto translation = new TranslationLightDto(record.gettId(), getValues(record));
                 final String locale = record.getlCode();
                 final String translationKey = getKey(record);
 
@@ -70,7 +118,7 @@ public final class TranslationPersistenceService implements HasClosableResources
                 if (map.containsKey(locale)) {
                     map.get(locale).put(translationKey, translation);
                 } else {
-                    final Map<String, TranslationDto> tr = new HashMap<>();
+                    final Map<String, TranslationLightDto> tr = new HashMap<>();
                     tr.put(translationKey, translation);
                     map.put(locale, tr);
                 }
