@@ -18,7 +18,7 @@ final class LocalePersistenceServiceTest extends PersistenceTest {
     @Test
     @DisplayName("Should be able to execute getAll()")
     void getAll() {
-        Assertions.assertEquals(3, service.getAll().size());
+        Assertions.assertTrue(service.getAll().size() > 2);
     }
 
     @Test

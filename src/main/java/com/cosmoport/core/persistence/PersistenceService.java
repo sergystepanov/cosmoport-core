@@ -2,7 +2,6 @@ package com.cosmoport.core.persistence;
 
 import com.cosmoport.core.persistence.exception.UniqueConstraintException;
 import com.cosmoport.core.persistence.param.QueryParam;
-import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.slf4j.Logger;
@@ -18,9 +17,6 @@ public abstract class PersistenceService<T> {
 
     private boolean keepConnection;
 
-    private final TypeToken<T> typeToken = new TypeToken<T>(getClass()) {
-    };
-
     @Inject
     protected PersistenceService(Logger logger, Provider<DataSource> ds) {
         this.ds = ds;
@@ -28,7 +24,7 @@ public abstract class PersistenceService<T> {
         this.keepConnection = false;
     }
 
-    protected Connection getConnection() throws SQLException {
+    Connection getConnection() throws SQLException {
         return ds.get().getConnection();
     }
 
@@ -134,7 +130,7 @@ public abstract class PersistenceService<T> {
         return newId;
     }
 
-    protected int deleteByIdWithParams(final String sql, final long id, final QueryParam... params) {
+    int deleteByIdWithParams(final String sql, final long id, final QueryParam... params) {
         int deleted = 0;
 
         Connection conn = null;
@@ -173,24 +169,12 @@ public abstract class PersistenceService<T> {
 
     protected abstract T map(final ResultSet rs) throws SQLException;
 
-    protected void throwServerApiException(Throwable t) {
+    void throwServerApiException(Throwable t) {
         logger.error(t.getMessage());
         throw new RuntimeException();
     }
 
-    private T create() {
-        try {
-            // Using the raw type Class object for the token to
-            // get at its default constructor.
-            return typeToken.constructor(typeToken.getRawType().getConstructor()).invoke(null);
-        } catch (Exception e) {
-            logger.error("Couldn't create generic class, " + e.getMessage());
-        }
-
-        return null;
-    }
-
-    public void close(AutoCloseable resource) {
+    private void close(AutoCloseable resource) {
         if (resource == null) {
             return;
         }
@@ -202,7 +186,7 @@ public abstract class PersistenceService<T> {
         }
     }
 
-    public void close(AutoCloseable... resources) {
+    void close(AutoCloseable... resources) {
         for (AutoCloseable resource : resources) {
             if (resource instanceof Connection) {
                 closeConnection((Connection) resource);
@@ -212,7 +196,7 @@ public abstract class PersistenceService<T> {
         }
     }
 
-    protected void closeConnection(Connection conn) {
+    private void closeConnection(Connection conn) {
         if (!keepConnection) {
             close(conn);
         }
@@ -239,7 +223,7 @@ public abstract class PersistenceService<T> {
     /**
      * Checks on duplicate key. ! Database dependent
      */
-    public static boolean isUniqueViolation(SQLException e) {
+    static boolean isUniqueViolation(SQLException e) {
         return
                 // SQLite
                 e.getErrorCode() == 19 ||
@@ -251,9 +235,5 @@ public abstract class PersistenceService<T> {
 
     public Logger getLogger() {
         return logger;
-    }
-
-    public void setKeepConnection(boolean keepConnection_) {
-        keepConnection = keepConnection_;
     }
 }
