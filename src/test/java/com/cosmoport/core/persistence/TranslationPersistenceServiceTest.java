@@ -1,10 +1,13 @@
 package com.cosmoport.core.persistence;
 
 import com.cosmoport.core.dto.TranslationDto;
+import com.google.common.eventbus.EventBus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
 
 final class TranslationPersistenceServiceTest extends PersistenceTest {
     private TranslationPersistenceService translationPersistenceService;
@@ -12,7 +15,8 @@ final class TranslationPersistenceServiceTest extends PersistenceTest {
     @BeforeEach
     void setService() {
         translationPersistenceService = new TranslationPersistenceService(
-                getDataSourceProvider(), new I18nPersistenceService(getLogger(), getDataSourceProvider()));
+                getDataSourceProvider(), new I18nPersistenceService(getLogger(), getDataSourceProvider()),
+                new EventBus());
     }
 
     @Test
@@ -27,5 +31,17 @@ final class TranslationPersistenceServiceTest extends PersistenceTest {
     @DisplayName("Should be able to execute getAll()")
     void getAll() {
         Assertions.assertEquals(3, translationPersistenceService.getAll().size());
+    }
+
+    @Test
+    @DisplayName("Should be able to update translation values")
+    void updateTranslationForId() {
+        final String text = "abc";
+
+        translationPersistenceService.updateTranslationForId(1, text);
+        final Optional<TranslationDto> result = translationPersistenceService.getById(1);
+
+        Assertions.assertTrue(result.isPresent());
+        Assertions.assertEquals(text, result.get().getText());
     }
 }

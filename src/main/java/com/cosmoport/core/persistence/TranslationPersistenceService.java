@@ -2,11 +2,13 @@ package com.cosmoport.core.persistence;
 
 import com.cosmoport.core.dto.TranslationDto;
 import com.cosmoport.core.dto.TranslationLightDto;
+import com.cosmoport.core.event.message.TestMessage;
 import com.cosmoport.core.persistence.constant.Constants;
 import com.cosmoport.core.persistence.exception.JsonConvertException;
 import com.cosmoport.core.persistence.trait.HasClosableResources;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.slf4j.Logger;
@@ -28,11 +30,14 @@ public final class TranslationPersistenceService implements HasClosableResources
     private static Logger logger = LoggerFactory.getLogger(TranslationPersistenceService.class.getCanonicalName());
     private final Provider<DataSource> ds;
     private final I18nPersistenceService i18nPersistenceService;
+    private EventBus eventBus;
 
     @Inject
-    public TranslationPersistenceService(Provider<DataSource> ds, I18nPersistenceService i18nPersistenceService) {
+    public TranslationPersistenceService(Provider<DataSource> ds, I18nPersistenceService i18nPersistenceService,
+                                         EventBus eventBus) {
         this.ds = ds;
         this.i18nPersistenceService = i18nPersistenceService;
+        this.eventBus = eventBus;
     }
 
     /**
@@ -76,6 +81,41 @@ public final class TranslationPersistenceService implements HasClosableResources
         }
 
         return translations;
+    }
+
+    public Optional<TranslationDto> getById(final long id) {
+        Optional<TranslationDto> object;
+        Connection conn = null;
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+
+        try {
+            conn = ds.get().getConnection();
+
+            final String sql = "SELECT * FROM TRANSLATION WHERE id = ?";
+            statement = conn.prepareStatement(sql);
+            statement.setLong(1, id);
+            rs = statement.executeQuery();
+
+            if (rs.next()) {
+                object = Optional.of(new TranslationDto(
+                        rs.getLong("id"),
+                        rs.getLong("i18n_id"),
+                        rs.getLong("locale_id"),
+                        rs.getString("tr_text"),
+                        null)
+                );
+            } else {
+                object = Optional.empty();
+            }
+        } catch (Exception e) {
+            getLogger().error(e.getMessage());
+            throw new RuntimeException();
+        } finally {
+            close(rs, statement, conn);
+        }
+
+        return object;
     }
 
     /**
@@ -131,6 +171,33 @@ public final class TranslationPersistenceService implements HasClosableResources
         }
 
         return map;
+    }
+
+    public boolean updateTranslationForId(final long id, final String text) {
+        boolean result;
+
+        Connection conn = null;
+        PreparedStatement statement = null;
+        try {
+            conn = ds.get().getConnection();
+
+            statement = conn.prepareStatement("UPDATE TRANSLATION SET tr_text = ? WHERE id = ?");
+            statement.setString(1, text);
+            statement.setLong(2, id);
+
+            result = statement.executeUpdate() == 1;
+
+            if (result) {
+                eventBus.post(new TestMessage());
+            }
+        } catch (Exception e) {
+            getLogger().error(e.getMessage());
+            throw new RuntimeException();
+        } finally {
+            close(statement, conn);
+        }
+
+        return result;
     }
 
     /**

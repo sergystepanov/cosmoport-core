@@ -1,10 +1,13 @@
 package com.cosmoport.core.api;
 
 import com.cosmoport.core.dto.LocaleDto;
+import com.cosmoport.core.dto.ResultDto;
 import com.cosmoport.core.dto.TranslationDto;
 import com.cosmoport.core.dto.TranslationLightDto;
+import com.cosmoport.core.dto.request.TranslationTextUpdateRequestDto;
 import com.cosmoport.core.persistence.LocalePersistenceService;
 import com.cosmoport.core.persistence.TranslationPersistenceService;
+import com.cosmoport.core.persistence.exception.UniqueConstraintException;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.jboss.resteasy.annotations.GZIP;
@@ -42,9 +45,22 @@ public class TranslationEndpoint {
         return translationPersistenceService.getAllByLocaleId(localeId);
     }
 
+    @POST
+    @Path("/{translationId}")
+    public ResultDto updateTranslation(@PathParam("translationId") long translationId,
+                                       TranslationTextUpdateRequestDto requestDto) {
+        return new ResultDto(translationPersistenceService.updateTranslationForId(translationId, requestDto.getText()));
+    }
+
     @GET
     @Path("/locales")
     public List<LocaleDto> getLocales() {
         return localePersistenceService.getAll();
+    }
+
+    @POST
+    @Path("/locale")
+    public LocaleDto createLocale(LocaleDto locale) throws UniqueConstraintException {
+        return localePersistenceService.createLocale(locale);
     }
 }

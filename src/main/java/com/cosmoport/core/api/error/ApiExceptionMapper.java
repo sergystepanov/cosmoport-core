@@ -1,6 +1,7 @@
 package com.cosmoport.core.api.error;
 
 import com.cosmoport.core.dto.ApiErrorDto;
+import com.cosmoport.core.persistence.exception.UniqueConstraintException;
 import com.google.inject.Singleton;
 
 import javax.ws.rs.core.MediaType;
@@ -20,6 +21,10 @@ public class ApiExceptionMapper implements ExceptionMapper<Exception> {
         if (e instanceof ApiError) {
             error = ((ApiError) e).getError();
             status = ((ApiError) e).getHttpStatus();
+        }
+
+        if (e instanceof UniqueConstraintException) {
+            error = new ApiErrorDto("e-3" , ((UniqueConstraintException) e).getFieldName());
         }
 
         return Response.status(status).
