@@ -665,3 +665,180 @@ an error object (“error”)
       }
     });
   ```
+
+**Get current translations for locale**
+---
+  Returns current data with translation values for specified locale ID.
+
+* **URL**
+
+  /translations/localeId=123
+
+* **Method:**
+
+  `GET`
+
+* **URL Params**
+
+  **Required**
+  `localeId=[number]`
+
+* **Data Params**
+
+  None
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** 
+    `[{"id": 1, "i18nId": 1, "localeId": 1, "text": "text", 
+    "I18n": {"id": 1, "tag": "tag", "external": false, "description": "", "params": "params")}} ...]`
+
+* **Sample Call:**
+
+  ```javascript
+    $.ajax({
+      url: "/translations/localeId=123",
+      dataType: "json",
+      type : "GET",
+      success : function(r) {
+        console.log(r);
+      }
+    });
+  ```
+  
+**Get current list of locales**
+---
+  Returns current list of locales.
+
+* **URL**
+
+  /translations/locales
+
+* **Method:**
+
+  `GET`
+
+* **URL Params**
+
+  None
+
+* **Data Params**
+
+  None
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** 
+    `[{"id": 1, "code": "aa", "defaultLocale": true, "localeDescription": "text"} ...]`
+
+* **Sample Call:**
+
+  ```javascript
+    $.ajax({
+      url: "/translations/locales",
+      dataType: "json",
+      type : "GET",
+      success : function(r) {
+        console.log(r);
+      }
+    });
+  ```
+  
+**Update translation value**
+---
+  Updates translation value.
+
+* **URL**
+
+  /translations/123
+
+* **Method:**
+
+  `POST`
+
+* **URL Params**
+
+  **Required**
+  
+  `/[number]`
+  
+  A translation value database row ID.
+
+* **Data Params**
+
+  **Required**
+  Object `{"text": "new value text"}`
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** 
+    
+    `{"result": true}`
+    
+    OR
+    
+    `{"result": false}`
+
+* **Sample Call:**
+
+  ```javascript
+    $.ajax({
+      url: "/translations/123",
+      dataType: "json",
+      type : "POST",
+      data: {"text": "new text"},
+      success : function(r) {
+        console.log(r);
+      }
+    });
+  ```
+  
+**Create new locale**
+---
+  Creates new locale or translation language.
+
+* **URL**
+
+  /translations/locale
+
+* **Method:**
+
+  `POST`
+
+* **URL Params**
+
+  None 
+
+* **Data Params**
+
+  **Required**
+  Object `{"code": "aa", "locale_description": "description"}`
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** 
+    
+    `{"id": 123, "code": "aa", "defaultLocale": false, "localeDescription": "description"}` 
+
+* **Error Response:**
+ 
+  * **Code:** 400 BAD REQUEST <br />
+    **Content:** `{"code": 003, "message": "Duplicate locale code."}`
+
+* **Sample Call:**
+
+  ```javascript
+    $.ajax({
+      url: "/translations/locale",
+      dataType: "json",
+      type : "POST",
+      data: {"code": "aa", "locale_description": "description"},
+      success : function(r) {
+        console.log(r);
+      }
+    });
+  ```  

@@ -40,9 +40,12 @@ public final class LocalePersistenceService extends PersistenceService<LocaleDto
         long newId;
         Connection conn = null;
         PreparedStatement statement = null;
+        PreparedStatement statement2 = null;
+        boolean success = true;
 
         try {
             conn = getConnection();
+            conn.setAutoCommit(false);
 
             statement = conn.prepareStatement(
                     "INSERT INTO LOCALE(code, is_default, locale_description) VALUES (?, 0, ?)",
@@ -62,16 +65,36 @@ public final class LocalePersistenceService extends PersistenceService<LocaleDto
                 }
             }
 
+            // Copy all locale id=1 values into new locale as defaults
+            statement2 = conn.prepareStatement(
+                    "INSERT INTO TRANSLATION (i18n_id, locale_id, tr_text) " +
+                            "SELECT i18n_id, ? AS locale_id, tr_text FROM TRANSLATION WHERE locale_id = 1");
+            statement2.setLong(1, newId);
+            if (statement2.executeUpdate() < 0) {
+                throw new Exception();
+            }
+
             newLocale = new LocaleDto(newId, locale.getCode(), false, locale.getLocaleDescription());
+
+            conn.commit();
         } catch (SQLException sqlexception) {
+            success = false;
             if (isUniqueViolation(sqlexception)) {
                 throw new UniqueConstraintException(locale.getCode());
             }
             throwServerApiException(sqlexception);
         } catch (Exception e) {
+            success = false;
             throwServerApiException(e);
         } finally {
-            close(statement, conn);
+            close(statement, statement2, conn);
+            if (!success && conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         return newLocale;

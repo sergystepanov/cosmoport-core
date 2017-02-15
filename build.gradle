@@ -72,9 +72,9 @@ ext {
             log4j       : '2.8',
             junitJupiter: '5.0.0-M3',
             springJdbc  : '4.3.6.RELEASE',
-            palomino    : '1.1.2',
+            palomino    : '1.2.0',
             jetty       : '9.4.1.v20170120',
-            jbcrypt     : '0.4-atlassian-1',
+            jbcrypt     : '0.4',
             iocommons   : '2.5',
             websocketApi: '1.1'
     ]

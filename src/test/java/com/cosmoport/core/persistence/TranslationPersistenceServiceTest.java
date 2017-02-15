@@ -30,7 +30,7 @@ final class TranslationPersistenceServiceTest extends PersistenceTest {
     @Test
     @DisplayName("Should be able to execute getAll()")
     void getAll() {
-        Assertions.assertEquals(3, translationPersistenceService.getAll().size());
+        Assertions.assertTrue(translationPersistenceService.getAll().size() > 2);
     }
 
     @Test
