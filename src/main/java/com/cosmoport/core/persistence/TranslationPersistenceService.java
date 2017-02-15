@@ -124,7 +124,7 @@ public final class TranslationPersistenceService implements HasClosableResources
      * @since 0.1.0
      */
     public Map<String, Map<String, TranslationLightDto>> getAll() {
-        final Map<String, Map<String, TranslationLightDto>> map = new HashMap<>();
+        final Map<String, Map<String, TranslationLightDto>> map = new LinkedHashMap<>();
 
         Connection conn = null;
         Statement statement = null;
