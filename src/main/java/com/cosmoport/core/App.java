@@ -6,6 +6,7 @@ import com.cosmoport.core.config.Config;
 import com.cosmoport.core.event.MessageHub;
 import com.cosmoport.core.module.JsonModule;
 import com.cosmoport.core.module.LoggerModule;
+import com.cosmoport.core.node.NodesModule;
 import com.cosmoport.core.persistence.module.PersistenceModule;
 import com.cosmoport.core.socket.EventServlet;
 import com.cosmoport.core.socket.EventSocket;
@@ -41,13 +42,9 @@ public class App {
         Server server = new Server(Config.PORT);
         ServletContextHandler servletHandler = new ServletContextHandler();
         servletHandler.addEventListener(injector.getInstance(GuiceResteasyBootstrapServletContextListener.class));
-
-        ServletHolder sh = new ServletHolder(HttpServletDispatcher.class);
-        servletHandler.addServlet(sh, "/*");
-
-        // Add a websocket to a specific path spec
-        ServletHolder holderEvents = new ServletHolder("ws-events", EventServlet.class);
-        servletHandler.addServlet(holderEvents, "/events/*");
+        servletHandler.addServlet(new ServletHolder(HttpServletDispatcher.class), "/*");
+//        ServletHolder holderEvents = new ServletHolder("ws-events", EventServlet.class);
+        servletHandler.addServlet(new ServletHolder(injector.getInstance(EventServlet.class)), "/events/*");
 
         server.setHandler(servletHandler);
         server.start();
@@ -69,8 +66,10 @@ public class App {
             install(new ApiV0Module());
             install(new PersistenceModule());
 //            install(new SchedulerModule());
+            install(new NodesModule());
 
             bind(EventBus.class).toInstance(eventBus);
+            bind(EventServlet.class);
             eventBus.register(new MessageHub());
             eventBus.register(new EventSocket());
 

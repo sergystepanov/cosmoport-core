@@ -16,5 +16,6 @@ public class ApiV0Module extends AbstractModule {
         bind(TimetableEndpoint.class).asEagerSingleton();
         bind(TimeEventsEndpoint.class).asEagerSingleton();
         bind(TranslationEndpoint.class).asEagerSingleton();
+        bind(NodesEndpoint.class).asEagerSingleton();
     }
 }

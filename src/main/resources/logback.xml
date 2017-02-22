@@ -9,7 +9,7 @@
     </appender>
 
     <logger name="org.eclipse.jetty" level="info"/>
-    <logger name="com.google.inject" level="info"/>
+    <logger name="com.google.inject" level="debug"/>
     <logger name="com.zaxxer.hikari" level="info"/>
     <logger name="org.flywaydb.core" level="error"/>
     <logger name="org.jboss.resteasy" level="info"/>
