@@ -3,7 +3,7 @@ image: java:8-jdk
 stages:
   - build
 #  - test
-#  - deploy
+  - deploy
 
 before_script:
 #  - echo `pwd` # debug
@@ -35,6 +35,16 @@ build:
 #  stage: deploy
 #  script:
 #    - ./deploy
+
+pages:
+  stage: deploy
+  script:
+  - echo 'Nothing to do...'
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
 
 after_script:
   - echo "End CI"
