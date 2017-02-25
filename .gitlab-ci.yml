@@ -3,7 +3,7 @@ image: java:8-jdk
 stages:
   - build
 #  - test
-  - deploy
+#  - deploy
 
 before_script:
 #  - echo `pwd` # debug
@@ -37,7 +37,8 @@ build:
 #    - ./deploy
 
 pages:
-  stage: deploy
+  image: alpine:latest
+  stage: build
   script:
   - echo 'Nothing to do...'
   artifacts:
