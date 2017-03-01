@@ -13,6 +13,7 @@ public class EventServlet extends WebSocketServlet {
 
     @Override
     public void configure(WebSocketServletFactory factory) {
+        factory.getPolicy().setIdleTimeout(0);
         factory.register(EventSocket.class);
 
         final WebSocketCreator creator = factory.getCreator();

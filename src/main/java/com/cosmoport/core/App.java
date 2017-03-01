@@ -29,23 +29,25 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import java.util.logging.LogManager;
 
 public class App {
-    public static void main(String[] args) throws Exception {
+    public static void main(String... args) throws Exception {
+        // Logging initialization
         LogManager.getLogManager().reset();
         SLF4JBridgeHandler.install();
 
+        // Injector initialization
         Injector injector = Guice.createInjector(new ServiceModule());
-
         injector.getAllBindings();
-
         injector.createChildInjector().getAllBindings();
 
-        Server server = new Server(Config.PORT);
+        // HTTP servlet initialization
         ServletContextHandler servletHandler = new ServletContextHandler();
         servletHandler.addEventListener(injector.getInstance(GuiceResteasyBootstrapServletContextListener.class));
         servletHandler.addServlet(new ServletHolder(HttpServletDispatcher.class), "/*");
-//        ServletHolder holderEvents = new ServletHolder("ws-events", EventServlet.class);
+        // Websocket servlet initialization
         servletHandler.addServlet(new ServletHolder(injector.getInstance(EventServlet.class)), "/events/*");
 
+        // Start server
+        Server server = new Server(Config.PORT);
         server.setHandler(servletHandler);
         server.start();
         server.join();

@@ -3,6 +3,8 @@
 
 API version 1 uses HTTP/1.1 protocol and JSON type transport.
 
+> /events endpoint reserved for Websockets
+
 
 ### Objects
 
