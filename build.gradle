@@ -61,19 +61,19 @@ installShadowApp {
 
 ext {
     ver = [
-            resteasy    : '3.1.1.Final',
+            resteasy    : '3.1.2.Final',
             guice       : '4.1.0',
-            jackson     : '2.9.0.pr1',
+            jackson     : '2.9.0.pr2',
             sqlite      : '3.16.1',
             hikaricp    : '2.6.1',
             flyway      : '4.0.3',
-            logback     : '1.2.2',
+            logback     : '1.2.3',
             slf4j       : '1.7.25',
             log4j       : '2.8.1',
             junitJupiter: '5.0.0-M3',
             springJdbc  : '4.3.7.RELEASE',
             palomino    : '1.2.1',
-            jetty       : '9.4.2.v20170220',
+            jetty       : '9.4.3.v20170317',
             jbcrypt     : '0.4',
             iocommons   : '2.5',
             websocketApi: '1.1'
