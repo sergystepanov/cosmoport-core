@@ -41,7 +41,7 @@ final class TimetablePersistenceServiceTest extends PersistenceTest {
                 () -> service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 540, 30, 20, 10, 1, 0, ""))
         );
 
-        Assertions.assertEquals("Overlapping events: [1] start: 540, end: 570", exception.getMessage());
+        Assertions.assertEquals("Overlapping events: [gate: 1] start: 540, end: 570", exception.getMessage());
     }
 
     @Test
@@ -55,6 +55,31 @@ final class TimetablePersistenceServiceTest extends PersistenceTest {
                 () -> service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 500, 70, 20, 10, 1, 0, ""))
         );
 
-        Assertions.assertEquals("Overlapping events: [1] start: 540, end: 570", exception.getMessage());
+        Assertions.assertEquals("Overlapping events: [gate: 1] start: 540, end: 570", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should be able to catch in-database checks")
+    void inDatabaseChecks() {
+        final TimetablePersistenceService service =
+                new TimetablePersistenceService(getLogger(), getDataSourceProvider());
+
+        Throwable exception = assertThrows(
+                ValidationException.class,
+                () -> service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 500, 10, 20, 10, 1, 1000, ""))
+        );
+        Assertions.assertEquals("check_people_limit", exception.getMessage());
+
+        exception = assertThrows(
+                ValidationException.class,
+                () -> service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 5000, 2210, 20, 10, 1, 0, ""))
+        );
+        Assertions.assertEquals("check_minutes_in_day_limit", exception.getMessage());
+
+        exception = assertThrows(
+                ValidationException.class,
+                () -> service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 100, 1341, 20, 10, 1, 0, ""))
+        );
+        Assertions.assertEquals("check_event_duration_less_a_day", exception.getMessage());
     }
 }

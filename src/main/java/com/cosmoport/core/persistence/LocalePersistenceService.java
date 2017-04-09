@@ -79,9 +79,7 @@ public final class LocalePersistenceService extends PersistenceService<LocaleDto
             conn.commit();
         } catch (SQLException sqlexception) {
             success = false;
-            if (isUniqueViolation(sqlexception)) {
-                throw new UniqueConstraintException(locale.getCode());
-            }
+            throwConstrainViolation(sqlexception);
             throwServerApiException(sqlexception);
         } catch (Exception e) {
             success = false;

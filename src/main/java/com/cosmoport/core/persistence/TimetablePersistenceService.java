@@ -7,8 +7,7 @@ import com.google.inject.Provider;
 import org.slf4j.Logger;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,14 +63,15 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
 
     private void validate(final EventDto event) throws ValidationException {
         final List<Object> params = new ArrayList<>();
+        params.add(event.getGateId());
         params.add(event.getEventDate());
         params.add(event.getStartTime());
         params.add(event.getEventDate());
         params.add(event.getStartTime() + event.getDurationTime());
 
         final List<EventDto> overlapping = getAllByParams(
-                "SELECT * FROM TIMETABLE WHERE (event_date = ? AND start_time = ?)" +
-                        " OR (event_date = ? AND start_time + duration_time = ?)",
+                "SELECT * FROM TIMETABLE WHERE gate_id = ? AND ((event_date = ? AND start_time = ?)" +
+                        " OR (event_date = ? AND start_time + duration_time = ?))",
                 params.toArray());
 
         if (overlapping.size() > 0) {
@@ -82,8 +82,8 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
             for (final EventDto event0 : overlapping) {
                 message
                         .append(divider)
-                        .append("[")
-                        .append(event0.getId())
+                        .append("[gate: ")
+                        .append(event0.getGateId())
                         .append("] start: ")
                         .append(event0.getStartTime())
                         .append(", end: ")
@@ -95,55 +95,53 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
         }
     }
 
-    public long save(final EventDto record) {
+    public EventDto save(final EventDto record) {
         validate(record);
 
-        long newId = 0;
-//        Connection conn = null;
-//        PreparedStatement statement = null;
-//
-//        final String uniqueId = "event001";
-//
-//        try {
-//            conn = getConnection();
-//
-//            final String sql = "INSERT INTO TIMETABLE (departure_time, type, duration, destination, cost, status," +
-//                    " gate_no, passengers_max, bought) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-//
-//            statement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-//            statement.setInt(1, 111);
-//            statement.setString(2, "text/text");
-//            statement.setInt(3, 222);
-//            statement.setString(4, "sedna");
-//            statement.setDouble(5, 33.33);
-//            statement.setString(6, "pending");
-//            statement.setInt(7, 1);
-//            statement.setInt(8, 100);
-//            statement.setInt(9, 10);
-//
-//            if (statement.executeUpdate() < 0) {
-//                throw new Exception();
-//            }
-//
-//            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-//                if (generatedKeys.next()) {
-//                    newId = generatedKeys.getLong(1);
-//                } else {
-//                    throw new Exception();
-//                }
-//            }
-//        } catch (SQLException sqlexception) {
-//            if (isUniqueViolation(sqlexception)) {
-//                throw new UniqueConstraintException(uniqueId);
-//            }
-//            throwServerApiException(sqlexception);
-//        } catch (Exception e) {
-//            throwServerApiException(e);
-//        } finally {
-//            close(statement, conn);
-//        }
+        Connection conn = null;
+        PreparedStatement statement = null;
+        try {
+            conn = getConnection();
 
-        return newId;
+            statement = conn.prepareStatement(
+                    "INSERT INTO TIMETABLE (event_date, event_type_id, event_status_id, event_destination_id, " +
+                            "gate_id, start_time, duration_time, repeat_interval, cost, people_limit, contestants) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS);
+            statement.setString(1, record.getEventDate());
+            statement.setLong(2, record.getEventTypeId());
+            statement.setLong(3, record.getEventStatusId());
+            statement.setLong(4, record.getEventDestinationId());
+            statement.setLong(5, record.getGateId());
+            statement.setLong(6, record.getStartTime());
+            statement.setLong(7, record.getDurationTime());
+            statement.setLong(8, record.getRepeatInterval());
+            statement.setDouble(9, record.getCost());
+            statement.setLong(10, record.getPeopleLimit());
+            statement.setLong(11, record.getContestants());
+
+            if (statement.executeUpdate() < 0) {
+                throw new Exception();
+            }
+
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    record.setId(generatedKeys.getLong(1));
+                } else {
+                    throw new Exception();
+                }
+            }
+        } catch (SQLException sqlexception) {
+            throwConstrainViolation(sqlexception);
+            // if not than
+            throwServerApiException(sqlexception);
+        } catch (Exception e) {
+            throwServerApiException(e);
+        } finally {
+            close(statement, conn);
+        }
+
+        return record;
     }
 
     @Override

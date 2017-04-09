@@ -1,6 +1,7 @@
 package com.cosmoport.core.persistence;
 
 import com.cosmoport.core.persistence.exception.UniqueConstraintException;
+import com.cosmoport.core.persistence.exception.ValidationException;
 import com.cosmoport.core.persistence.param.QueryParam;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -10,6 +11,8 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class PersistenceService<T> {
     private final Provider<DataSource> ds;
@@ -92,7 +95,7 @@ public abstract class PersistenceService<T> {
         return values;
     }
 
-    protected long insertStringById(final String sql, final String value, final long id)
+    /*protected long insertStringById(final String sql, final String value, final long id)
             throws UniqueConstraintException {
         long newId = 0;
         Connection conn = null;
@@ -128,7 +131,7 @@ public abstract class PersistenceService<T> {
         }
 
         return newId;
-    }
+    }*/
 
     int deleteByIdWithParams(final String sql, final long id, final QueryParam... params) {
         int deleted = 0;
@@ -223,7 +226,7 @@ public abstract class PersistenceService<T> {
     /**
      * Checks on duplicate key. ! Database dependent
      */
-    static boolean isUniqueViolation(SQLException e) {
+    static boolean hasConstrainViolation(SQLException e) {
         return
                 // SQLite
                 e.getErrorCode() == 19 ||
@@ -231,6 +234,24 @@ public abstract class PersistenceService<T> {
                         e.getErrorCode() == 23505 ||
                         // ORACLE ???
                         e.getErrorCode() == 23000;
+    }
+
+    static void throwConstrainViolation(final SQLException e) {
+        if (hasConstrainViolation(e)) {
+            Matcher m = Pattern
+                    .compile("\\((UNIQUE|CHECK) constraint failed: (.*?)\\)")
+                    .matcher(e.getMessage());
+            if (m.find()) {
+                final String name = m.group(2);
+
+                if ("UNIQUE".equals(m.group(1))) {
+                    throw new UniqueConstraintException(name);
+                } else {
+                    if ("CHECK".equals(m.group(1)))
+                        throw new ValidationException(name);
+                }
+            }
+        }
     }
 
     public Logger getLogger() {

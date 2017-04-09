@@ -1,6 +1,6 @@
 package com.cosmoport.core.persistence.exception;
 
-public class UniqueConstraintException extends Exception {
+public class UniqueConstraintException extends RuntimeException {
     private static final long serialVersionUID = -5617963591633753213L;
 
     private final String fieldName;

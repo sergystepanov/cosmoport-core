@@ -1,7 +1,6 @@
 package com.cosmoport.core.persistence;
 
 import com.cosmoport.core.dto.TestDto;
-import com.cosmoport.core.persistence.exception.UniqueConstraintException;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.slf4j.Logger;
@@ -76,9 +75,7 @@ public class TestPersistenceService extends PersistenceService<TestDto> {
                 }
             }
         } catch (SQLException sqlexception) {
-            if (isUniqueViolation(sqlexception)) {
-                throw new UniqueConstraintException(uniqueId);
-            }
+            throwConstrainViolation(sqlexception);
             throwServerApiException(sqlexception);
         } catch (Exception e) {
             throwServerApiException(e);
