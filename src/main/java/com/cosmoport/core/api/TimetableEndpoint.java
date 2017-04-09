@@ -1,6 +1,6 @@
 package com.cosmoport.core.api;
 
-import com.cosmoport.core.dto.TimetableDto;
+import com.cosmoport.core.dto.EventDto;
 import com.cosmoport.core.persistence.TimetablePersistenceService;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -25,7 +25,13 @@ public final class TimetableEndpoint {
 
     @GET
     @Path("/")
-    public List<TimetableDto> get(@QueryParam("date") String date, @QueryParam("gate") long gateId) {
+    public List<EventDto> get(@QueryParam("date") String date, @QueryParam("gate") long gateId) {
         return timetablePersistenceService.getAllWithFilter(date, gateId);
     }
+
+//    @POST
+//    @Path("/")
+//    public EventDto add(final EventDto event) {
+//
+//    }
 }

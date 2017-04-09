@@ -69,7 +69,7 @@ ext {
             flyway      : '4.0.3',
             logback     : '1.2.3',
             slf4j       : '1.7.25',
-            log4j       : '2.8.1',
+            log4j       : '2.8.2',
             junitJupiter: '5.0.0-M3',
             springJdbc  : '4.3.7.RELEASE',
             palomino    : '1.2.1',

@@ -2,6 +2,7 @@ package com.cosmoport.core.api.error;
 
 import com.cosmoport.core.dto.ApiErrorDto;
 import com.cosmoport.core.persistence.exception.UniqueConstraintException;
+import com.cosmoport.core.persistence.exception.ValidationException;
 import com.google.inject.Singleton;
 
 import javax.ws.rs.core.MediaType;
@@ -24,7 +25,12 @@ public class ApiExceptionMapper implements ExceptionMapper<Exception> {
         }
 
         if (e instanceof UniqueConstraintException) {
-            error = new ApiErrorDto("e-3" , ((UniqueConstraintException) e).getFieldName());
+            error = new ApiErrorDto("e-3", ((UniqueConstraintException) e).getFieldName());
+        }
+
+        if (e instanceof ValidationException) {
+            error = new ApiErrorDto("e-4", "Validation, " + e.getMessage());
+            status = 400;
         }
 
         return Response.status(status).
