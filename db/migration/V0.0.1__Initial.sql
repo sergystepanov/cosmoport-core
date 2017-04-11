@@ -14,7 +14,9 @@ CREATE TABLE I18N (
   -- A flag of the translation which shows that the value is used externally
   external    BOOLEAN NOT NULL                      DEFAULT (0),
   description TEXT    NOT NULL                      DEFAULT (''),
-  params      TEXT    NOT NULL                      DEFAULT ('')
+  params      TEXT    NOT NULL                      DEFAULT (''),
+
+  CONSTRAINT unique_tag UNIQUE (tag)
 );
 -- Language locales (EN, RU, DE, etc.)
 CREATE TABLE LOCALE (
@@ -32,7 +34,6 @@ CREATE TABLE TRANSLATION (
   i18n_id     INTEGER NOT NULL,
   locale_id   INTEGER NOT NULL,
   tr_text     TEXT    NOT NULL                      DEFAULT (''),
-  tr_token_id INTEGER                               DEFAULT (NULL),
 
   CONSTRAINT unique_i18n_locale UNIQUE (i18n_id, locale_id),
 
