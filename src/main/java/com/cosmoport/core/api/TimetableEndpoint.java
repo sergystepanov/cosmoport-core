@@ -29,9 +29,9 @@ public final class TimetableEndpoint {
         return timetablePersistenceService.getAllWithFilter(date, gateId);
     }
 
-//    @POST
-//    @Path("/")
-//    public EventDto add(final EventDto event) {
-//
-//    }
+    @POST
+    @Path("/")
+    public EventDto add(final EventDto event) {
+        return timetablePersistenceService.save(event);
+    }
 }

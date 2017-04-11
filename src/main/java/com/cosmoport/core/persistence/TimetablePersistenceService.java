@@ -53,8 +53,7 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
         final StringBuilder sql = new StringBuilder("SELECT * FROM TIMETABLE");
         if (hasParams) {
             sql.append(" WHERE ");
-            sql.append(hasDate && hasGate ? "event_date = ? AND gate_id = ?" :
-                    hasDate ? "event_date = ?" : "gate_id = ?");
+            sql.append(hasDate && hasGate ? "event_date = ? AND gate_id = ?" : hasDate ? "event_date = ?" : "gate_id = ?");
         }
         getLogger().debug("sql={}", sql.toString());
 
@@ -62,17 +61,13 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
     }
 
     private void validate(final EventDto event) throws ValidationException {
-        final List<Object> params = new ArrayList<>();
-        params.add(event.getGateId());
-        params.add(event.getEventDate());
-        params.add(event.getStartTime());
-        params.add(event.getEventDate());
-        params.add(event.getStartTime() + event.getDurationTime());
+        final Object[] params = {event.getGateId(), event.getEventDate(), event.getStartTime(), event.getEventDate(),
+                event.getStartTime() + event.getDurationTime()};
 
         final List<EventDto> overlapping = getAllByParams(
                 "SELECT * FROM TIMETABLE WHERE gate_id = ? AND ((event_date = ? AND start_time = ?)" +
                         " OR (event_date = ? AND start_time + duration_time = ?))",
-                params.toArray());
+                params);
 
         if (overlapping.size() > 0) {
             String divider = "";
