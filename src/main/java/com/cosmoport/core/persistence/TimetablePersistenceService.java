@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class TimetablePersistenceService extends PersistenceService<EventDto> {
     @Inject
-    TimetablePersistenceService(Logger logger, Provider<DataSource> ds) {
+    public TimetablePersistenceService(Logger logger, Provider<DataSource> ds) {
         super(logger, ds);
     }
 

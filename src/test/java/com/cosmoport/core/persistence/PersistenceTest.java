@@ -14,19 +14,19 @@ import javax.sql.DataSource;
  *
  * @since 0.1.0
  */
-class PersistenceTest {
+public class PersistenceTest {
     private static final Logger logger = LoggerFactory.getLogger(PersistenceTest.class);
     private Provider<DataSource> dataSourceProvider;
     private final Flyway flyway;
 
-    PersistenceTest() {
+    public PersistenceTest() {
         flyway = new Flyway();
         flyway.setLocations("filesystem:" + System.getProperty("user.dir") + "/db/migration");
         flyway.setBaselineOnMigrate(true);
     }
 
     @BeforeEach
-    void before() {
+    public void before() {
         // Create new in-memory database before each test
         dataSourceProvider = new DatasourceServiceTestProvider();
         // Apply all migrations
@@ -34,11 +34,11 @@ class PersistenceTest {
         flyway.migrate();
     }
 
-    Provider<DataSource> getDataSourceProvider() {
+    public Provider<DataSource> getDataSourceProvider() {
         return dataSourceProvider;
     }
 
-    Logger getLogger() {
+    public Logger getLogger() {
         return logger;
     }
 }
