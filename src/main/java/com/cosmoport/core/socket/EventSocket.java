@@ -1,16 +1,15 @@
 package com.cosmoport.core.socket;
 
+import com.cosmoport.core.event.message.ReloadMessage;
 import com.cosmoport.core.event.message.TestMessage;
 import com.cosmoport.core.node.NodesHolder;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
-import org.eclipse.jetty.websocket.api.WebSocketException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -49,15 +48,16 @@ public class EventSocket extends WebSocketAdapter {
      */
     private void sendAll(final String message) {
         synchronized (sessions) {
-            for (Session s : sessions) {
-                if (s.isOpen()) {
-                    try {
-                        s.getRemote().sendString(message);
-                    } catch (IOException | WebSocketException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+            sessions.stream()
+                    .filter(Session::isOpen)
+                    .forEach(session -> {
+                        try {
+                            session.getRemote().sendString(message);
+                        } catch (Exception e) {
+                            logger.error(
+                                    "[socket] Couldn't send a message {} for {}", message, session.getRemoteAddress());
+                        }
+                    });
         }
     }
 
@@ -73,6 +73,12 @@ public class EventSocket extends WebSocketAdapter {
     public void applicationEvent(TestMessage message) {
         logger.info("test message from socket");
         sendAll(":do:");
+    }
+
+    @Subscribe
+    public void onReloadMessage(final ReloadMessage message) {
+        logger.info("[socket] {}", ReloadMessage.token);
+        sendAll(ReloadMessage.token);
     }
 
     @Override

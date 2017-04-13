@@ -1,6 +1,7 @@
 package com.cosmoport.core.persistence;
 
 import com.cosmoport.core.dto.EventDto;
+import com.cosmoport.core.persistence.exception.UniqueConstraintException;
 import com.cosmoport.core.persistence.exception.ValidationException;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -22,7 +23,14 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
         super(logger, ds);
     }
 
-    public List<EventDto> getAll() {
+    /**
+     * Fetches all events from the table without any conditions.
+     *
+     * @return A collection of {@code TimetableDto} objects or an empty list.
+     * @throws RuntimeException In case of any exception during fetch procedure.
+     * @since 0.1.0
+     */
+    public List<EventDto> getAll() throws RuntimeException {
         return getAll("SELECT * FROM TIMETABLE");
     }
 
@@ -32,7 +40,8 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
      *
      * @param date   null or the date string to filter with formatted in yyyy-mm-dd supposedly.
      * @param gateId null or the id number to filter by a gate id.
-     * @return A collection of {@code TimetableDto} objects or an empty array.
+     * @return A collection of {@code TimetableDto} objects or an empty list.
+     * @throws RuntimeException In case of any exception during fetch procedure.
      * @since 0.1.0
      */
     public List<EventDto> getAllWithFilter(final String date, final Long gateId) {
@@ -53,13 +62,26 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
         final StringBuilder sql = new StringBuilder("SELECT * FROM TIMETABLE");
         if (hasParams) {
             sql.append(" WHERE ");
-            sql.append(hasDate && hasGate ? "event_date = ? AND gate_id = ?" : hasDate ? "event_date = ?" : "gate_id = ?");
+            sql.append(hasDate && hasGate ? "event_date = ? AND gate_id = ?" :
+                    hasDate ? "event_date = ?" : "gate_id = ?");
         }
         getLogger().debug("sql={}", sql.toString());
 
         return getAllByParams(sql.toString(), params.toArray());
     }
 
+    /**
+     * Validates an event object.
+     * <p>
+     * There's shouldn't be two events for one gate with:
+     * - the same start time
+     * - the same end time (which is sum of the start time and the duration)
+     * </p>
+     *
+     * @param event The event to validate.
+     * @throws ValidationException In case of violation of a constraint.
+     * @since 0.1.0
+     */
     private void validate(final EventDto event) throws ValidationException {
         final Object[] params = {event.getGateId(), event.getEventDate(), event.getStartTime(), event.getEventDate(),
                 event.getStartTime() + event.getDurationTime()};
@@ -90,7 +112,17 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
         }
     }
 
-    public EventDto save(final EventDto record) {
+    /**
+     * Saves new event record.
+     *
+     * @param record The record to save.
+     * @return A new record with id.
+     * @throws UniqueConstraintException In case of unique constraint violation during save.
+     * @throws ValidationException       In case of validation failure before save.
+     * @throws RuntimeException          In case of any other exception during save.
+     * @since 0.1.0
+     */
+    public EventDto save(final EventDto record) throws RuntimeException {
         validate(record);
 
         Connection conn = null;
@@ -137,6 +169,18 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
         }
 
         return record;
+    }
+
+    /**
+     * Deletes an event.
+     *
+     * @param id The id number of the event to delete.
+     * @return Whether or not record has been deleted.
+     * @throws RuntimeException In case of an exception during delete.
+     * @since 0.1.0
+     */
+    public boolean delete(final long id) throws RuntimeException {
+        return deleteByIdWithParams("DELETE FROM TIMETABLE WHERE id = ?", id) == 1;
     }
 
     @Override

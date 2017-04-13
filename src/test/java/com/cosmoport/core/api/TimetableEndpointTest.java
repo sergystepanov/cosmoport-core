@@ -5,6 +5,7 @@ import com.cosmoport.core.persistence.PersistenceTest;
 import com.cosmoport.core.persistence.TimetablePersistenceService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.eventbus.EventBus;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockDispatcherFactory;
 import org.jboss.resteasy.mock.MockHttpRequest;
@@ -18,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TimetableEndpointTest extends PersistenceTest {
     private TimetablePersistenceService service;
+    private EventBus eventBus;
     private ObjectMapper mapper;
 
     @BeforeEach
@@ -25,6 +27,7 @@ class TimetableEndpointTest extends PersistenceTest {
         super.before();
 
         service = new TimetablePersistenceService(getLogger(), getDataSourceProvider());
+        eventBus = new EventBus();
         mapper = new ObjectMapper();
     }
 
@@ -32,7 +35,7 @@ class TimetableEndpointTest extends PersistenceTest {
     void get() throws Exception {
         Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();
 
-        dispatcher.getRegistry().addSingletonResource(new TimetableEndpoint(service));
+        dispatcher.getRegistry().addSingletonResource(new TimetableEndpoint(service, eventBus));
 
         MockHttpResponse response = new MockHttpResponse();
         dispatcher.invoke(MockHttpRequest.get("/timetable"), response);

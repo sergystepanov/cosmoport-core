@@ -14,19 +14,21 @@ final class TimetablePersistenceServiceTest extends PersistenceTest {
 
     @BeforeEach
     void createPersistenceService() {
+        super.before();
+
         service = new TimetablePersistenceService(getLogger(), getDataSourceProvider());
     }
 
     @Nested
-    @DisplayName("Should be able to save/get objects")
+    @DisplayName("Should be able to save/get/delete objects")
     class PersistenceTest {
-        final int total = 11;
+        final int total = 10;
 
         @Test
         @DisplayName("Should be able to execute save()")
         void save() {
             assertEquals(
-                    total,
+                    total + 1,
                     service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 1, 1, 20, 10, 1, 0, "")).getId()
             );
         }
@@ -46,6 +48,12 @@ final class TimetablePersistenceServiceTest extends PersistenceTest {
                     () -> assertEquals(total, service.getAllWithFilter(null, 1L).size()),
                     () -> assertEquals(0, service.getAllWithFilter("2015-01-01", 1L).size())
             );
+        }
+
+        @Test
+        @DisplayName("Should be able to execute delete()")
+        void delete() {
+            assertTrue(service.delete(1));
         }
     }
 
