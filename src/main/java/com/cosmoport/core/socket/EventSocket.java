@@ -83,16 +83,20 @@ public class EventSocket extends WebSocketAdapter {
 
     @Override
     public void onWebSocketClose(int statusCode, String reason) {
-        Session s = getSession();
-        sessions.remove(s);
-        logger.info("Socket Closed: [{}] {}", statusCode, reason);
+        sessions.remove(getSession());
+        logger.info("Socket closed: [{}] {}", statusCode, reason);
 
-        super.onWebSocketClose(statusCode, reason);
-        // Get what connected
-        nodesHolder.decGates();
-        nodesHolder.decTables();
+        try {
+            super.onWebSocketClose(statusCode, reason);
+        } catch (Exception e) {
+            logger.error("Socket closed with an error: {}", e.getMessage());
+        } finally {
+            // Get what connected
+            nodesHolder.decGates();
+            nodesHolder.decTables();
 
-        sendAll(":update-nodes:");
+            sendAll(":update-nodes:");
+        }
     }
 
     @Override

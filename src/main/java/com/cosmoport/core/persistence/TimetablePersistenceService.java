@@ -175,7 +175,7 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
      * Deletes an event.
      *
      * @param id The id number of the event to delete.
-     * @return Whether or not record has been deleted.
+     * @return bool Whether or not record has been deleted.
      * @throws RuntimeException In case of an exception during delete.
      * @since 0.1.0
      */

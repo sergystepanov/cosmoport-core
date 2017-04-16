@@ -26,6 +26,7 @@ public class ApiExceptionMapper implements ExceptionMapper<Exception> {
 
         if (e instanceof UniqueConstraintException) {
             error = new ApiErrorDto("e-3", ((UniqueConstraintException) e).getFieldName());
+            status = 400;
         }
 
         if (e instanceof ValidationException) {

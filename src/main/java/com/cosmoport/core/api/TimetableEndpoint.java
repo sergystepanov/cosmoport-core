@@ -39,4 +39,10 @@ public final class TimetableEndpoint {
 
         return newEvent;
     }
+
+    @DELETE
+    @Path("/{id}")
+    public String delete(@PathParam("id") final long id) {
+        return "{\"deleted\": " + timetablePersistenceService.delete(id) + '}';
+    }
 }
