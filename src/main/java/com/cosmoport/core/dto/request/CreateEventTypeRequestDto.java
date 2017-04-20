@@ -27,10 +27,6 @@ public final class CreateEventTypeRequestDto implements Serializable {
         this.defaultRepeatInterval = defaultRepeatInterval;
     }
 
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
-
     public String getName() {
         return name;
     }

@@ -4,16 +4,14 @@ import com.cosmoport.core.dto.EventDestinationDto;
 import com.cosmoport.core.dto.EventReferenceDataDto;
 import com.cosmoport.core.dto.EventStatusDto;
 import com.cosmoport.core.dto.EventTypeDto;
+import com.cosmoport.core.dto.request.CreateEventTypeRequestDto;
 import com.cosmoport.core.persistence.EventDestinationPersistenceService;
 import com.cosmoport.core.persistence.EventStatusPersistenceService;
 import com.cosmoport.core.persistence.EventTypePersistenceService;
 import com.google.inject.Inject;
 import org.jboss.resteasy.annotations.GZIP;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
@@ -48,6 +46,12 @@ public final class TimeEventsEndpoint {
     @Path("/types")
     public List<EventTypeDto> getEventTypes() {
         return eventTypePersistenceService.getAll();
+    }
+
+    @POST
+    @Path("/types")
+    public EventTypeDto createEventType(final CreateEventTypeRequestDto eventType) {
+        return eventTypePersistenceService.save(eventType);
     }
 
     @GET
