@@ -3,7 +3,6 @@ package com.cosmoport.core.persistence;
 import com.cosmoport.core.db.test.DatasourceServiceTestProvider;
 import com.google.inject.Provider;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +24,7 @@ public class PersistenceTest {
         flyway.setBaselineOnMigrate(true);
     }
 
-    @BeforeEach
+
     public void before() {
         // Create new in-memory database before each test
         dataSourceProvider = new DatasourceServiceTestProvider();
@@ -34,11 +33,11 @@ public class PersistenceTest {
         flyway.migrate();
     }
 
-    public Provider<DataSource> getDataSourceProvider() {
+    protected Provider<DataSource> getDataSourceProvider() {
         return dataSourceProvider;
     }
 
-    public Logger getLogger() {
+    protected Logger getLogger() {
         return logger;
     }
 }

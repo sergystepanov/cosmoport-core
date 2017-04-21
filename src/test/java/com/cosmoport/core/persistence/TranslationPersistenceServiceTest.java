@@ -14,9 +14,11 @@ final class TranslationPersistenceServiceTest extends PersistenceTest {
 
     @BeforeEach
     void setService() {
+        super.before();
+
         translationPersistenceService = new TranslationPersistenceService(
                 getDataSourceProvider(), new I18nPersistenceService(getLogger(), getDataSourceProvider()),
-                new EventBus());
+                new LocalePersistenceService(getLogger(), getDataSourceProvider()), new EventBus());
     }
 
     @Test

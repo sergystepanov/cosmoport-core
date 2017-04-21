@@ -12,6 +12,8 @@ final class LocalePersistenceServiceTest extends PersistenceTest {
 
     @BeforeEach
     void setService() {
+        super.before();
+
         service = new LocalePersistenceService(getLogger(), getDataSourceProvider());
     }
 
