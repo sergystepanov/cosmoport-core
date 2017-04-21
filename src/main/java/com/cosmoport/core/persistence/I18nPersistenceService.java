@@ -6,8 +6,7 @@ import com.google.inject.Provider;
 import org.slf4j.Logger;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 /**
  * I18N database entities service.
@@ -18,6 +17,46 @@ public final class I18nPersistenceService extends PersistenceService<I18nDto> {
     @Inject
     protected I18nPersistenceService(Logger logger, Provider<DataSource> ds) {
         super(logger, ds);
+    }
+
+    public I18nDto save(I18nDto i18n, final Connection extConn) throws RuntimeException {
+        Connection conn = null;
+        PreparedStatement statement = null;
+        try {
+            conn = extConn != null ? extConn : getConnection();
+
+            statement = conn.prepareStatement(
+                    "INSERT INTO I18N (tag, external, description, params) VALUES (?, ?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS);
+            statement.setString(1, i18n.getTag());
+            statement.setBoolean(2, i18n.isExternal());
+            statement.setString(3, i18n.getDescription());
+            statement.setString(4, i18n.getParams());
+
+            if (statement.executeUpdate() < 0) {
+                throw new Exception();
+            }
+
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    i18n.setId(generatedKeys.getLong(1));
+                } else {
+                    throw new Exception();
+                }
+            }
+        } catch (SQLException sqlexception) {
+            throwConstrainViolation(sqlexception);
+            throwServerApiException(sqlexception);
+        } catch (Exception e) {
+            throwServerApiException(e);
+        } finally {
+            close(statement);
+            if (extConn == null) {
+                close(conn);
+            }
+        }
+
+        return i18n;
     }
 
     @Override

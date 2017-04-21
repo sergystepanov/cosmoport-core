@@ -1,5 +1,6 @@
 package com.cosmoport.core.persistence;
 
+import com.cosmoport.core.dto.LocaleDto;
 import com.cosmoport.core.dto.TranslationDto;
 import com.cosmoport.core.dto.TranslationLightDto;
 import com.cosmoport.core.event.message.TestMessage;
@@ -15,11 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.cosmoport.core.persistence.PersistenceService.throwConstrainViolation;
 
 /**
  * Custom database translation entities service.
@@ -30,13 +31,15 @@ public final class TranslationPersistenceService implements HasClosableResources
     private static Logger logger = LoggerFactory.getLogger(TranslationPersistenceService.class.getCanonicalName());
     private final Provider<DataSource> ds;
     private final I18nPersistenceService i18nPersistenceService;
+    private final LocalePersistenceService localePersistenceService;
     private EventBus eventBus;
 
     @Inject
     public TranslationPersistenceService(Provider<DataSource> ds, I18nPersistenceService i18nPersistenceService,
-                                         EventBus eventBus) {
+                                         LocalePersistenceService localePersistenceService, EventBus eventBus) {
         this.ds = ds;
         this.i18nPersistenceService = i18nPersistenceService;
+        this.localePersistenceService = localePersistenceService;
         this.eventBus = eventBus;
     }
 
@@ -171,6 +174,85 @@ public final class TranslationPersistenceService implements HasClosableResources
         }
 
         return map;
+    }
+
+    public TranslationDto save(TranslationDto translation, final Connection extConn) throws RuntimeException {
+        Connection conn = null;
+        PreparedStatement statement = null;
+        try {
+            conn = extConn != null ? extConn : ds.get().getConnection();
+
+            statement = conn.prepareStatement(
+                    "INSERT INTO TRANSLATION (i18n_id, locale_id, tr_text) VALUES (?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS);
+            statement.setLong(1, translation.getI18nId());
+            statement.setLong(2, translation.getLocaleId());
+            statement.setString(3, translation.getText());
+
+            if (statement.executeUpdate() < 0) {
+                throw new Exception();
+            }
+
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    translation.setId(generatedKeys.getLong(1));
+                } else {
+                    throw new Exception();
+                }
+            }
+        } catch (SQLException sqlexception) {
+            throwConstrainViolation(sqlexception);
+            throwServerApiException(sqlexception);
+        } catch (Exception e) {
+            throwServerApiException(e);
+        } finally {
+            close(statement);
+            if (extConn == null) {
+                close(conn);
+            }
+        }
+
+        return translation;
+    }
+
+    public void copyOf(final TranslationDto translation, Connection extConn) throws RuntimeException {
+        Connection conn = null;
+        PreparedStatement statement = null;
+        try {
+            conn = extConn != null ? extConn : ds.get().getConnection();
+
+            List<LocaleDto> locales = localePersistenceService.getAll()
+                    .stream()
+                    .filter(locale -> locale.getId() != translation.getLocaleId())
+                    .collect(Collectors.toList());
+
+            for (final LocaleDto loc : locales) {
+                statement = conn.prepareStatement(
+                        "INSERT INTO TRANSLATION (i18n_id, locale_id, tr_text) VALUES (?, ?, ?)");
+                statement.setLong(1, translation.getI18nId());
+                statement.setLong(2, loc.getId());
+                statement.setString(3, translation.getText());
+
+                if (statement.executeUpdate() < 0) {
+                    throw new Exception();
+                }
+            }
+        } catch (SQLException sqlexception) {
+            throwConstrainViolation(sqlexception);
+            throwServerApiException(sqlexception);
+        } catch (Exception e) {
+            throwServerApiException(e);
+        } finally {
+            close(statement);
+            if (extConn == null) {
+                close(conn);
+            }
+        }
+    }
+
+    private void throwServerApiException(Throwable t) {
+        logger.error(t.getMessage());
+        throw new RuntimeException();
     }
 
     public boolean updateTranslationForId(final long id, final String text) {
