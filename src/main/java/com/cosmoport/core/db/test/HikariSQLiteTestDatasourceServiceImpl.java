@@ -14,11 +14,6 @@ public class HikariSQLiteTestDatasourceServiceImpl implements DatasourceService 
 
     @Override
     public DataSource getSource() {
-//        if (ds == null) {
-            //return new SingleConnectionDataSource(DatasourceServiceTestParams.getRandomMemUrl(System.nanoTime()), true);
-//        }
-
-//        return ds;
         return ds;
     }
 }

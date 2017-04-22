@@ -6,6 +6,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+// TODO Or just return 405 or so
 /**
  * Static files endpoint of the application.
  *

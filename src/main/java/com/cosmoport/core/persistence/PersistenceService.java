@@ -213,7 +213,7 @@ public abstract class PersistenceService<T> {
         close(rs);
     }
 
-    protected void rollback(Connection conn) {
+    void rollback(Connection conn) {
         if (conn != null) {
             try {
                 conn.rollback();
@@ -226,7 +226,7 @@ public abstract class PersistenceService<T> {
     /**
      * Checks on duplicate key. ! Database dependent
      */
-    static boolean hasConstrainViolation(SQLException e) {
+    private static boolean hasConstrainViolation(SQLException e) {
         return
                 // SQLite
                 e.getErrorCode() == 19 ||

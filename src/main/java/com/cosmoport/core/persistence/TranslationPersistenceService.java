@@ -86,8 +86,8 @@ public final class TranslationPersistenceService implements HasClosableResources
         return translations;
     }
 
-    public Optional<TranslationDto> getById(final long id) {
-        Optional<TranslationDto> object;
+    Optional<TranslationDto> getById(final long id) {
+        Optional<TranslationDto> object = null;
         Connection conn = null;
         PreparedStatement statement = null;
         ResultSet rs = null;
@@ -112,8 +112,7 @@ public final class TranslationPersistenceService implements HasClosableResources
                 object = Optional.empty();
             }
         } catch (Exception e) {
-            getLogger().error(e.getMessage());
-            throw new RuntimeException();
+            throwServerApiException(e);
         } finally {
             close(rs, statement, conn);
         }
@@ -167,8 +166,7 @@ public final class TranslationPersistenceService implements HasClosableResources
                 }
             }
         } catch (Exception e) {
-            getLogger().error(e.getMessage());
-            throw new RuntimeException();
+            throwServerApiException(e);
         } finally {
             close(rs, statement, conn);
         }
@@ -215,7 +213,7 @@ public final class TranslationPersistenceService implements HasClosableResources
         return translation;
     }
 
-    public void copyOf(final TranslationDto translation, Connection extConn) throws RuntimeException {
+    void copyOf(final TranslationDto translation, Connection extConn) throws RuntimeException {
         Connection conn = null;
         PreparedStatement statement = null;
         try {
@@ -248,6 +246,42 @@ public final class TranslationPersistenceService implements HasClosableResources
                 close(conn);
             }
         }
+    }
+
+    /**
+     * Finds a record by its i18n id.
+     *
+     * @param i18nId An id to find with.
+     * @return Optional {@code TranslationDto} record.
+     */
+    List<TranslationDto> findAllByI18n(final long i18nId) {
+        List<TranslationDto> objects = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+
+        try {
+            conn = ds.get().getConnection();
+
+            statement = conn.prepareStatement("SELECT * FROM TRANSLATION WHERE i18n_id = ?");
+            statement.setLong(1, i18nId);
+            rs = statement.executeQuery();
+
+            while (rs.next()) {
+                objects.add(new TranslationDto(
+                        rs.getLong("id"),
+                        rs.getLong("i18n_id"),
+                        rs.getLong("locale_id"),
+                        rs.getString("tr_text"),
+                        null));
+            }
+        } catch (Exception e) {
+            throwServerApiException(e);
+        } finally {
+            close(rs, statement, conn);
+        }
+
+        return objects;
     }
 
     private void throwServerApiException(Throwable t) {

@@ -155,23 +155,11 @@ public final class EventTypePersistenceService extends PersistenceService<EventT
 
             conn.commit();
         } catch (SQLException sqlexception) {
-            try {
-                if (conn != null) {
-                    conn.rollback();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            rollback(conn);
             throwConstrainViolation(sqlexception);
             throwServerApiException(sqlexception);
         } catch (Exception e) {
-            try {
-                if (conn != null) {
-                    conn.rollback();
-                }
-            } catch (SQLException sqle) {
-                sqle.printStackTrace();
-            }
+            rollback(conn);
             throwServerApiException(e);
         } finally {
             close(statement, conn);

@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * I18N database entities service.
@@ -17,6 +19,18 @@ public final class I18nPersistenceService extends PersistenceService<I18nDto> {
     @Inject
     protected I18nPersistenceService(Logger logger, Provider<DataSource> ds) {
         super(logger, ds);
+    }
+
+    /**
+     * Finds a record by its tag value.
+     *
+     * @param tag A tag value to find with.
+     * @return Optional {@code I18nDto} record.
+     */
+    Optional<I18nDto> findByTag(final String tag) {
+        final List<I18nDto> result = getAllByParams("SELECT * FROM I18N WHERE tag = ?", tag);
+
+        return result.size() > 0 ? Optional.of(result.get(0)) : Optional.empty();
     }
 
     public I18nDto save(I18nDto i18n, final Connection extConn) throws RuntimeException {
