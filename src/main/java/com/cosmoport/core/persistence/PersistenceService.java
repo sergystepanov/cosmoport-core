@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -93,6 +94,30 @@ public abstract class PersistenceService<T> {
         }
 
         return values;
+    }
+
+    Optional<T> findById(final String sql, final long id) {
+        T result = null;
+        Connection conn = null;
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            conn = getConnection();
+
+            statement = conn.prepareStatement(sql);
+            statement.setLong(1, id);
+            rs = statement.executeQuery();
+
+            if (rs.next()) {
+                result = map(rs);
+            }
+        } catch (Exception e) {
+            throwServerApiException(e);
+        } finally {
+            close(rs, statement, conn);
+        }
+
+        return result != null ? Optional.of(result) : Optional.empty();
     }
 
     /*protected long insertStringById(final String sql, final String value, final long id)

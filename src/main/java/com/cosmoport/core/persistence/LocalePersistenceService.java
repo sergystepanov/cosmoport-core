@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Locale entity database persistence service.
@@ -27,8 +28,9 @@ public final class LocalePersistenceService extends PersistenceService<LocaleDto
                 rs.getLong("id"),
                 rs.getString("code"),
                 rs.getBoolean("is_default"),
-                rs.getString("locale_description")
-        );
+                rs.getString("locale_description"),
+                rs.getBoolean("show"),
+                rs.getInt("show_time"));
     }
 
     public List<LocaleDto> getAll() {
@@ -74,7 +76,7 @@ public final class LocalePersistenceService extends PersistenceService<LocaleDto
                 throw new Exception();
             }
 
-            newLocale = new LocaleDto(newId, locale.getCode(), false, locale.getLocaleDescription());
+            newLocale = new LocaleDto(newId, locale.getCode(), false, locale.getLocaleDescription(), false, 1);
 
             conn.commit();
         } catch (SQLException sqlexception) {
@@ -96,5 +98,39 @@ public final class LocalePersistenceService extends PersistenceService<LocaleDto
         }
 
         return newLocale;
+    }
+
+    /**
+     * Updates locale show data.
+     *
+     * @param locale The locale to change data.
+     * @return Changed locale.
+     */
+    public LocaleDto updateLocaleShowData(final LocaleDto locale) {
+        Connection conn = null;
+        PreparedStatement statement = null;
+
+        try {
+            conn = getConnection();
+
+            statement = conn.prepareStatement("UPDATE LOCALE SET show = ?, show_time = ? WHERE id = ?");
+            statement.setBoolean(1, locale.isShow());
+            statement.setInt(2, locale.getShowTime());
+            statement.setLong(3, locale.getId());
+
+            if (statement.executeUpdate() < 0) {
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            throwServerApiException(e);
+        } finally {
+            close(statement, conn);
+        }
+
+        return locale;
+    }
+
+    Optional<LocaleDto> findById(final long id) {
+        return findById("SELECT * FROM LOCALE WHERE id = ?", id);
     }
 }

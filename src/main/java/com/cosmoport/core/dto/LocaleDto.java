@@ -16,12 +16,18 @@ public final class LocaleDto extends Entity implements Serializable {
     private final String code;
     private final boolean isDefault;
     private final String localeDescription;
+    private final boolean show;
+    private final int showTime;
 
     @JsonCreator
     public LocaleDto(@JsonProperty("id") long id,
                      @JsonProperty("code") String code,
                      @JsonProperty("is_default") boolean isDefault,
-                     @JsonProperty("locale_description") String localeDescription) {
+                     @JsonProperty("locale_description") String localeDescription,
+                     @JsonProperty("show") boolean show,
+                     @JsonProperty("show_time") int showTime) {
+        this.show = show;
+        this.showTime = showTime;
         this.id = id;
         this.code = code;
         this.isDefault = isDefault;
@@ -32,11 +38,19 @@ public final class LocaleDto extends Entity implements Serializable {
         return code;
     }
 
-    public boolean isDefaultLocale() {
+    public boolean isDefault() {
         return isDefault;
     }
 
     public String getLocaleDescription() {
         return localeDescription;
+    }
+
+    public boolean isShow() {
+        return show;
+    }
+
+    public int getShowTime() {
+        return showTime;
     }
 }

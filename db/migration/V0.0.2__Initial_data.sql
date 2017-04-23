@@ -4,10 +4,10 @@
 -- @encoding UTF-8
 --
 
-INSERT INTO LOCALE (id, code, is_default, locale_description) VALUES
-  (1, 'en', 1, 'English'),
-  (2, 'ru', 0, 'Русский'),
-  (3, 'el', 0, 'Ελληνική');
+INSERT INTO LOCALE (id, code, is_default, locale_description, show) VALUES
+  (1, 'en', 1, 'English', 1),
+  (2, 'ru', 0, 'Русский', 1),
+  (3, 'el', 0, 'Ελληνική', 1);
 
 INSERT INTO I18N (id, tag, external, description, params) VALUES
   (1, 'ui_caption_gate', 1, 'Interface caption for gate.', ''),

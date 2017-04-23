@@ -60,7 +60,13 @@ public class TranslationEndpoint {
 
     @POST
     @Path("/locale")
-    public LocaleDto createLocale(LocaleDto locale) throws UniqueConstraintException {
+    public LocaleDto createLocale(final LocaleDto locale) throws UniqueConstraintException {
         return localePersistenceService.createLocale(locale);
+    }
+
+    @POST
+    @Path("/locale/show")
+    public LocaleDto setLocaleShowData(final LocaleDto locale) {
+        return localePersistenceService.updateLocaleShowData(locale);
     }
 }
