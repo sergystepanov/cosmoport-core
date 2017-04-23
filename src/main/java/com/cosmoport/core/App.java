@@ -1,6 +1,7 @@
 package com.cosmoport.core;
 
 import com.cosmoport.core.api.ApiV0Module;
+import com.cosmoport.core.api.StaticsEndpoint;
 import com.cosmoport.core.api.error.ApiExceptionMapper;
 import com.cosmoport.core.config.Config;
 import com.cosmoport.core.event.MessageHub;
@@ -10,7 +11,6 @@ import com.cosmoport.core.node.NodesModule;
 import com.cosmoport.core.persistence.module.PersistenceModule;
 import com.cosmoport.core.socket.EventServlet;
 import com.cosmoport.core.socket.EventSocket;
-import com.cosmoport.core.statics.StaticsEndpoint;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.eventbus.EventBus;
