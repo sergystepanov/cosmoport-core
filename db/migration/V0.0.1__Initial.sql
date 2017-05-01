@@ -28,7 +28,7 @@ CREATE TABLE LOCALE (
   show               BOOLEAN    NOT NULL  DEFAULT (0),
   show_time          INTEGER    NOT NULL  DEFAULT (1),
 
-    CONSTRAINT unique_code UNIQUE (code)
+  CONSTRAINT unique_code UNIQUE (code)
 );
 -- The main translation table of translated values to use internally and externally
 CREATE TABLE TRANSLATION (
@@ -126,6 +126,15 @@ CREATE TABLE TIMETABLE (
   FOREIGN KEY (gate_id) REFERENCES GATE (id)
     ON DELETE SET NULL
     ON UPDATE CASCADE
+);
+
+CREATE TABLE SETTINGS (
+  id    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  param TEXT    NOT NULL             DEFAULT (''),
+  value TEXT    NOT NULL             DEFAULT (''),
+
+  CONSTRAINT unique_key UNIQUE (param),
+  CONSTRAINT check_not_empty_key CHECK (param <> '')
 );
 
 --

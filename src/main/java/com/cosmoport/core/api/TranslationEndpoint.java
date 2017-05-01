@@ -5,11 +5,13 @@ import com.cosmoport.core.dto.ResultDto;
 import com.cosmoport.core.dto.TranslationDto;
 import com.cosmoport.core.dto.TranslationLightDto;
 import com.cosmoport.core.dto.request.TranslationTextUpdateRequestDto;
+import com.cosmoport.core.event.message.ReloadMessage;
+import com.cosmoport.core.event.message.TimeoutUpdateMessage;
 import com.cosmoport.core.persistence.LocalePersistenceService;
 import com.cosmoport.core.persistence.TranslationPersistenceService;
 import com.cosmoport.core.persistence.exception.UniqueConstraintException;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import org.jboss.resteasy.annotations.GZIP;
 
 import javax.ws.rs.*;
@@ -18,19 +20,21 @@ import java.util.List;
 import java.util.Map;
 
 @Path("/translations")
-@Singleton
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @GZIP
 public class TranslationEndpoint {
     private final TranslationPersistenceService translationPersistenceService;
     private final LocalePersistenceService localePersistenceService;
+    private final EventBus eventBus;
 
     @Inject
     public TranslationEndpoint(TranslationPersistenceService translationPersistenceService,
-                               LocalePersistenceService localePersistenceService) {
+                               LocalePersistenceService localePersistenceService,
+                               EventBus eventBus) {
         this.translationPersistenceService = translationPersistenceService;
         this.localePersistenceService = localePersistenceService;
+        this.eventBus = eventBus;
     }
 
     @GET
@@ -46,16 +50,28 @@ public class TranslationEndpoint {
     }
 
     @POST
-    @Path("/{translationId}")
+    @Path("/update/{translationId}")
     public ResultDto updateTranslation(@PathParam("translationId") long translationId,
                                        TranslationTextUpdateRequestDto requestDto) {
-        return new ResultDto(translationPersistenceService.updateTranslationForId(translationId, requestDto.getText()));
+        final boolean updated =
+                translationPersistenceService.updateTranslationForId(translationId, requestDto.getText());
+        if (updated) {
+            eventBus.post(new ReloadMessage());
+        }
+
+        return new ResultDto(updated);
     }
 
     @GET
     @Path("/locales")
     public List<LocaleDto> getLocales() {
         return localePersistenceService.getAll();
+    }
+
+    @GET
+    @Path("/locales/visible")
+    public List<LocaleDto> getVisibleLocales() {
+        return localePersistenceService.getAllVisible();
     }
 
     @POST
@@ -67,6 +83,9 @@ public class TranslationEndpoint {
     @POST
     @Path("/locale/show")
     public LocaleDto setLocaleShowData(final LocaleDto locale) {
-        return localePersistenceService.updateLocaleShowData(locale);
+        final LocaleDto newLocale = localePersistenceService.updateLocaleShowData(locale);
+        eventBus.post(new TimeoutUpdateMessage());
+
+        return newLocale;
     }
 }

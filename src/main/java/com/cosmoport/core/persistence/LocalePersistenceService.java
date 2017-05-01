@@ -37,13 +37,16 @@ public final class LocalePersistenceService extends PersistenceService<LocaleDto
         return getAll("SELECT * FROM LOCALE");
     }
 
+    public List<LocaleDto> getAllVisible() {
+        return getAll("SELECT * FROM LOCALE WHERE show = 1");
+    }
+
     public LocaleDto createLocale(final LocaleDto locale) throws UniqueConstraintException {
         LocaleDto newLocale = null;
         long newId;
         Connection conn = null;
         PreparedStatement statement = null;
         PreparedStatement statement2 = null;
-        boolean success = true;
 
         try {
             conn = getConnection();
@@ -80,21 +83,14 @@ public final class LocalePersistenceService extends PersistenceService<LocaleDto
 
             conn.commit();
         } catch (SQLException sqlexception) {
-            success = false;
+            rollback(conn);
             throwConstrainViolation(sqlexception);
             throwServerApiException(sqlexception);
         } catch (Exception e) {
-            success = false;
+            rollback(conn);
             throwServerApiException(e);
         } finally {
             close(statement, statement2, conn);
-            if (!success && conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
 
         return newLocale;

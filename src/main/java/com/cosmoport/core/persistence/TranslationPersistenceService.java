@@ -3,7 +3,6 @@ package com.cosmoport.core.persistence;
 import com.cosmoport.core.dto.LocaleDto;
 import com.cosmoport.core.dto.TranslationDto;
 import com.cosmoport.core.dto.TranslationLightDto;
-import com.cosmoport.core.event.message.TestMessage;
 import com.cosmoport.core.persistence.constant.Constants;
 import com.cosmoport.core.persistence.exception.JsonConvertException;
 import com.cosmoport.core.persistence.trait.HasClosableResources;
@@ -302,10 +301,6 @@ public final class TranslationPersistenceService implements HasClosableResources
             statement.setLong(2, id);
 
             result = statement.executeUpdate() == 1;
-
-            if (result) {
-                eventBus.post(new TestMessage());
-            }
         } catch (Exception e) {
             getLogger().error(e.getMessage());
             throw new RuntimeException();

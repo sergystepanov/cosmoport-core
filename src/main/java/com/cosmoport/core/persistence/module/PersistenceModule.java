@@ -12,7 +12,6 @@ public final class PersistenceModule extends AbstractModule {
     protected void configure() {
         bind(DataSource.class).toProvider(DatasourceServiceProvider.class).in(Scopes.SINGLETON);
 
-        bind(TestPersistenceService.class);
         bind(TimetablePersistenceService.class);
         bind(EventTypePersistenceService.class);
         bind(EventStatusPersistenceService.class);
@@ -21,5 +20,6 @@ public final class PersistenceModule extends AbstractModule {
         bind(LocalePersistenceService.class);
         bind(TranslationPersistenceService.class);
         bind(I18nPersistenceService.class);
+        bind(SettingsPersistenceService.class);
     }
 }
