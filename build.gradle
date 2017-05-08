@@ -73,7 +73,7 @@ ext {
             junitJupiter: '5.0.0-M4',
             springJdbc  : '4.3.8.RELEASE',
             palomino    : '1.2.1',
-            jetty       : '9.4.4.v20170414',
+            jetty       : '9.4.5.v20170502',
             jbcrypt     : '0.4',
             iocommons   : '2.5',
             websocketApi: '1.1'

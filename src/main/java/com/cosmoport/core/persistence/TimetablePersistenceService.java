@@ -18,6 +18,9 @@ import java.util.List;
  * @since 0.1.0
  */
 public class TimetablePersistenceService extends PersistenceService<EventDto> {
+    private static final String getOrder = " ORDER BY event_date, start_time";
+
+
     @Inject
     public TimetablePersistenceService(Logger logger, Provider<DataSource> ds) {
         super(logger, ds);
@@ -31,7 +34,7 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
      * @since 0.1.0
      */
     public List<EventDto> getAll() throws RuntimeException {
-        return getAll("SELECT * FROM TIMETABLE");
+        return getAll("SELECT * FROM TIMETABLE" + getOrder);
     }
 
     /**
@@ -65,9 +68,23 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
             sql.append(hasDate && hasGate ? "event_date = ? AND gate_id = ?" :
                     hasDate ? "event_date = ?" : "gate_id = ?");
         }
+        sql.append(getOrder);
         getLogger().debug("sql={}", sql.toString());
 
         return getAllByParams(sql.toString(), params.toArray());
+    }
+
+    /**
+     * Fetches all events from the table with simple page * count params.
+     *
+     * @return A collection of {@code TimetableDto} objects or an empty list.
+     * @throws RuntimeException In case of any exception during fetch procedure.
+     * @since 0.1.2
+     */
+    public List<EventDto> getAllPage(final int page, final int count) throws RuntimeException {
+        //noinspection UnnecessaryBoxing
+        return getAllByParams("SELECT * FROM TIMETABLE" + getOrder + " LIMIT ?, ?",
+                new Integer((page - 1) * count), new Integer(count));
     }
 
     /**
@@ -83,11 +100,12 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
      * @since 0.1.0
      */
     private void validate(final EventDto event) throws ValidationException {
-        final Object[] params = {event.getGateId(), event.getEventDate(), event.getStartTime(), event.getEventDate(),
+        final Object[] params = {event.getId(), event.getGateId(), event.getEventDate(), event.getStartTime(),
+                event.getEventDate(),
                 event.getStartTime() + event.getDurationTime()};
 
         final List<EventDto> overlapping = getAllByParams(
-                "SELECT * FROM TIMETABLE WHERE gate_id = ? AND ((event_date = ? AND start_time = ?)" +
+                "SELECT * FROM TIMETABLE WHERE id <> ? AND gate_id = ? AND ((event_date = ? AND start_time = ?)" +
                         " OR (event_date = ? AND start_time + duration_time = ?))",
                 params);
 
@@ -130,11 +148,21 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
         try {
             conn = getConnection();
 
-            statement = conn.prepareStatement(
-                    "INSERT INTO TIMETABLE (event_date, event_type_id, event_status_id, event_destination_id, " +
-                            "gate_id, start_time, duration_time, repeat_interval, cost, people_limit, contestants) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                    Statement.RETURN_GENERATED_KEYS);
+            if (record.getId() > 0) {
+                statement = conn.prepareStatement(
+                        "UPDATE TIMETABLE SET event_date = ?, event_type_id = ?, " +
+                                "event_status_id = ?, event_destination_id = ?,  " +
+                                "gate_id = ?, start_time = ?, duration_time = ?, " +
+                                "repeat_interval = ?, cost = ?, people_limit = ?, contestants = ? " +
+                                "WHERE id = ?"
+                );
+            } else {
+                statement = conn.prepareStatement(
+                        "INSERT INTO TIMETABLE (event_date, event_type_id, event_status_id, event_destination_id, " +
+                                "gate_id, start_time, duration_time, repeat_interval, cost, people_limit, contestants) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        Statement.RETURN_GENERATED_KEYS);
+            }
             statement.setString(1, record.getEventDate());
             statement.setLong(2, record.getEventTypeId());
             statement.setLong(3, record.getEventStatusId());
@@ -146,16 +174,21 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
             statement.setDouble(9, record.getCost());
             statement.setLong(10, record.getPeopleLimit());
             statement.setLong(11, record.getContestants());
+            if (record.getId() > 0) {
+                statement.setLong(12, record.getId());
+            }
 
             if (statement.executeUpdate() < 0) {
                 throw new Exception();
             }
 
-            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    record.setId(generatedKeys.getLong(1));
-                } else {
-                    throw new Exception();
+            if (record.getId() == 0) {
+                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        record.setId(generatedKeys.getLong(1));
+                    } else {
+                        throw new Exception();
+                    }
                 }
             }
         } catch (SQLException sqlexception) {

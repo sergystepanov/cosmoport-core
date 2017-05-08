@@ -176,6 +176,5 @@ INSERT INTO TIMETABLE (event_date, event_type_id, event_status_id, event_destina
   ('2017-02-05', 1, 1, 2, 1, 1080, 90, 34, 10, 10);
 
 INSERT INTO SETTINGS (param, value) VALUES
-  ('remote_exchange_address', 'http://127.0.0.1:81'),
-  ('remote_http_address', 'http://127.0.0.1:8080'),
-  ('remote_ws_address', 'ws://127.0.0.1:8008');
+  ('timetable_screen_lines', '20'),
+  ('boarding_time', '5');

@@ -4,7 +4,7 @@ import com.cosmoport.core.dto.LocaleDto;
 import com.cosmoport.core.dto.ResultDto;
 import com.cosmoport.core.dto.TranslationDto;
 import com.cosmoport.core.dto.TranslationLightDto;
-import com.cosmoport.core.dto.request.TranslationTextUpdateRequestDto;
+import com.cosmoport.core.dto.request.TextValueUpdateRequestDto;
 import com.cosmoport.core.event.message.ReloadMessage;
 import com.cosmoport.core.event.message.TimeoutUpdateMessage;
 import com.cosmoport.core.persistence.LocalePersistenceService;
@@ -52,7 +52,7 @@ public class TranslationEndpoint {
     @POST
     @Path("/update/{translationId}")
     public ResultDto updateTranslation(@PathParam("translationId") long translationId,
-                                       TranslationTextUpdateRequestDto requestDto) {
+                                       TextValueUpdateRequestDto requestDto) {
         final boolean updated =
                 translationPersistenceService.updateTranslationForId(translationId, requestDto.getText());
         if (updated) {

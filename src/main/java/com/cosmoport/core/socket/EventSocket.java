@@ -1,6 +1,7 @@
 package com.cosmoport.core.socket;
 
 import com.cosmoport.core.event.message.ReloadMessage;
+import com.cosmoport.core.event.message.SyncTimetablesMessage;
 import com.cosmoport.core.event.message.TestMessage;
 import com.cosmoport.core.event.message.TimeoutUpdateMessage;
 import com.cosmoport.core.node.NodesHolder;
@@ -86,6 +87,12 @@ public class EventSocket extends WebSocketAdapter {
     public void onTimeoutUpdateMessage(final TimeoutUpdateMessage message) {
         logger.info("[socket] {}", TimeoutUpdateMessage.token);
         sendAll(TimeoutUpdateMessage.token);
+    }
+
+    @Subscribe
+    public void onSyncTimetablesMessage(final SyncTimetablesMessage message) {
+        logger.info("[socket] {}", SyncTimetablesMessage.token);
+        sendAll(SyncTimetablesMessage.token);
     }
 
     @Override
