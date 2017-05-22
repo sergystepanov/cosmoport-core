@@ -2,8 +2,7 @@ buildscript {
     ext {
         ver = [
                 junitPlugin   : '1.0.0-M4',
-                versionsPlugin: '0.14.0',
-                shadowPlugin  : '1.2.4'
+                versionsPlugin: '0.14.0'
         ]
     }
 
@@ -17,7 +16,6 @@ buildscript {
     dependencies {
         classpath "org.junit.platform:junit-platform-gradle-plugin:$ver.junitPlugin"
         classpath "com.github.ben-manes:gradle-versions-plugin:$ver.versionsPlugin"
-        classpath "com.github.jengelman.gradle.plugins:shadow:$ver.shadowPlugin"
     }
 }
 
@@ -25,9 +23,8 @@ apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'com.github.ben-manes.versions'
-apply plugin: 'com.github.johnrengelman.shadow'
 
-version = '0.1.0'
+version = '0.1.1'
 
 repositories {
     jcenter()
@@ -43,28 +40,35 @@ compileJava {
 
 mainClassName = 'com.cosmoport.core.App'
 
-shadowJar {
-    classifier = null
-}
+applicationDefaultJvmArgs = ["-Xms512m", "-Xmx1024m"]
 
-installShadowApp {
-    distributions {
+distributions {
+    main {
         contents {
             from(file("$projectDir/db")) {
                 into 'db'
                 include('**/*.db')
                 includeEmptyDirs = false
             }
+            from(file("$buildDir/scripts")) {
+                include '*.bat'
+            }
         }
+    }
+}
+startScripts.applicationName = 'core0'
+startScripts {
+    doLast {
+        windowsScript.text = windowsScript.text.replace('APP_HOME=%DIRNAME%..', 'APP_HOME=%DIRNAME%.')
     }
 }
 
 ext {
     ver = [
-            resteasy    : '3.1.2.Final',
+            resteasy    : '3.1.3.Final',
             guice       : '4.1.0',
             jackson     : '2.9.0.pr3',
-            sqlite      : '3.16.1',
+            sqlite      : '3.18.0',
             hikaricp    : '2.6.1',
             flyway      : '4.0.3',
             logback     : '1.2.3',
