@@ -4,7 +4,6 @@ import com.cosmoport.core.api.ApiV0Module;
 import com.cosmoport.core.api.StaticsEndpoint;
 import com.cosmoport.core.api.error.ApiExceptionMapper;
 import com.cosmoport.core.config.Config;
-import com.cosmoport.core.event.MessageHub;
 import com.cosmoport.core.module.JsonModule;
 import com.cosmoport.core.module.LoggerModule;
 import com.cosmoport.core.node.NodesModule;
@@ -72,7 +71,6 @@ public class App {
 
             bind(EventBus.class).toInstance(eventBus);
             bind(EventServlet.class);
-            eventBus.register(new MessageHub());
             eventBus.register(new EventSocket());
 
             bind(StaticsEndpoint.class).asEagerSingleton();

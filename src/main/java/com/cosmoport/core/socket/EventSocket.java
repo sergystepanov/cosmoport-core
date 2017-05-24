@@ -1,8 +1,8 @@
 package com.cosmoport.core.socket;
 
+import com.cosmoport.core.event.message.FireUpGateMessage;
 import com.cosmoport.core.event.message.ReloadMessage;
 import com.cosmoport.core.event.message.SyncTimetablesMessage;
-import com.cosmoport.core.event.message.TestMessage;
 import com.cosmoport.core.event.message.TimeoutUpdateMessage;
 import com.cosmoport.core.node.NodesHolder;
 import com.google.common.eventbus.Subscribe;
@@ -72,12 +72,6 @@ public class EventSocket extends WebSocketAdapter {
     }
 
     @Subscribe
-    public void applicationEvent(TestMessage message) {
-        logger.info("test message from socket");
-        sendAll(":do:");
-    }
-
-    @Subscribe
     public void onReloadMessage(final ReloadMessage message) {
         logger.info("[socket] {}", ReloadMessage.token);
         sendAll(ReloadMessage.token);
@@ -93,6 +87,12 @@ public class EventSocket extends WebSocketAdapter {
     public void onSyncTimetablesMessage(final SyncTimetablesMessage message) {
         logger.info("[socket] {}", SyncTimetablesMessage.token);
         sendAll(SyncTimetablesMessage.token);
+    }
+
+    @Subscribe
+    public void onFireGateMessage(final FireUpGateMessage message) {
+        logger.info("[socket] {}", message.token());
+        sendAll(message.token());
     }
 
     @Override
