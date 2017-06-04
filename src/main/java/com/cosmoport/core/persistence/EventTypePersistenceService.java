@@ -51,7 +51,7 @@ public final class EventTypePersistenceService extends PersistenceService<EventT
     /**
      * Validates an event type object.
      * <p>
-     * There's shouldn't be two events types ith:
+     * There's shouldn't be two events types with:
      * - the same name and subname
      * </p>
      *
@@ -166,6 +166,77 @@ public final class EventTypePersistenceService extends PersistenceService<EventT
         }
 
         return newEventType;
+    }
+
+    public int delete(final long id) throws RuntimeException {
+        Connection conn = null;
+        PreparedStatement statement0 = null;
+        PreparedStatement statement = null;
+        PreparedStatement statement2 = null;
+        int deleted = 0;
+
+        try {
+            conn = getConnection();
+            conn.setAutoCommit(false);
+
+            // Combines all i18n IDs into one column for deletion
+            statement0 = conn.prepareStatement(
+                    "DELETE FROM TRANSLATION WHERE i18n_id IN (" +
+                            "SELECT i18n_event_type_name AS id FROM EVENT_TYPE WHERE id = ? " +
+                            "UNION " +
+                            "SELECT i18n_event_type_subname AS id FROM EVENT_TYPE where id = ? " +
+                            "UNION " +
+                            "SELECT i18n_event_type_description AS id FROM EVENT_TYPE where id = ?)");
+            statement0.setLong(1, id);
+            statement0.setLong(2, id);
+            statement0.setLong(3, id);
+
+            final int deleted0 = statement0.executeUpdate();
+            if (deleted0 < 0) {
+                throw new Exception();
+            }
+
+            // Combines all i18n IDs into one column for deletion
+            statement = conn.prepareStatement(
+                    "DELETE FROM I18N WHERE id IN (" +
+                            "SELECT i18n_event_type_name AS id FROM EVENT_TYPE WHERE id = ? " +
+                            "UNION " +
+                            "SELECT i18n_event_type_subname AS id FROM EVENT_TYPE where id = ? " +
+                            "UNION " +
+                            "SELECT i18n_event_type_description AS id FROM EVENT_TYPE where id = ?)");
+            statement.setLong(1, id);
+            statement.setLong(2, id);
+            statement.setLong(3, id);
+
+            final int deleted1 = statement.executeUpdate();
+            if (deleted1 < 0) {
+                throw new Exception();
+            }
+
+            // Deletes the main record
+            statement2 = conn.prepareStatement("DELETE FROM EVENT_TYPE WHERE id = ?");
+            statement2.setLong(1, id);
+
+            final int deleted2 = statement2.executeUpdate();
+            if (deleted2 < 0) {
+                throw new Exception();
+            }
+
+            deleted = deleted0 + deleted1 + deleted2;
+
+            conn.commit();
+        } catch (SQLException sqlexception) {
+            rollback(conn);
+            throwConstrainViolation(sqlexception);
+            throwServerApiException(sqlexception);
+        } catch (Exception e) {
+            rollback(conn);
+            throwServerApiException(e);
+        } finally {
+            close(statement0, statement, statement2, conn);
+        }
+
+        return deleted;
     }
 
     private long getMaxId() {

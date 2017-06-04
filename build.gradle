@@ -69,7 +69,7 @@ ext {
             guice       : '4.1.0',
             jackson     : '2.9.0.pr3',
             sqlite      : '3.18.0',
-            hikaricp    : '2.6.1',
+            hikaricp    : '2.6.2',
             flyway      : '4.0.3',
             logback     : '1.2.3',
             slf4j       : '1.7.25',

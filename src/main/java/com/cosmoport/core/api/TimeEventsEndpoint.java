@@ -54,6 +54,12 @@ public final class TimeEventsEndpoint {
         return eventTypePersistenceService.save(eventType);
     }
 
+    @DELETE
+    @Path("/types/{id}")
+    public String delete(@PathParam("id") final long id) {
+        return "{\"deleted\": " + eventTypePersistenceService.delete(id) + '}';
+    }
+
     @GET
     @Path("/statuses")
     public List<EventStatusDto> getEventStatuses() {

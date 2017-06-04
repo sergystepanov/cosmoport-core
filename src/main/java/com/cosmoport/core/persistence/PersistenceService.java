@@ -230,14 +230,6 @@ public abstract class PersistenceService<T> {
         }
     }
 
-    protected void closeStatement(Statement s) {
-        close(s);
-    }
-
-    protected void closeResultSet(ResultSet rs) {
-        close(rs);
-    }
-
     void rollback(Connection conn) {
         if (conn != null) {
             try {
