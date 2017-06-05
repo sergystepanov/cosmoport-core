@@ -2,7 +2,7 @@ buildscript {
     ext {
         ver = [
                 junitPlugin   : '1.0.0-M4',
-                versionsPlugin: '0.14.0'
+                versionsPlugin: '0.15.0'
         ]
     }
 
