@@ -120,6 +120,30 @@ public abstract class PersistenceService<T> {
         return result != null ? Optional.of(result) : Optional.empty();
     }
 
+    Optional<T> findByParam(final String sql, final String param) {
+        T result = null;
+        Connection conn = null;
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            conn = getConnection();
+
+            statement = conn.prepareStatement(sql);
+            statement.setString(1, param);
+            rs = statement.executeQuery();
+
+            if (rs.next()) {
+                result = map(rs);
+            }
+        } catch (Exception e) {
+            throwServerApiException(e);
+        } finally {
+            close(rs, statement, conn);
+        }
+
+        return result != null ? Optional.of(result) : Optional.empty();
+    }
+
     /*protected long insertStringById(final String sql, final String value, final long id)
             throws UniqueConstraintException {
         long newId = 0;

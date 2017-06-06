@@ -7,7 +7,7 @@ import com.google.inject.name.Names;
 public class ApiV0Module extends AbstractModule {
     @Override
     protected void configure() {
-        // Filesystem
+        // Filesystem for legacy purposes only
         bindConstant().annotatedWith(Names.named("fileSystemRoot")).to(System.getProperty("user.dir"));
 
         bind(FileSystem.class).asEagerSingleton();
@@ -20,5 +20,6 @@ public class ApiV0Module extends AbstractModule {
         bind(GateEndpoint.class).asEagerSingleton();
         bind(SettingsEndpoint.class).asEagerSingleton();
         bind(ProxyEndpoint.class).asEagerSingleton();
+        bind(AuthEndpoint.class).asEagerSingleton();
     }
 }

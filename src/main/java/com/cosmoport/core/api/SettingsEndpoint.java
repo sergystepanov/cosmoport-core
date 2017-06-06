@@ -30,7 +30,7 @@ public final class SettingsEndpoint {
     @GET
     @Path("/")
     public List<SettingsDto> getSettings() {
-        return service.getAll();
+        return service.getAllWithoutProtectedValues();
     }
 
     @POST

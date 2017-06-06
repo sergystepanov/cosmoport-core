@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public class SettingsPersistenceService extends PersistenceService<SettingsDto> {
     @Inject
@@ -27,6 +28,16 @@ public class SettingsPersistenceService extends PersistenceService<SettingsDto> 
         return getAll("SELECT * FROM SETTINGS");
     }
 
+    public List<SettingsDto> getAllWithoutProtectedValues() {
+        return getAll("SELECT * FROM SETTINGS WHERE param <> 'password'");
+    }
+
+    public boolean paramEquals(final String param, final String value) {
+        final Optional<SettingsDto> obj = findByParam("SELECT * FROM SETTINGS WHERE param = ?", param);
+
+        return obj.isPresent() && obj.get().getValue().equals(value);
+    }
+
     public boolean updateSettingForId(final long id, final String value) throws RuntimeException {
         boolean result;
 
@@ -38,6 +49,29 @@ public class SettingsPersistenceService extends PersistenceService<SettingsDto> 
             statement = conn.prepareStatement("UPDATE SETTINGS SET value = ? WHERE id = ?");
             statement.setString(1, value);
             statement.setLong(2, id);
+
+            result = statement.executeUpdate() == 1;
+        } catch (Exception e) {
+            getLogger().error(e.getMessage());
+            throw new RuntimeException();
+        } finally {
+            close(statement, conn);
+        }
+
+        return result;
+    }
+
+    public boolean updateSettingForParam(final String param, final String value) throws RuntimeException {
+        boolean result;
+
+        Connection conn = null;
+        PreparedStatement statement = null;
+        try {
+            conn = getConnection();
+
+            statement = conn.prepareStatement("UPDATE SETTINGS SET value = ? WHERE param = ?");
+            statement.setString(1, value);
+            statement.setString(2, param);
 
             result = statement.executeUpdate() == 1;
         } catch (Exception e) {

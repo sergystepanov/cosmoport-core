@@ -177,4 +177,5 @@ INSERT INTO TIMETABLE (event_date, event_type_id, event_status_id, event_destina
 
 INSERT INTO SETTINGS (param, value) VALUES
   ('timetable_screen_lines', '20'),
-  ('boarding_time', '5');
+  ('boarding_time', '5'),
+  ('password', 'Abcd1234!');
