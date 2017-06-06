@@ -17,6 +17,7 @@ public class ApiV0Module extends AbstractModule {
         bind(TimeEventsEndpoint.class).asEagerSingleton();
         bind(TranslationEndpoint.class).asEagerSingleton();
         bind(NodesEndpoint.class).asEagerSingleton();
+        bind(GateEndpoint.class).asEagerSingleton();
         bind(SettingsEndpoint.class).asEagerSingleton();
         bind(ProxyEndpoint.class).asEagerSingleton();
     }

@@ -12,7 +12,10 @@ public final class GateDto extends Entity implements Serializable {
     private final String gateName;
 
     @JsonCreator
-    public GateDto(@JsonProperty("number") int number, @JsonProperty("gate_name") String gateName) {
+    public GateDto(@JsonProperty("id") long id,
+                   @JsonProperty("number") int number,
+                   @JsonProperty("gate_name") String gateName) {
+        this.id = id;
         this.number = number;
         this.gateName = gateName;
     }
