@@ -27,13 +27,10 @@ public final class ProxyEndpoint {
     @POST
     @Path("/")
     public String reactOn(final ProxyRequestDto request) {
-        String result = "";
-
         if (request.getName().equals("fire_gate")) {
-            eventBus.post(new FireUpGateMessage(request.getEvent().getGateId()));
-            result = "" + request.getEvent().getGateId();
+            eventBus.post(new FireUpGateMessage(request.getEvent(), request.getType()));
         }
 
-        return result;
+        return "Success";
     }
 }

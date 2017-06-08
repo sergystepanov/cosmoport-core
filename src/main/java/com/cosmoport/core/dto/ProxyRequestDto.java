@@ -10,11 +10,15 @@ public final class ProxyRequestDto implements Serializable {
 
     private final String name;
     private final EventDto event;
+    private final String type;
 
     @JsonCreator
-    public ProxyRequestDto(@JsonProperty("name") String name, @JsonProperty("event") EventDto event) {
+    public ProxyRequestDto(@JsonProperty("name") String name,
+                           @JsonProperty("event") EventDto event,
+                           @JsonProperty("type") String type) {
         this.name = name;
         this.event = event;
+        this.type = type;
     }
 
     public String getName() {
@@ -23,5 +27,9 @@ public final class ProxyRequestDto implements Serializable {
 
     public EventDto getEvent() {
         return event;
+    }
+
+    public String getType() {
+        return type;
     }
 }

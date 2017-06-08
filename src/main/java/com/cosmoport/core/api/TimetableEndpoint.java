@@ -42,6 +42,18 @@ public final class TimetableEndpoint {
         return events;
     }
 
+    /**
+     * Gets the event with {@code id} and one event after that for same gate.
+     *
+     * @param id long An id of event.
+     * @return Two events.
+     */
+    @GET
+    @Path("/byIdAndOneAfter")
+    public List<EventDto> getEvents(@QueryParam("id") long id) {
+        return service.getCustomByIdForGate(id);
+    }
+
     @POST
     @Path("/")
     public EventDto create(final EventDto event) {

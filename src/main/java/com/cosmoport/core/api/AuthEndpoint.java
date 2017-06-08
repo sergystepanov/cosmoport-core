@@ -35,15 +35,4 @@ public final class AuthEndpoint {
     public ResultDto set(final PasswordDto password) {
         return new ResultDto(service.updateSettingForParam("password", password.getPwd()));
     }
-
-//    @POST
-//    @Path("/update/{id}")
-//    public ResultDto updateSetting(@PathParam("id") long id, final TextValueUpdateRequestDto requestDto) {
-//        final boolean updated = service.updateSettingForId(id, requestDto.getText());
-//        if (updated) {
-//            eventBus.post(new ReloadMessage());
-//        }
-//
-//        return new ResultDto(updated);
-//    }
 }

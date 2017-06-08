@@ -7,6 +7,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 final class TimetablePersistenceServiceTest extends PersistenceTest {
@@ -42,7 +44,7 @@ final class TimetablePersistenceServiceTest extends PersistenceTest {
         @Test
         @DisplayName("Should be able to execute getAll() with paging")
         void getAllPage() {
-           assertEquals(5, service.getAllPage(1, 5).size());
+            assertEquals(5, service.getAllPage(1, 5).size());
         }
 
         @Test
@@ -61,6 +63,17 @@ final class TimetablePersistenceServiceTest extends PersistenceTest {
         void delete() {
             assertTrue(service.delete(1));
         }
+    }
+
+    @Test
+    @DisplayName("Should be able to select near events")
+    void getCustomByIdForGate() {
+        final List<EventDto> events = service.getCustomByIdForGate(5);
+
+        assertAll("events",
+                () -> assertEquals(5, events.get(0).getId()),
+                () -> assertEquals(7, events.get(1).getId())
+        );
     }
 
     @Nested

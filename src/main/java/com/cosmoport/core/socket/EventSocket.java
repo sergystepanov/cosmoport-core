@@ -91,8 +91,8 @@ public class EventSocket extends WebSocketAdapter {
 
     @Subscribe
     public void onFireGateMessage(final FireUpGateMessage message) {
-        logger.info("[socket] {}", message.token());
-        sendAll(message.token());
+        logger.info("[socket] {}", message.toString());
+        sendAll(message.toString());
     }
 
     @Override

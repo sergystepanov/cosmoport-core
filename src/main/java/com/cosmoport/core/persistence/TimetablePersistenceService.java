@@ -1,6 +1,7 @@
 package com.cosmoport.core.persistence;
 
 import com.cosmoport.core.dto.EventDto;
+import com.cosmoport.core.persistence.constant.EventStatus;
 import com.cosmoport.core.persistence.exception.UniqueConstraintException;
 import com.cosmoport.core.persistence.exception.ValidationException;
 import com.google.inject.Inject;
@@ -11,15 +12,15 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Timetable database entity service.
+ * The Timetable (events) database entity service.
  *
  * @since 0.1.0
  */
 public class TimetablePersistenceService extends PersistenceService<EventDto> {
-    private static final String getOrder = " ORDER BY event_date, start_time";
-
+    private static final String defaultOrder = " ORDER BY event_date, start_time";
 
     @Inject
     public TimetablePersistenceService(Logger logger, Provider<DataSource> ds) {
@@ -34,7 +35,7 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
      * @since 0.1.0
      */
     public List<EventDto> getAll() throws RuntimeException {
-        return getAll("SELECT * FROM TIMETABLE" + getOrder);
+        return getAll("SELECT * FROM TIMETABLE" + defaultOrder);
     }
 
     /**
@@ -68,7 +69,7 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
             sql.append(hasDate && hasGate ? "event_date = ? AND gate_id = ?" :
                     hasDate ? "event_date = ?" : "gate_id = ?");
         }
-        sql.append(getOrder);
+        sql.append(defaultOrder);
         getLogger().debug("sql={}", sql.toString());
 
         return getAllByParams(sql.toString(), params.toArray());
@@ -78,13 +79,53 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
      * Fetches all events from the table with simple page * count params.
      *
      * @return A collection of {@code TimetableDto} objects or an empty list.
-     * @throws RuntimeException In case of any exception during fetch procedure.
+     * @throws RuntimeException In case of any exception during the fetch procedure.
      * @since 0.1.2
      */
     public List<EventDto> getAllPage(final int page, final int count) throws RuntimeException {
         //noinspection UnnecessaryBoxing
-        return getAllByParams("SELECT * FROM TIMETABLE" + getOrder + " LIMIT ?, ?",
+        return getAllByParams("SELECT * FROM TIMETABLE" + defaultOrder + " LIMIT ?, ?",
                 new Integer((page - 1) * count), new Integer(count));
+    }
+
+    /**
+     * Fetches an event by its {@code id} and one following.
+     * This needs for the Gate app only.
+     * <p>
+     * TODO One query
+     * </p>
+     *
+     * @param id The {@code id} of the event.
+     * @return A list of one or two events.
+     * @throws RuntimeException In case of any exception during the fetch procedure.
+     * @since 0.1.2
+     */
+    public List<EventDto> getCustomByIdForGate(final long id) throws RuntimeException {
+        List<EventDto> result = new ArrayList<>();
+
+        // Get the main event
+        final Optional<EventDto> mainEvent = findById("SELECT * FROM TIMETABLE WHERE id = ?", id);
+        // If exists then select the next one
+        if (mainEvent.isPresent()) {
+            final EventDto main = mainEvent.get();
+            //noinspection UnnecessaryBoxing
+            final List<EventDto> nextEvent = getAllByParams(
+                    "SELECT * FROM TIMETABLE WHERE event_date = ? AND gate_id = ? AND start_time > ? " +
+                            "AND event_status_id <> ? AND id <> ? " +
+                            defaultOrder + " LIMIT 1",
+                    main.getEventDate(),
+                    new Long(main.getGateId()),
+                    new Long(main.getStartTime()),
+                    new Integer(EventStatus.CANCELED.value()),
+                    new Long(main.getId()));
+            // Compile the result
+            result.add(main);
+            if (nextEvent.size() > 0) {
+                result.add(nextEvent.get(0));
+            }
+        }
+
+        return result;
     }
 
     /**

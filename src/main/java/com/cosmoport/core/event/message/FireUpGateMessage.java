@@ -1,14 +1,19 @@
 package com.cosmoport.core.event.message;
 
+import com.cosmoport.core.dto.EventDto;
+
 public final class FireUpGateMessage {
     private static final String token = ":fire_gate";
-    private final long id;
+    private final EventDto event;
+    private final String type;
 
-    public FireUpGateMessage(final long id) {
-        this.id = id;
+    public FireUpGateMessage(EventDto event, String type) {
+        this.event = event;
+        this.type = type;
     }
 
-    public String token() {
-        return token + "|" + this.id;
+    @Override
+    public String toString() {
+        return token + '|' + this.event.getGateId() + "|" + this.event.getId() + "|" + this.type;
     }
 }
