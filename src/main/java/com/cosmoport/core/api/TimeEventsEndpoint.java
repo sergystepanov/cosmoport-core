@@ -5,9 +5,11 @@ import com.cosmoport.core.dto.EventReferenceDataDto;
 import com.cosmoport.core.dto.EventStatusDto;
 import com.cosmoport.core.dto.EventTypeDto;
 import com.cosmoport.core.dto.request.CreateEventTypeRequestDto;
+import com.cosmoport.core.event.message.ReloadMessage;
 import com.cosmoport.core.persistence.EventDestinationPersistenceService;
 import com.cosmoport.core.persistence.EventStatusPersistenceService;
 import com.cosmoport.core.persistence.EventTypePersistenceService;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import org.jboss.resteasy.annotations.GZIP;
 
@@ -23,14 +25,16 @@ public final class TimeEventsEndpoint {
     private final EventTypePersistenceService eventTypePersistenceService;
     private final EventStatusPersistenceService eventStatusPersistenceService;
     private final EventDestinationPersistenceService eventDestinationPersistenceService;
+    private final EventBus eventBus;
 
     @Inject
     public TimeEventsEndpoint(EventTypePersistenceService eventTypePersistenceService,
                               EventStatusPersistenceService eventStatusPersistenceService,
-                              EventDestinationPersistenceService eventDestinationPersistenceService) {
+                              EventDestinationPersistenceService eventDestinationPersistenceService, EventBus eventBus) {
         this.eventTypePersistenceService = eventTypePersistenceService;
         this.eventStatusPersistenceService = eventStatusPersistenceService;
         this.eventDestinationPersistenceService = eventDestinationPersistenceService;
+        this.eventBus = eventBus;
     }
 
     @GET
@@ -39,6 +43,7 @@ public final class TimeEventsEndpoint {
         return new EventReferenceDataDto(
                 eventTypePersistenceService.getAll(),
                 eventStatusPersistenceService.getAll(),
+                eventStatusPersistenceService.getAllLocation(),
                 eventDestinationPersistenceService.getAll());
     }
 
@@ -57,13 +62,22 @@ public final class TimeEventsEndpoint {
     @DELETE
     @Path("/types/{id}")
     public String delete(@PathParam("id") final long id) {
-        return "{\"deleted\": " + eventTypePersistenceService.delete(id) + '}';
+        final String result = "{\"deleted\": " + eventTypePersistenceService.delete(id) + '}';
+        eventBus.post(new ReloadMessage());
+
+        return result;
     }
 
     @GET
     @Path("/statuses")
     public List<EventStatusDto> getEventStatuses() {
         return eventStatusPersistenceService.getAll();
+    }
+
+    @GET
+    @Path("/location_statuses")
+    public List<EventStatusDto> getEventLocationStatuses() {
+        return eventStatusPersistenceService.getAllLocation();
     }
 
     @GET

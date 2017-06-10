@@ -31,6 +31,6 @@ public final class ProxyEndpoint {
             eventBus.post(new FireUpGateMessage(request.getEvent(), request.getType()));
         }
 
-        return "Success";
+        return "{\"result\": \"success\"}";
     }
 }

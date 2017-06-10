@@ -8,7 +8,6 @@ import com.cosmoport.core.persistence.exception.JsonConvertException;
 import com.cosmoport.core.persistence.trait.HasClosableResources;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.slf4j.Logger;
@@ -31,15 +30,14 @@ public final class TranslationPersistenceService implements HasClosableResources
     private final Provider<DataSource> ds;
     private final I18nPersistenceService i18nPersistenceService;
     private final LocalePersistenceService localePersistenceService;
-    private EventBus eventBus;
 
     @Inject
-    public TranslationPersistenceService(Provider<DataSource> ds, I18nPersistenceService i18nPersistenceService,
-                                         LocalePersistenceService localePersistenceService, EventBus eventBus) {
+    public TranslationPersistenceService(Provider<DataSource> ds,
+                                         I18nPersistenceService i18nPersistenceService,
+                                         LocalePersistenceService localePersistenceService) {
         this.ds = ds;
         this.i18nPersistenceService = i18nPersistenceService;
         this.localePersistenceService = localePersistenceService;
-        this.eventBus = eventBus;
     }
 
     /**
@@ -173,7 +171,7 @@ public final class TranslationPersistenceService implements HasClosableResources
         return map;
     }
 
-    public TranslationDto save(TranslationDto translation, final Connection extConn) throws RuntimeException {
+    TranslationDto save(TranslationDto translation, final Connection extConn) throws RuntimeException {
         Connection conn = null;
         PreparedStatement statement = null;
         try {

@@ -40,7 +40,8 @@ INSERT INTO I18N (id, tag, external, description, params) VALUES
   (27, 'ui_caption_minutes', 1, '', ''),
   (28, 'event_type_description_1', 0, '', ''),
   (29, 'ui_caption_departing', 1, '', ''),
-  (30, 'ui_caption_cost', 1, '', '');
+  (30, 'ui_caption_cost', 1, '', ''),
+  (31, 'event_status_name_8', 0, '', '');
 
 INSERT INTO TRANSLATION (i18n_id, locale_id, tr_text) VALUES
   (1, 1, 'Gate'),
@@ -135,7 +136,10 @@ INSERT INTO TRANSLATION (i18n_id, locale_id, tr_text) VALUES
   (29, 3, 'Αναχωρούν'),
   (30, 1, 'Cost'),
   (30, 2, 'Цена'),
-  (30, 3, 'Κόστος');
+  (30, 3, 'Κόστος'),
+  (31, 1, 'Return'),
+  (31, 2, 'Возвращается'),
+  (31, 3, 'Επιστροφές');
 
 INSERT INTO EVENT_TYPE (id, i18n_event_type_name, i18n_event_type_subname, i18n_event_type_description,
                         default_duration, default_repeat_interval) VALUES
@@ -145,7 +149,10 @@ INSERT INTO EVENT_TYPE (id, i18n_event_type_name, i18n_event_type_subname, i18n_
   (4, 10, 11, 28, 120, 0);
 
 INSERT INTO EVENT_STATUS (id, i18n_status) VALUES
-  (1, 18), (2, 19), (3, 20), (4, 21), (5, 22), (6, 23), (7, 24);
+  (1, 18), (2, 19), (3, 20);
+
+INSERT INTO EVENT_LOCATION_STATUS (id, i18n_status) VALUES
+  (1, 21), (2, 22), (3, 23), (4, 24), (5, 31);
 
 INSERT INTO EVENT_DESTINATION (id, i18n_event_destination_name) VALUES
   (1, 14), (2, 15), (3, 16), (4, 17);
@@ -162,18 +169,18 @@ INSERT INTO GATE (id, number, gate_name) VALUES
   (9, 9, ''),
   (10, 10, '');
 
-INSERT INTO TIMETABLE (event_date, event_type_id, event_status_id, event_destination_id, gate_id, start_time,
+INSERT INTO TIMETABLE (event_date, event_type_id, event_status_id, event_location_status_id, event_destination_id, gate_id, gate2_id, start_time,
                        duration_time, cost, people_limit, contestants) VALUES
-  ('2017-02-05', 2, 6, 1, 1, 540, 30, 20, 10, 1),
-  ('2017-02-05', 1, 1, 2, 1, 570, 80, 30, 10, 2),
-  ('2017-02-05', 3, 4, 3, 1, 600, 45, 45, 10, 3),
-  ('2017-02-05', 2, 1, 4, 1, 660, 120, 12, 10, 4),
-  ('2017-02-05', 4, 1, 1, 1, 750, 90, 45, 10, 5),
-  ('2017-02-05', 4, 3, 2, 1, 840, 30, 67, 10, 6),
-  ('2017-02-05', 2, 7, 3, 1, 900, 80, 23, 10, 7),
-  ('2017-02-05', 1, 1, 4, 1, 1005, 45, 45, 10, 8),
-  ('2017-02-05', 4, 1, 1, 1, 1020, 120, 68, 10, 9),
-  ('2017-02-05', 1, 1, 2, 1, 1080, 90, 34, 10, 10);
+  ('2017-02-05', 2, 3, null, 1, 1, 1, 540, 30, 20, 10, 1),
+  ('2017-02-05', 1, 1, null, 2, 1, 1, 570, 80, 30, 10, 2),
+  ('2017-02-05', 3, 1, null, 3, 1, 1, 600, 45, 45, 10, 3),
+  ('2017-02-05', 2, 1, null, 4, 1, 1, 660, 120, 12, 10, 4),
+  ('2017-02-05', 4, 1, null, 1, 1, 1, 750, 90, 45, 10, 5),
+  ('2017-02-05', 4, 3, null, 2, 1, 1, 840, 30, 67, 10, 6),
+  ('2017-02-05', 2, 2, null, 3, 1, 1, 900, 80, 23, 10, 7),
+  ('2017-02-05', 1, 1, null, 4, 1, 1, 1005, 45, 45, 10, 8),
+  ('2017-02-05', 4, 1, 4, 1, 1, 2, 1020, 120, 68, 10, 9),
+  ('2017-02-05', 1, 1, null, 2, 1, 2, 1080, 90, 34, 10, 10);
 
 INSERT INTO SETTINGS (param, value) VALUES
   ('timetable_screen_lines', '20'),

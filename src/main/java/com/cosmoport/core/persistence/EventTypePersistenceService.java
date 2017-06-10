@@ -22,14 +22,17 @@ import java.util.List;
 public final class EventTypePersistenceService extends PersistenceService<EventTypeDto> {
     private final I18nPersistenceService i18nPersistenceService;
     private final TranslationPersistenceService translationPersistenceService;
+    private final TimetablePersistenceService timetablePersistenceService;
 
     @Inject
     EventTypePersistenceService(Logger logger, Provider<DataSource> ds,
                                 I18nPersistenceService i18nPersistenceService,
-                                TranslationPersistenceService translationPersistenceService) {
+                                TranslationPersistenceService translationPersistenceService,
+                                TimetablePersistenceService timetablePersistenceService) {
         super(logger, ds);
         this.i18nPersistenceService = i18nPersistenceService;
         this.translationPersistenceService = translationPersistenceService;
+        this.timetablePersistenceService = timetablePersistenceService;
     }
 
     @Override
@@ -170,6 +173,7 @@ public final class EventTypePersistenceService extends PersistenceService<EventT
 
     public int delete(final long id) throws RuntimeException {
         Connection conn = null;
+        PreparedStatement checkStatement = null;
         PreparedStatement statement0 = null;
         PreparedStatement statement = null;
         PreparedStatement statement2 = null;
@@ -178,6 +182,11 @@ public final class EventTypePersistenceService extends PersistenceService<EventT
         try {
             conn = getConnection();
             conn.setAutoCommit(false);
+
+            if (timetablePersistenceService.findById(
+                    "SELECT * FROM TIMETABLE WHERE event_type_id = ?", id).isPresent()) {
+                throw new Exception("No delete. Some events were linked with this type.");
+            }
 
             // Combines all i18n IDs into one column for deletion
             statement0 = conn.prepareStatement(
@@ -233,7 +242,7 @@ public final class EventTypePersistenceService extends PersistenceService<EventT
             rollback(conn);
             throwServerApiException(e);
         } finally {
-            close(statement0, statement, statement2, conn);
+            close(checkStatement, statement0, statement, statement2, conn);
         }
 
         return deleted;

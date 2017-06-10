@@ -3,7 +3,6 @@ package com.cosmoport.core.persistence;
 import com.cosmoport.core.dto.EventTypeDto;
 import com.cosmoport.core.dto.request.CreateEventTypeRequestDto;
 import com.cosmoport.core.persistence.exception.ValidationException;
-import com.google.common.eventbus.EventBus;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,12 +20,12 @@ final class EventTypePersistenceServiceTest extends PersistenceTest {
         translationService = new TranslationPersistenceService(
                 getDataSourceProvider(),
                 i18nService,
-                new LocalePersistenceService(getLogger(), getDataSourceProvider()),
-                new EventBus()
+                new LocalePersistenceService(getLogger(), getDataSourceProvider())
         );
+        final TimetablePersistenceService timetablePersistenceService =
+                new TimetablePersistenceService(getLogger(), getDataSourceProvider());
         service = new EventTypePersistenceService(getLogger(), getDataSourceProvider(),
-                i18nService,
-                translationService);
+                i18nService, translationService, timetablePersistenceService);
     }
 
     @Test

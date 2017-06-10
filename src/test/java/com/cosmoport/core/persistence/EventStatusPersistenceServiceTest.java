@@ -12,16 +12,11 @@ final class EventStatusPersistenceServiceTest extends PersistenceTest {
     }
 
     @Test
-    void map() {
-
-    }
-
-    @Test
     @DisplayName("Should be able to execute getAll()")
     void getAll() {
         EventStatusPersistenceService service =
                 new EventStatusPersistenceService(getLogger(), getDataSourceProvider());
 
-        Assertions.assertEquals(7, service.getAll().size());
+        Assertions.assertEquals(3, service.getAll().size());
     }
 }

@@ -223,7 +223,7 @@ public abstract class PersistenceService<T> {
 
     void throwServerApiException(Throwable t) {
         logger.error(t.getMessage());
-        throw new RuntimeException();
+        throw new RuntimeException(t.getMessage());
     }
 
     private void close(AutoCloseable resource) {

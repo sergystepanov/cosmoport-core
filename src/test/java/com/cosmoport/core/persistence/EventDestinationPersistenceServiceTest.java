@@ -19,9 +19,4 @@ final class EventDestinationPersistenceServiceTest extends PersistenceTest {
 
         Assertions.assertEquals(4, service.getAll().size());
     }
-
-    @Test
-    void map() {
-
-    }
 }

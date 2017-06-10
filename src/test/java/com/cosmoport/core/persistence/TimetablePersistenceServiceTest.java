@@ -31,7 +31,7 @@ final class TimetablePersistenceServiceTest extends PersistenceTest {
         void save() {
             assertEquals(
                     total + 1,
-                    service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 1, 1, 20, 10, 1, 0, "")).getId()
+                    service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 1, 1, 1, 1, 20, 10, 1, 0, "")).getId()
             );
         }
 
@@ -84,7 +84,7 @@ final class TimetablePersistenceServiceTest extends PersistenceTest {
         void validateStart() {
             final Throwable exception = assertThrows(
                     ValidationException.class,
-                    () -> service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 540, 30, 20, 10, 1, 0, ""))
+                    () -> service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 1, 1, 540, 30, 20, 10, 1, 0, ""))
             );
 
             assertEquals("Overlapping events: [gate: 1] start: 540, end: 570", exception.getMessage());
@@ -95,7 +95,7 @@ final class TimetablePersistenceServiceTest extends PersistenceTest {
         void validateEnd() {
             final Throwable exception = assertThrows(
                     ValidationException.class,
-                    () -> service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 500, 70, 20, 10, 1, 0, ""))
+                    () -> service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 1, 1, 500, 70, 20, 10, 1, 0, ""))
             );
 
             assertEquals("Overlapping events: [gate: 1] start: 540, end: 570", exception.getMessage());
@@ -106,7 +106,7 @@ final class TimetablePersistenceServiceTest extends PersistenceTest {
         void peopleLimit() {
             assertEquals("check_people_limit", assertThrows(
                     ValidationException.class,
-                    () -> service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 500, 10, 20, 10, 1, 1000, ""))
+                    () -> service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 1, 1, 500, 10, 20, 10, 1, 1000, ""))
             ).getMessage());
         }
 
@@ -115,7 +115,7 @@ final class TimetablePersistenceServiceTest extends PersistenceTest {
         void dayLimit() {
             assertEquals("check_minutes_in_day_limit", assertThrows(
                     ValidationException.class,
-                    () -> service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 5000, 2210, 20, 10, 1, 0, ""))
+                    () -> service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 1, 1, 5000, 2210, 20, 10, 1, 0, ""))
             ).getMessage());
         }
 
@@ -124,7 +124,7 @@ final class TimetablePersistenceServiceTest extends PersistenceTest {
         void durationLimit() {
             assertEquals("check_event_duration_less_a_day", assertThrows(
                     ValidationException.class,
-                    () -> service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 100, 1341, 20, 10, 1, 0, ""))
+                    () -> service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 1, 1, 100, 1341, 20, 10, 1, 0, ""))
             ).getMessage());
         }
     }

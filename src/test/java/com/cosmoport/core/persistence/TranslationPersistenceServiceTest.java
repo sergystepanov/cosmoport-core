@@ -1,7 +1,6 @@
 package com.cosmoport.core.persistence;
 
 import com.cosmoport.core.dto.TranslationDto;
-import com.google.common.eventbus.EventBus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +17,7 @@ final class TranslationPersistenceServiceTest extends PersistenceTest {
 
         translationPersistenceService = new TranslationPersistenceService(
                 getDataSourceProvider(), new I18nPersistenceService(getLogger(), getDataSourceProvider()),
-                new LocalePersistenceService(getLogger(), getDataSourceProvider()), new EventBus());
+                new LocalePersistenceService(getLogger(), getDataSourceProvider()));
     }
 
     @Test

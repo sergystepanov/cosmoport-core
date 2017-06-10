@@ -110,11 +110,12 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
             final EventDto main = mainEvent.get();
             //noinspection UnnecessaryBoxing
             final List<EventDto> nextEvent = getAllByParams(
-                    "SELECT * FROM TIMETABLE WHERE event_date = ? AND gate_id = ? AND start_time > ? " +
+                    "SELECT * FROM TIMETABLE WHERE event_date = ? AND (gate_id = ? OR gate2_id = ?) AND start_time > ? " +
                             "AND event_status_id <> ? AND id <> ? " +
                             defaultOrder + " LIMIT 1",
                     main.getEventDate(),
                     new Long(main.getGateId()),
+                    new Long(main.getGate2Id()),
                     new Long(main.getStartTime()),
                     new Integer(EventStatus.CANCELED.value()),
                     new Long(main.getId()));
@@ -141,13 +142,21 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
      * @since 0.1.0
      */
     private void validate(final EventDto event) throws ValidationException {
-        final Object[] params = {event.getId(), event.getGateId(), event.getEventDate(), event.getStartTime(),
-                event.getEventDate(),
-                event.getStartTime() + event.getDurationTime()};
+        final long startTime = event.getStartTime();
+        final long endTime = event.getStartTime() + event.getDurationTime();
+
+        final Object[] params = {
+                event.getId(), event.getEventDate(),
+                event.getGateId(), startTime, endTime, startTime, endTime,
+                event.getGate2Id(), startTime, endTime, startTime, endTime
+        };
 
         final List<EventDto> overlapping = getAllByParams(
-                "SELECT * FROM TIMETABLE WHERE id <> ? AND gate_id = ? AND ((event_date = ? AND start_time = ?)" +
-                        " OR (event_date = ? AND start_time + duration_time = ?))",
+                "SELECT * FROM TIMETABLE WHERE id <> ? AND event_date = ? AND " +
+                        "("+
+                        "(gate_id = ? AND start_time IN (?, ?) OR start_time + duration_time IN (?, ?)) OR" +
+                        "(gate2_id = ? AND start_time IN (?, ?) OR start_time + duration_time IN (?, ?))"+
+                ")",
                 params);
 
         if (overlapping.size() > 0) {
@@ -160,6 +169,8 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
                         .append(divider)
                         .append("[gate: ")
                         .append(event0.getGateId())
+                        .append("→")
+                        .append(event0.getGate2Id())
                         .append("] start: ")
                         .append(event0.getStartTime())
                         .append(", end: ")
@@ -192,31 +203,34 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
             if (record.getId() > 0) {
                 statement = conn.prepareStatement(
                         "UPDATE TIMETABLE SET event_date = ?, event_type_id = ?, " +
-                                "event_status_id = ?, event_destination_id = ?,  " +
-                                "gate_id = ?, start_time = ?, duration_time = ?, " +
+                                "event_status_id = ?, event_location_status_id = ?, event_destination_id = ?,  " +
+                                "gate_id = ?, gate2_id = ?, start_time = ?, duration_time = ?, " +
                                 "repeat_interval = ?, cost = ?, people_limit = ?, contestants = ? " +
                                 "WHERE id = ?"
                 );
             } else {
                 statement = conn.prepareStatement(
-                        "INSERT INTO TIMETABLE (event_date, event_type_id, event_status_id, event_destination_id, " +
-                                "gate_id, start_time, duration_time, repeat_interval, cost, people_limit, contestants) " +
-                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        "INSERT INTO TIMETABLE (event_date, event_type_id, event_status_id, " +
+                                "event_location_status_id, event_destination_id, " +
+                                "gate_id, gate2_id, start_time, duration_time, repeat_interval, cost, people_limit, contestants) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                         Statement.RETURN_GENERATED_KEYS);
             }
             statement.setString(1, record.getEventDate());
             statement.setLong(2, record.getEventTypeId());
             statement.setLong(3, record.getEventStatusId());
-            statement.setLong(4, record.getEventDestinationId());
-            statement.setLong(5, record.getGateId());
-            statement.setLong(6, record.getStartTime());
-            statement.setLong(7, record.getDurationTime());
-            statement.setLong(8, record.getRepeatInterval());
-            statement.setDouble(9, record.getCost());
-            statement.setLong(10, record.getPeopleLimit());
-            statement.setLong(11, record.getContestants());
+            statement.setLong(4, record.getEventLocationStatusId());
+            statement.setLong(5, record.getEventDestinationId());
+            statement.setLong(6, record.getGateId());
+            statement.setLong(7, record.getGate2Id());
+            statement.setLong(8, record.getStartTime());
+            statement.setLong(9, record.getDurationTime());
+            statement.setLong(10, record.getRepeatInterval());
+            statement.setDouble(11, record.getCost());
+            statement.setLong(12, record.getPeopleLimit());
+            statement.setLong(13, record.getContestants());
             if (record.getId() > 0) {
-                statement.setLong(12, record.getId());
+                statement.setLong(14, record.getId());
             }
 
             if (statement.executeUpdate() < 0) {
@@ -264,8 +278,10 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
                 rs.getString("event_date"),
                 rs.getLong("event_type_id"),
                 rs.getLong("event_status_id"),
+                rs.getLong("event_location_status_id"),
                 rs.getLong("event_destination_id"),
                 rs.getLong("gate_id"),
+                rs.getLong("gate2_id"),
                 rs.getLong("start_time"),
                 rs.getLong("duration_time"),
                 rs.getLong("repeat_interval"),

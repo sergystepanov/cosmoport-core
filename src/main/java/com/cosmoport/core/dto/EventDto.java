@@ -18,8 +18,10 @@ public final class EventDto extends Entity implements Serializable {
     private final String eventDate;
     private final long eventTypeId;
     private final long eventStatusId;
+    private final long eventLocationStatusId;
     private final long eventDestinationId;
     private final long gateId;
+    private final long gate2Id;
     private final long startTime;
     private final long durationTime;
     private final long repeatInterval;
@@ -33,8 +35,10 @@ public final class EventDto extends Entity implements Serializable {
                     @JsonProperty("event_date") String eventDate,
                     @JsonProperty("event_type_id") long eventTypeId,
                     @JsonProperty("event_status_id") long eventStatusId,
+                    @JsonProperty("event_location_status_id") long eventLocationStatusId,
                     @JsonProperty("event_destination_id") long eventDestinationId,
                     @JsonProperty("gate_id") long gateId,
+                    @JsonProperty("gate2_id") long gate2Id,
                     @JsonProperty("start_time") long startTime,
                     @JsonProperty("duration_time") long durationTime,
                     @JsonProperty("repeat_interval") long repeatInterval,
@@ -46,8 +50,10 @@ public final class EventDto extends Entity implements Serializable {
         this.eventDate = eventDate;
         this.eventTypeId = eventTypeId;
         this.eventStatusId = eventStatusId;
+        this.eventLocationStatusId = eventLocationStatusId;
         this.eventDestinationId = eventDestinationId;
         this.gateId = gateId;
+        this.gate2Id = gate2Id;
         this.startTime = startTime;
         this.durationTime = durationTime;
         this.repeatInterval = repeatInterval;
@@ -69,12 +75,20 @@ public final class EventDto extends Entity implements Serializable {
         return eventStatusId;
     }
 
+    public long getEventLocationStatusId() {
+        return eventLocationStatusId;
+    }
+
     public long getEventDestinationId() {
         return eventDestinationId;
     }
 
     public long getGateId() {
         return gateId;
+    }
+
+    public long getGate2Id() {
+        return gate2Id;
     }
 
     public long getStartTime() {
@@ -111,8 +125,10 @@ public final class EventDto extends Entity implements Serializable {
                 "eventDate='" + eventDate + '\'' +
                 ", eventTypeId=" + eventTypeId +
                 ", eventStatusId=" + eventStatusId +
+                ", eventLocationStatusId=" + eventLocationStatusId +
                 ", eventDestinationId=" + eventDestinationId +
                 ", gateId=" + gateId +
+                ", gate2Id=" + gate2Id +
                 ", startTime=" + startTime +
                 ", durationTime=" + durationTime +
                 ", repeatInterval=" + repeatInterval +
