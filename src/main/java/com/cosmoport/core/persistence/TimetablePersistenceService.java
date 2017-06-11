@@ -147,16 +147,16 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
 
         final Object[] params = {
                 event.getId(), event.getEventDate(),
-                event.getGateId(), startTime, endTime, startTime, endTime,
-                event.getGate2Id(), startTime, endTime, startTime, endTime
+                event.getGateId(), event.getGate2Id(), event.getGateId(), event.getGate2Id(),
+                startTime, endTime, startTime, endTime
         };
 
         final List<EventDto> overlapping = getAllByParams(
-                "SELECT * FROM TIMETABLE WHERE id <> ? AND event_date = ? AND " +
-                        "("+
-                        "(gate_id = ? AND start_time IN (?, ?) OR start_time + duration_time IN (?, ?)) OR" +
-                        "(gate2_id = ? AND start_time IN (?, ?) OR start_time + duration_time IN (?, ?))"+
-                ")",
+                "SELECT DISTINCT * FROM TIMETABLE WHERE id <> ? AND event_date = ? AND " +
+                        "(" +
+                        "(gate_id IN (?, ?) OR gate2_id IN (?, ?)) AND " +
+                        "(start_time IN (?, ?) OR start_time + duration_time IN (?, ?))" +
+                        ")",
                 params);
 
         if (overlapping.size() > 0) {
@@ -167,7 +167,9 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
             for (final EventDto event0 : overlapping) {
                 message
                         .append(divider)
-                        .append("[gate: ")
+                        .append("id: ")
+                        .append(event0.getId())
+                        .append(" [gate: ")
                         .append(event0.getGateId())
                         .append("→")
                         .append(event0.getGate2Id())
@@ -200,26 +202,25 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
         try {
             conn = getConnection();
 
-            if (record.getId() > 0) {
-                statement = conn.prepareStatement(
-                        "UPDATE TIMETABLE SET event_date = ?, event_type_id = ?, " +
-                                "event_status_id = ?, event_location_status_id = ?, event_destination_id = ?,  " +
-                                "gate_id = ?, gate2_id = ?, start_time = ?, duration_time = ?, " +
-                                "repeat_interval = ?, cost = ?, people_limit = ?, contestants = ? " +
-                                "WHERE id = ?"
-                );
-            } else {
-                statement = conn.prepareStatement(
-                        "INSERT INTO TIMETABLE (event_date, event_type_id, event_status_id, " +
-                                "event_location_status_id, event_destination_id, " +
-                                "gate_id, gate2_id, start_time, duration_time, repeat_interval, cost, people_limit, contestants) " +
-                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                        Statement.RETURN_GENERATED_KEYS);
-            }
+            // Is it new for insert or an old one for the update
+            statement = record.getId() > 0 ?
+                    conn.prepareStatement(
+                            "UPDATE TIMETABLE SET event_date = ?, event_type_id = ?, " +
+                                    "event_state_id = ?, event_status_id = ?, event_destination_id = ?,  " +
+                                    "gate_id = ?, gate2_id = ?, start_time = ?, duration_time = ?, " +
+                                    "repeat_interval = ?, cost = ?, people_limit = ?, contestants = ? " +
+                                    "WHERE id = ?"
+                    ) : conn.prepareStatement(
+                    "INSERT INTO TIMETABLE (event_date, event_type_id, event_state_id, " +
+                            "event_status_id, event_destination_id, gate_id, gate2_id, " +
+                            "start_time, duration_time, repeat_interval, cost, people_limit, contestants) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS);
+
             statement.setString(1, record.getEventDate());
             statement.setLong(2, record.getEventTypeId());
-            statement.setLong(3, record.getEventStatusId());
-            statement.setLong(4, record.getEventLocationStatusId());
+            statement.setLong(3, record.getEventStateId());
+            statement.setLong(4, record.getEventStatusId());
             statement.setLong(5, record.getEventDestinationId());
             statement.setLong(6, record.getGateId());
             statement.setLong(7, record.getGate2Id());
@@ -277,8 +278,8 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
                 rs.getLong("id"),
                 rs.getString("event_date"),
                 rs.getLong("event_type_id"),
+                rs.getLong("event_state_id"),
                 rs.getLong("event_status_id"),
-                rs.getLong("event_location_status_id"),
                 rs.getLong("event_destination_id"),
                 rs.getLong("gate_id"),
                 rs.getLong("gate2_id"),

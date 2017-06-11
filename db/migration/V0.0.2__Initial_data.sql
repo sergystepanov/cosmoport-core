@@ -35,13 +35,14 @@ INSERT INTO I18N (id, tag, external, description, params) VALUES
   (22, 'event_status_name_5', 0, '', ''),
   (23, 'event_status_name_6', 0, '', ''),
   (24, 'event_status_name_7', 0, '', ''),
-  (25, 'ui_caption_duration', 1, '', ''),
-  (26, 'ui_caption_hours', 1, '', ''),
-  (27, 'ui_caption_minutes', 1, '', ''),
-  (28, 'event_type_description_1', 0, '', ''),
-  (29, 'ui_caption_departing', 1, '', ''),
-  (30, 'ui_caption_cost', 1, '', ''),
-  (31, 'event_status_name_8', 0, '', '');
+  (25, 'event_status_name_8', 0, '', ''),
+
+  (26, 'ui_caption_duration', 1, '', ''),
+  (27, 'ui_caption_hours', 1, '', ''),
+  (28, 'ui_caption_minutes', 1, '', ''),
+  (29, 'event_type_description_1', 0, '', ''),
+  (30, 'ui_caption_departing', 1, '', ''),
+  (31, 'ui_caption_cost', 1, '', '');
 
 INSERT INTO TRANSLATION (i18n_id, locale_id, tr_text) VALUES
   (1, 1, 'Gate'),
@@ -110,36 +111,36 @@ INSERT INTO TRANSLATION (i18n_id, locale_id, tr_text) VALUES
   (22, 1, 'Departed'),
   (22, 2, 'Отправлен'),
   (22, 3, 'Περασμένος'),
-  (23, 1, 'Returned'),
-  (23, 2, 'Вернулся'),
-  (23, 3, 'επέστρεψαν'),
-  (24, 1, 'Preorder'),
-  (24, 2, 'Предзаказ'),
-  (24, 3, 'Προπαραγγελία'),
-  (25, 1, 'Duration'),
-  (25, 2, 'Продолжительность'),
-  (25, 3, 'Διάρκεια'),
-  (26, 1, 'h'),
-  (26, 2, 'ч.'),
-  (26, 3, 'ώ'),
-  (27, 1, 'm'),
-  (27, 2, 'м.'),
-  (27, 3, 'λ'),
-  (28, 1,
+  (23, 1, 'Return'),
+  (23, 2, 'Возвращается'),
+  (23, 3, 'Επιστροφές'),
+  (24, 1, 'Returned'),
+  (24, 2, 'Вернулся'),
+  (24, 3, 'επέστρεψαν'),
+  (25, 1, 'Preorder'),
+  (25, 2, 'Предзаказ'),
+  (25, 3, 'Προπαραγγελία'),
+  (26, 1, 'Duration'),
+  (26, 2, 'Продолжительность'),
+  (26, 3, 'Διάρκεια'),
+  (27, 1, 'h'),
+  (27, 2, 'ч.'),
+  (27, 3, 'ώ'),
+  (28, 1, 'm'),
+  (28, 2, 'м.'),
+  (28, 3, 'λ'),
+  (29, 1,
    'You will find a fascinating journey of discovery and a real space station, you''ll learn how it works from the inside, what mechanisms and systems are needed for full protection of human life in space. You will find a fascinating journey of discovery and a real space station.'),
-  (28, 2,
+  (29, 2,
    'Вас ждёт увлекательное и познавательное путешествие на настоящую космическую станцию, Вы узнаете как она работает изнутри, какие механизмы и системы необходимы для полного обеспечения жизни человека в космосе. Вас ждёт увлекательное и познавательное путешествие на настоящую космическую станцию.'),
-  (28, 3,
+  (29, 3,
    'Θα βρείτε ένα συναρπαστικό ταξίδι ανακάλυψης και ένα πραγματικό διαστημικό σταθμό, θα μάθετε πώς λειτουργεί από μέσα, ποιους μηχανισμούς και τα συστήματα που απαιτούνται για την πλήρη προστασία της ανθρώπινης ζωής στο διάστημα. Θα βρείτε ένα συναρπαστικό ταξίδι ανακάλυψης και ένα πραγματικό διαστημικό σταθμό.'),
-  (29, 1, 'Departing'),
-  (29, 2, 'Отправление'),
-  (29, 3, 'Αναχωρούν'),
-  (30, 1, 'Cost'),
-  (30, 2, 'Цена'),
-  (30, 3, 'Κόστος'),
-  (31, 1, 'Return'),
-  (31, 2, 'Возвращается'),
-  (31, 3, 'Επιστροφές');
+  (30, 1, 'Departing'),
+  (30, 2, 'Отправление'),
+  (30, 3, 'Αναχωρούν'),
+  (31, 1, 'Cost'),
+  (31, 2, 'Цена'),
+  (31, 3, 'Κόστος');
 
 INSERT INTO EVENT_TYPE (id, i18n_event_type_name, i18n_event_type_subname, i18n_event_type_description,
                         default_duration, default_repeat_interval) VALUES
@@ -148,17 +149,17 @@ INSERT INTO EVENT_TYPE (id, i18n_event_type_name, i18n_event_type_subname, i18n_
   (3, 10, 13, 28, 120, 0),
   (4, 10, 11, 28, 120, 0);
 
-INSERT INTO EVENT_STATUS (id, i18n_status) VALUES
-  (1, 18), (2, 19), (3, 20);
+INSERT INTO EVENT_STATE (id, i18n_state) VALUES
+  (1, 18), (2, 19);
 
-INSERT INTO EVENT_LOCATION_STATUS (id, i18n_status) VALUES
-  (1, 21), (2, 22), (3, 23), (4, 24), (5, 31);
+INSERT INTO EVENT_STATUS (id, i18n_status) VALUES
+  (1, 20), (2, 21), (3, 22), (4, 23), (5, 24), (6, 25);
 
 INSERT INTO EVENT_DESTINATION (id, i18n_event_destination_name) VALUES
   (1, 14), (2, 15), (3, 16), (4, 17);
 
 INSERT INTO GATE (id, number, gate_name) VALUES
-  (1, 1, ''),
+  (1, 1, 'Main'),
   (2, 2, ''),
   (3, 3, ''),
   (4, 4, ''),
@@ -169,18 +170,18 @@ INSERT INTO GATE (id, number, gate_name) VALUES
   (9, 9, ''),
   (10, 10, '');
 
-INSERT INTO TIMETABLE (event_date, event_type_id, event_status_id, event_location_status_id, event_destination_id, gate_id, gate2_id, start_time,
+INSERT INTO TIMETABLE (event_date, event_type_id, event_status_id, event_state_id, event_destination_id, gate_id, gate2_id, start_time,
                        duration_time, cost, people_limit, contestants) VALUES
-  ('2017-02-05', 2, 3, null, 1, 1, 1, 540, 30, 20, 10, 1),
-  ('2017-02-05', 1, 1, null, 2, 1, 1, 570, 80, 30, 10, 2),
-  ('2017-02-05', 3, 1, null, 3, 1, 1, 600, 45, 45, 10, 3),
-  ('2017-02-05', 2, 1, null, 4, 1, 1, 660, 120, 12, 10, 4),
-  ('2017-02-05', 4, 1, null, 1, 1, 1, 750, 90, 45, 10, 5),
-  ('2017-02-05', 4, 3, null, 2, 1, 1, 840, 30, 67, 10, 6),
-  ('2017-02-05', 2, 2, null, 3, 1, 1, 900, 80, 23, 10, 7),
-  ('2017-02-05', 1, 1, null, 4, 1, 1, 1005, 45, 45, 10, 8),
-  ('2017-02-05', 4, 1, 4, 1, 1, 2, 1020, 120, 68, 10, 9),
-  ('2017-02-05', 1, 1, null, 2, 1, 2, 1080, 90, 34, 10, 10);
+  ('2017-02-05', 2, 1, 1, 1, 1, 1, 540, 30, 20, 10, 1),
+  ('2017-02-05', 1, NULL, 1, 2, 1, 1, 580, 80, 30, 10, 2),
+  ('2017-02-05', 3, NULL, 1, 3, 1, 1, 600, 45, 45, 10, 3),
+  ('2017-02-05', 2, NULL, 1, 4, 1, 1, 660, 120, 12, 10, 4),
+  ('2017-02-05', 4, NULL, 1, 1, 1, 1, 750, 90, 45, 10, 5),
+  ('2017-02-05', 4, 1, 1, 2, 1, 1, 840, 30, 67, 10, 6),
+  ('2017-02-05', 2, 2, 1, 3, 1, 1, 900, 80, 23, 10, 7),
+  ('2017-02-05', 1, NULL, 1, 4, 1, 1, 1005, 45, 45, 10, 8),
+  ('2017-02-05', 4, NULL, 1, 1, 1, 2, 1020, 120, 68, 10, 9),
+  ('2017-02-05', 1, NULL, 1, 2, 1, 2, 1080, 90, 34, 10, 10);
 
 INSERT INTO SETTINGS (param, value) VALUES
   ('timetable_screen_lines', '20'),

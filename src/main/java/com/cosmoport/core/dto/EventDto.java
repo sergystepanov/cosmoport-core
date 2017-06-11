@@ -17,8 +17,8 @@ public final class EventDto extends Entity implements Serializable {
 
     private final String eventDate;
     private final long eventTypeId;
+    private final long eventStateId;
     private final long eventStatusId;
-    private final long eventLocationStatusId;
     private final long eventDestinationId;
     private final long gateId;
     private final long gate2Id;
@@ -34,8 +34,8 @@ public final class EventDto extends Entity implements Serializable {
     public EventDto(@JsonProperty("id") long id,
                     @JsonProperty("event_date") String eventDate,
                     @JsonProperty("event_type_id") long eventTypeId,
+                    @JsonProperty("event_state_id") long eventStateId,
                     @JsonProperty("event_status_id") long eventStatusId,
-                    @JsonProperty("event_location_status_id") long eventLocationStatusId,
                     @JsonProperty("event_destination_id") long eventDestinationId,
                     @JsonProperty("gate_id") long gateId,
                     @JsonProperty("gate2_id") long gate2Id,
@@ -50,7 +50,7 @@ public final class EventDto extends Entity implements Serializable {
         this.eventDate = eventDate;
         this.eventTypeId = eventTypeId;
         this.eventStatusId = eventStatusId;
-        this.eventLocationStatusId = eventLocationStatusId;
+        this.eventStateId = eventStateId;
         this.eventDestinationId = eventDestinationId;
         this.gateId = gateId;
         this.gate2Id = gate2Id;
@@ -75,8 +75,8 @@ public final class EventDto extends Entity implements Serializable {
         return eventStatusId;
     }
 
-    public long getEventLocationStatusId() {
-        return eventLocationStatusId;
+    public long getEventStateId() {
+        return eventStateId;
     }
 
     public long getEventDestinationId() {
@@ -125,7 +125,7 @@ public final class EventDto extends Entity implements Serializable {
                 "eventDate='" + eventDate + '\'' +
                 ", eventTypeId=" + eventTypeId +
                 ", eventStatusId=" + eventStatusId +
-                ", eventLocationStatusId=" + eventLocationStatusId +
+                ", eventStateId=" + eventStateId +
                 ", eventDestinationId=" + eventDestinationId +
                 ", gateId=" + gateId +
                 ", gate2Id=" + gate2Id +

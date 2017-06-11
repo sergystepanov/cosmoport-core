@@ -1,12 +1,10 @@
 package com.cosmoport.core.api;
 
-import com.cosmoport.core.dto.EventDestinationDto;
-import com.cosmoport.core.dto.EventReferenceDataDto;
-import com.cosmoport.core.dto.EventStatusDto;
-import com.cosmoport.core.dto.EventTypeDto;
+import com.cosmoport.core.dto.*;
 import com.cosmoport.core.dto.request.CreateEventTypeRequestDto;
 import com.cosmoport.core.event.message.ReloadMessage;
 import com.cosmoport.core.persistence.EventDestinationPersistenceService;
+import com.cosmoport.core.persistence.EventStatePersistenceService;
 import com.cosmoport.core.persistence.EventStatusPersistenceService;
 import com.cosmoport.core.persistence.EventTypePersistenceService;
 import com.google.common.eventbus.EventBus;
@@ -24,15 +22,19 @@ import java.util.List;
 public final class TimeEventsEndpoint {
     private final EventTypePersistenceService eventTypePersistenceService;
     private final EventStatusPersistenceService eventStatusPersistenceService;
+    private final EventStatePersistenceService eventStatePersistenceService;
     private final EventDestinationPersistenceService eventDestinationPersistenceService;
     private final EventBus eventBus;
 
     @Inject
     public TimeEventsEndpoint(EventTypePersistenceService eventTypePersistenceService,
                               EventStatusPersistenceService eventStatusPersistenceService,
-                              EventDestinationPersistenceService eventDestinationPersistenceService, EventBus eventBus) {
+                              EventStatePersistenceService eventStatePersistenceService,
+                              EventDestinationPersistenceService eventDestinationPersistenceService,
+                              EventBus eventBus) {
         this.eventTypePersistenceService = eventTypePersistenceService;
         this.eventStatusPersistenceService = eventStatusPersistenceService;
+        this.eventStatePersistenceService = eventStatePersistenceService;
         this.eventDestinationPersistenceService = eventDestinationPersistenceService;
         this.eventBus = eventBus;
     }
@@ -43,7 +45,7 @@ public final class TimeEventsEndpoint {
         return new EventReferenceDataDto(
                 eventTypePersistenceService.getAll(),
                 eventStatusPersistenceService.getAll(),
-                eventStatusPersistenceService.getAllLocation(),
+                eventStatePersistenceService.getAll(),
                 eventDestinationPersistenceService.getAll());
     }
 
@@ -75,9 +77,9 @@ public final class TimeEventsEndpoint {
     }
 
     @GET
-    @Path("/location_statuses")
-    public List<EventStatusDto> getEventLocationStatuses() {
-        return eventStatusPersistenceService.getAllLocation();
+    @Path("/states")
+    public List<EventStateDto> getEventStates() {
+        return eventStatePersistenceService.getAll();
     }
 
     @GET

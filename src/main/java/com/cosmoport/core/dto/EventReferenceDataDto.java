@@ -8,16 +8,16 @@ public final class EventReferenceDataDto implements Serializable {
 
     private final List<EventTypeDto> types;
     private final List<EventStatusDto> statuses;
-    private final List<EventStatusDto> locationStatuses;
+    private final List<EventStateDto> states;
     private final List<EventDestinationDto> destinations;
 
     public EventReferenceDataDto(List<EventTypeDto> types,
                                  List<EventStatusDto> statuses,
-                                 List<EventStatusDto> locationStatuses,
+                                 List<EventStateDto> states,
                                  List<EventDestinationDto> destinations) {
         this.types = types;
         this.statuses = statuses;
-        this.locationStatuses = locationStatuses;
+        this.states = states;
         this.destinations = destinations;
     }
 
@@ -29,8 +29,8 @@ public final class EventReferenceDataDto implements Serializable {
         return statuses;
     }
 
-    public List<EventStatusDto> getLocationStatuses() {
-        return locationStatuses;
+    public List<EventStateDto> getStates() {
+        return states;
     }
 
     public List<EventDestinationDto> getDestinations() {

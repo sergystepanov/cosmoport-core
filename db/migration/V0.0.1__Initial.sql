@@ -70,7 +70,7 @@ CREATE TABLE EVENT_TYPE (
     ON UPDATE CASCADE
 
 );
--- The event status (not time and place)
+-- The event status (to display)
 CREATE TABLE EVENT_STATUS (
   id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   i18n_status INTEGER,
@@ -79,12 +79,12 @@ CREATE TABLE EVENT_STATUS (
     ON DELETE SET NULL
     ON UPDATE CASCADE
 );
--- The event status (time and place)
-CREATE TABLE EVENT_LOCATION_STATUS (
-  id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  i18n_status INTEGER,
+-- The event state (for internal use mostly)
+CREATE TABLE EVENT_STATE (
+  id         INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  i18n_state INTEGER,
 
-  FOREIGN KEY (i18n_status) REFERENCES I18N (id)
+  FOREIGN KEY (i18n_state) REFERENCES I18N (id)
     ON DELETE SET NULL
     ON UPDATE CASCADE
 );
@@ -105,21 +105,21 @@ CREATE TABLE GATE (
 );
 -- Events' schedule by days
 CREATE TABLE TIMETABLE (
-  id                       INTEGER        NOT NULL PRIMARY KEY AUTOINCREMENT,
-  event_date               DATE           NOT NULL,
-  event_type_id            INTEGER,
-  event_status_id          INTEGER,
-  event_location_status_id INTEGER,
-  event_destination_id     INTEGER,
-  gate_id                  INTEGER,
-  gate2_id                 INTEGER,
-  start_time               INTEGER        NOT NULL             DEFAULT (0),
-  duration_time            INTEGER        NOT NULL             DEFAULT (1),
-  repeat_interval          INTEGER        NOT NULL             DEFAULT (0),
-  cost                     DECIMAL(10, 2) NOT NULL             DEFAULT (1.00),
-  people_limit             INTEGER        NOT NULL             DEFAULT (1),
-  contestants              INTEGER        NOT NULL             DEFAULT (0),
-  date_added               TIMESTAMP      NOT NULL             DEFAULT (CURRENT_TIMESTAMP),
+  id                   INTEGER        NOT NULL PRIMARY KEY AUTOINCREMENT,
+  event_date           DATE           NOT NULL,
+  event_type_id        INTEGER,
+  event_status_id      INTEGER,
+  event_state_id       INTEGER        NOT NULL             DEFAULT (1),
+  event_destination_id INTEGER,
+  gate_id              INTEGER,
+  gate2_id             INTEGER,
+  start_time           INTEGER        NOT NULL             DEFAULT (0),
+  duration_time        INTEGER        NOT NULL             DEFAULT (1),
+  repeat_interval      INTEGER        NOT NULL             DEFAULT (0),
+  cost                 DECIMAL(10, 2) NOT NULL             DEFAULT (1.00),
+  people_limit         INTEGER        NOT NULL             DEFAULT (1),
+  contestants          INTEGER        NOT NULL             DEFAULT (0),
+  date_added           TIMESTAMP      NOT NULL             DEFAULT (CURRENT_TIMESTAMP),
 
   CONSTRAINT check_people_limit CHECK (contestants <= people_limit),
   CONSTRAINT check_minutes_in_day_limit CHECK (start_time < 1441 AND duration_time < 1441),
@@ -131,7 +131,7 @@ CREATE TABLE TIMETABLE (
   FOREIGN KEY (event_status_id) REFERENCES EVENT_STATUS (id)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
-  FOREIGN KEY (event_location_status_id) REFERENCES EVENT_LOCATION_STATUS (id)
+  FOREIGN KEY (event_state_id) REFERENCES EVENT_STATE (id)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
   FOREIGN KEY (event_destination_id) REFERENCES EVENT_DESTINATION (id)
@@ -144,6 +144,47 @@ CREATE TABLE TIMETABLE (
     ON DELETE SET NULL
     ON UPDATE CASCADE
 );
+--
+-- Triggers for TIMETABLE
+--
+-- State changing
+--
+-- On tickets increase
+--
+CREATE TRIGGER TIMETABLE_STATE_CHANGE_ON_TICKETS_INCREASE_AI
+  AFTER
+  INSERT
+  ON TIMETABLE
+  WHEN NEW.contestants = NEW.people_limit
+BEGIN
+  UPDATE TIMETABLE
+  SET event_state_id = 2
+  WHERE id = NEW.id;
+END;
+
+CREATE TRIGGER TIMETABLE_STATE_CHANGE_ON_TICKETS_INCREASE_AU
+  AFTER
+  UPDATE
+  ON TIMETABLE
+  WHEN NEW.contestants = NEW.people_limit
+BEGIN
+  UPDATE TIMETABLE
+  SET event_state_id = 2
+  WHERE id = NEW.id;
+END;
+--
+-- On tickets decrease
+--
+CREATE TRIGGER TIMETABLE_STATE_CHANGE_ON_TICKETS_DECREASE_AU
+  AFTER
+  UPDATE
+  ON TIMETABLE
+  WHEN OLD.contestants = OLD.people_limit AND NEW.contestants < NEW.people_limit
+BEGIN
+  UPDATE TIMETABLE
+  SET event_state_id = 1
+  WHERE id = NEW.id;
+END;
 
 CREATE TABLE SETTINGS (
   id    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,

@@ -33,7 +33,7 @@ public final class I18nPersistenceService extends PersistenceService<I18nDto> {
         return result.size() > 0 ? Optional.of(result.get(0)) : Optional.empty();
     }
 
-    public I18nDto save(I18nDto i18n, final Connection extConn) throws RuntimeException {
+    I18nDto save(I18nDto i18n, final Connection extConn) throws RuntimeException {
         Connection conn = null;
         PreparedStatement statement = null;
         try {
@@ -88,7 +88,7 @@ public final class I18nPersistenceService extends PersistenceService<I18nDto> {
         );
     }
 
-    public I18nDto mapObject(final ResultSet rs, final String idNameOverride) throws SQLException {
+    I18nDto mapObject(final ResultSet rs, final String idNameOverride) throws SQLException {
         return mapRs(rs, idNameOverride);
     }
 }

@@ -1,9 +1,12 @@
 package com.cosmoport.core.persistence.constant;
 
 public enum EventStatus {
-    OPENED(1),
-    CLOSED(2),
-    CANCELED(3);
+    CANCELED(1),
+    BOARDING(2),
+    DEPARTED(3),
+    RETURN(4),
+    RETURNED(5),
+    PREORDER(6);
 
     private final int value;
 

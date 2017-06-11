@@ -17,6 +17,6 @@ final class EventStatusPersistenceServiceTest extends PersistenceTest {
         EventStatusPersistenceService service =
                 new EventStatusPersistenceService(getLogger(), getDataSourceProvider());
 
-        Assertions.assertEquals(3, service.getAll().size());
+        Assertions.assertEquals(6, service.getAll().size());
     }
 }

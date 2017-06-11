@@ -87,7 +87,7 @@ final class TimetablePersistenceServiceTest extends PersistenceTest {
                     () -> service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 1, 1, 540, 30, 20, 10, 1, 0, ""))
             );
 
-            assertEquals("Overlapping events: [gate: 1] start: 540, end: 570", exception.getMessage());
+            assertEquals("Overlapping events: id: 1 [gate: 1→1] start: 540, end: 570", exception.getMessage());
         }
 
         @Test
@@ -98,7 +98,7 @@ final class TimetablePersistenceServiceTest extends PersistenceTest {
                     () -> service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 1, 1, 500, 70, 20, 10, 1, 0, ""))
             );
 
-            assertEquals("Overlapping events: [gate: 1] start: 540, end: 570", exception.getMessage());
+            assertEquals("Overlapping events: id: 1 [gate: 1→1] start: 540, end: 570", exception.getMessage());
         }
 
         @Test

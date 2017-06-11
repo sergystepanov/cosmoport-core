@@ -29,8 +29,4 @@ public final class EventStatusPersistenceService extends PersistenceService<Even
     public List<EventStatusDto> getAll() {
         return getAll("SELECT * FROM EVENT_STATUS");
     }
-
-    public List<EventStatusDto> getAllLocation() {
-        return getAll("SELECT * FROM EVENT_LOCATION_STATUS");
-    }
 }
