@@ -15,6 +15,7 @@ public final class PersistenceModule extends AbstractModule {
         bind(TimetablePersistenceService.class);
         bind(EventTypePersistenceService.class);
         bind(EventStatusPersistenceService.class);
+        bind(EventStatePersistenceService.class);
         bind(EventDestinationPersistenceService.class);
         bind(GatePersistenceService.class);
         bind(LocalePersistenceService.class);

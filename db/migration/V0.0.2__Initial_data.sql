@@ -173,10 +173,10 @@ INSERT INTO GATE (id, number, gate_name) VALUES
 INSERT INTO TIMETABLE (event_date, event_type_id, event_status_id, event_state_id, event_destination_id, gate_id, gate2_id, start_time,
                        duration_time, cost, people_limit, contestants) VALUES
   ('2017-02-05', 2, 1, 1, 1, 1, 1, 540, 30, 20, 10, 1),
-  ('2017-02-05', 1, NULL, 1, 2, 1, 1, 580, 80, 30, 10, 2),
+  ('2017-02-05', 1, NULL, 1, 2, 1, 1, 580, 90, 30, 10, 2),
   ('2017-02-05', 3, NULL, 1, 3, 1, 1, 600, 45, 45, 10, 3),
   ('2017-02-05', 2, NULL, 1, 4, 1, 1, 660, 120, 12, 10, 4),
-  ('2017-02-05', 4, NULL, 1, 1, 1, 1, 750, 90, 45, 10, 5),
+  ('2017-02-05', 4, NULL, 1, 1, 1, 1, 750, 80, 45, 10, 5),
   ('2017-02-05', 4, 1, 1, 2, 1, 1, 840, 30, 67, 10, 6),
   ('2017-02-05', 2, 2, 1, 3, 1, 1, 900, 80, 23, 10, 7),
   ('2017-02-05', 1, NULL, 1, 4, 1, 1, 1005, 45, 45, 10, 8),
