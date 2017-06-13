@@ -23,7 +23,8 @@ final class EventTypePersistenceServiceTest extends PersistenceTest {
                 new LocalePersistenceService(getLogger(), getDataSourceProvider())
         );
         final TimetablePersistenceService timetablePersistenceService =
-                new TimetablePersistenceService(getLogger(), getDataSourceProvider());
+                new TimetablePersistenceService(getLogger(), getDataSourceProvider(),
+                        new SettingsPersistenceService(getLogger(), getDataSourceProvider()));
         service = new EventTypePersistenceService(getLogger(), getDataSourceProvider(),
                 i18nService, translationService, timetablePersistenceService);
     }

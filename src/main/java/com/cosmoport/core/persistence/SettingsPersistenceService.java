@@ -1,6 +1,7 @@
 package com.cosmoport.core.persistence;
 
 import com.cosmoport.core.dto.SettingsDto;
+import com.cosmoport.core.persistence.constant.Constants;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.slf4j.Logger;
@@ -15,7 +16,7 @@ import java.util.Optional;
 
 public class SettingsPersistenceService extends PersistenceService<SettingsDto> {
     @Inject
-    protected SettingsPersistenceService(Logger logger, Provider<DataSource> ds) {
+    public SettingsPersistenceService(Logger logger, Provider<DataSource> ds) {
         super(logger, ds);
     }
 
@@ -30,6 +31,21 @@ public class SettingsPersistenceService extends PersistenceService<SettingsDto> 
 
     public List<SettingsDto> getAllWithoutProtectedValues() {
         return getAll("SELECT * FROM SETTINGS WHERE param <> 'password'");
+    }
+
+    int getPreEventPeriod() {
+        int result = 0;
+
+        final Optional<SettingsDto> obj = findByParam(
+                "SELECT * FROM SETTINGS WHERE param = ?",
+                Constants.preBoardingPeriod
+        );
+
+        if (obj.isPresent()) {
+            result = Integer.parseInt(obj.get().getValue());
+        }
+
+        return result;
     }
 
     public boolean paramEquals(final String param, final String value) {

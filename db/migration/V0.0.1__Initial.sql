@@ -172,19 +172,6 @@ BEGIN
   SET event_state_id = 2
   WHERE id = NEW.id;
 END;
---
--- On tickets decrease
---
-CREATE TRIGGER TIMETABLE_STATE_CHANGE_ON_TICKETS_DECREASE_AU
-  AFTER
-  UPDATE
-  ON TIMETABLE
-  WHEN OLD.contestants = OLD.people_limit AND NEW.contestants < NEW.people_limit
-BEGIN
-  UPDATE TIMETABLE
-  SET event_state_id = 1
-  WHERE id = NEW.id;
-END;
 
 CREATE TABLE SETTINGS (
   id    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,

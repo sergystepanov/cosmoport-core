@@ -144,10 +144,10 @@ INSERT INTO TRANSLATION (i18n_id, locale_id, tr_text) VALUES
 
 INSERT INTO EVENT_TYPE (id, i18n_event_type_name, i18n_event_type_subname, i18n_event_type_description,
                         default_duration, default_repeat_interval) VALUES
-  (1, 8, 11, 28, 40, 5),
-  (2, 9, 12, 28, 90, 0),
-  (3, 10, 13, 28, 120, 0),
-  (4, 10, 11, 28, 120, 0);
+  (1, 8, 11, 29, 40, 5),
+  (2, 9, 12, 29, 90, 0),
+  (3, 10, 13, 29, 120, 0),
+  (4, 10, 11, 29, 120, 0);
 
 INSERT INTO EVENT_STATE (id, i18n_state) VALUES
   (1, 18), (2, 19);

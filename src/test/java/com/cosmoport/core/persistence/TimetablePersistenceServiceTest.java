@@ -18,7 +18,8 @@ final class TimetablePersistenceServiceTest extends PersistenceTest {
     void createPersistenceService() {
         super.before();
 
-        service = new TimetablePersistenceService(getLogger(), getDataSourceProvider());
+        service = new TimetablePersistenceService(getLogger(), getDataSourceProvider(),
+                new SettingsPersistenceService(getLogger(), getDataSourceProvider()));
     }
 
     @Nested

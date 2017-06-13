@@ -2,6 +2,7 @@ package com.cosmoport.core.api;
 
 import com.cosmoport.core.dto.EventDto;
 import com.cosmoport.core.persistence.PersistenceTest;
+import com.cosmoport.core.persistence.SettingsPersistenceService;
 import com.cosmoport.core.persistence.TimetablePersistenceService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +27,9 @@ class TimetableEndpointTest extends PersistenceTest {
     public void before() {
         super.before();
 
-        TimetablePersistenceService service = new TimetablePersistenceService(getLogger(), getDataSourceProvider());
+        TimetablePersistenceService service = new TimetablePersistenceService(
+                getLogger(), getDataSourceProvider(),
+                new SettingsPersistenceService(getLogger(), getDataSourceProvider()));
         EventBus eventBus = new EventBus();
         mapper = new ObjectMapper();
 

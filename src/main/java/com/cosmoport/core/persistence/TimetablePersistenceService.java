@@ -20,11 +20,17 @@ import java.util.Optional;
  * @since 0.1.0
  */
 public class TimetablePersistenceService extends PersistenceService<EventDto> {
+    private final SettingsPersistenceService settingsPersistenceService;
     private static final String defaultOrder = " ORDER BY event_date, start_time";
 
     @Inject
-    public TimetablePersistenceService(Logger logger, Provider<DataSource> ds) {
+    public TimetablePersistenceService(
+            Logger logger,
+            Provider<DataSource> ds,
+            SettingsPersistenceService settingsPersistenceService) {
         super(logger, ds);
+
+        this.settingsPersistenceService = settingsPersistenceService;
     }
 
     /**
@@ -130,18 +136,19 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
     }
 
     /**
-     * Validates an event object.
+     * Validates times of an event object.
      * <p>
      * There's shouldn't be two events for one gate with:
      * - the same start time
      * - the same end time (which is sum of the start time and the duration)
+     * - overlapping pre-boarding and pre-return periods (value in settings)
      * </p>
      *
      * @param event The event to validate.
      * @throws ValidationException In case of violation of a constraint.
      * @since 0.1.0
      */
-    private void validate(final EventDto event) throws ValidationException {
+    private void validateTime(final EventDto event) throws ValidationException {
         final long startTime = event.getStartTime();
         final long endTime = event.getStartTime() + event.getDurationTime();
 
@@ -185,6 +192,65 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
     }
 
     /**
+     * Validates pre-event periods of an event object.
+     * <p>
+     * There's shouldn't be two events for one gate with:
+     * - overlapping pre-boarding and pre-return periods (value in settings)
+     * </p>
+     *
+     * @param event The event to validate.
+     * @throws ValidationException In case of violation of a constraint.
+     * @since 0.1.3
+     */
+    private void validatePeriod(final EventDto event) throws ValidationException {
+        final long startTime = event.getStartTime();
+        final long endTime = event.getStartTime() + event.getDurationTime();
+        final int period = settingsPersistenceService.getPreEventPeriod();
+
+        final Object[] params = {
+                event.getId(), event.getEventDate(),
+                event.getGateId(), event.getGate2Id(), event.getGateId(), event.getGate2Id(),
+                startTime - period, startTime, endTime - period, endTime
+        };
+
+        final List<EventDto> overlapping = getAllByParams(
+                "SELECT DISTINCT * FROM TIMETABLE WHERE id <> ? AND event_date = ? AND " +
+                        "(" +
+                        "(gate_id IN (?, ?) OR gate2_id IN (?, ?)) AND " +
+                        "(start_time BETWEEN ? AND ? OR start_time + duration_time BETWEEN ? AND ?)" +
+                        ")",
+                params);
+
+        if (overlapping.size() > 0) {
+            String divider = "";
+            StringBuilder message = new StringBuilder();
+            message.append("Overlapping pre-periods of events: ");
+
+            for (final EventDto event0 : overlapping) {
+                message
+                        .append(divider)
+                        .append("id: ")
+                        .append(event0.getId())
+                        .append(" [gate: ")
+                        .append(event0.getGateId())
+                        .append("→")
+                        .append(event0.getGate2Id())
+                        .append("] start: ")
+                        .append(event0.getStartTime())
+                        .append(" - ")
+                        .append(period)
+                        .append(", end: ")
+                        .append(event0.getStartTime() + event0.getDurationTime())
+                        .append(" - ")
+                        .append(period);
+                divider = " | ";
+            }
+
+            throw new ValidationException(message.toString());
+        }
+    }
+
+    /**
      * Saves new event record.
      *
      * @param record The record to save.
@@ -195,7 +261,8 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
      * @since 0.1.0
      */
     public EventDto save(final EventDto record) throws RuntimeException {
-        validate(record);
+        validateTime(record);
+        validatePeriod(record);
 
         Connection conn = null;
         PreparedStatement statement = null;
