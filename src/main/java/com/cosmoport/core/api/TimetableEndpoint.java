@@ -4,6 +4,8 @@ import com.cosmoport.core.dto.EventDto;
 import com.cosmoport.core.event.message.ReloadMessage;
 import com.cosmoport.core.event.message.SyncTimetablesMessage;
 import com.cosmoport.core.persistence.TimetablePersistenceService;
+import com.cosmoport.core.sync.RemoteSync;
+import com.cosmoport.core.sync.Types;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import org.jboss.resteasy.annotations.GZIP;
@@ -63,6 +65,8 @@ public final class TimetableEndpoint {
     public EventDto create(final EventDto event) {
         final EventDto newEvent = service.save(event);
         eventBus.post(new ReloadMessage());
+        new RemoteSync().process("", Types.CREATE, newEvent);
+
 
         return newEvent;
     }
@@ -72,6 +76,7 @@ public final class TimetableEndpoint {
     public EventDto update(final EventDto event) {
         final EventDto newEvent = service.save(event);
         eventBus.post(new ReloadMessage());
+        new RemoteSync().process("", Types.UPDATE, newEvent);
 
         return newEvent;
     }
@@ -81,6 +86,7 @@ public final class TimetableEndpoint {
     public String delete(@PathParam("id") final long id) {
         final String deleted = "{\"deleted\": " + service.delete(id) + '}';
         eventBus.post(new ReloadMessage());
+        new RemoteSync().process("", Types.DELETE, new EventDto(id));
 
         return deleted;
     }

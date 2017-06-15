@@ -63,6 +63,24 @@ public final class EventDto extends Entity implements Serializable {
         this.dateAdded = dateAdded;
     }
 
+    public EventDto(long id) {
+        this.id = id;
+        eventStateId = 0;
+        eventDate = null;
+        eventTypeId = 0;
+        eventStatusId = 0;
+        eventDestinationId = 0;
+        gateId = 0;
+        gate2Id = 0;
+        startTime = 0;
+        durationTime = 0;
+        repeatInterval = 0;
+        cost = 0;
+        peopleLimit = 0;
+        contestants = 0;
+        dateAdded = null;
+    }
+
     public String getEventDate() {
         return eventDate;
     }
