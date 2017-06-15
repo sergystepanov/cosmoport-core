@@ -173,6 +173,20 @@ BEGIN
   WHERE id = NEW.id;
 END;
 
+--
+-- Not allow to buy if closed
+--
+CREATE TRIGGER TIMETABLE_RESTRICT_BUY
+  BEFORE
+  UPDATE
+  ON TIMETABLE
+BEGIN
+  SELECT CASE
+         WHEN (NEW.event_state_id = 2 AND NEW.contestants <> OLD.contestants)
+           THEN RAISE(ABORT, 'Cannot sell tickets if closed.')
+         END;
+END;
+
 CREATE TABLE SETTINGS (
   id    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   param TEXT    NOT NULL             DEFAULT (''),

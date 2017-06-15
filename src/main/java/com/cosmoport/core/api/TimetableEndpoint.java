@@ -11,6 +11,7 @@ import org.jboss.resteasy.annotations.GZIP;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+import java.util.Objects;
 
 @Path("/timetable")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -28,8 +29,11 @@ public final class TimetableEndpoint {
 
     @GET
     @Path("/")
-    public List<EventDto> get(@QueryParam("date") String date, @QueryParam("gate") long gateId) {
-        return service.getAllWithFilter(date, gateId);
+    public List<EventDto> get(@QueryParam("date") String date, @QueryParam("date2") String date2,
+                              @QueryParam("gate") long gateId) {
+        return date2 != null && (!Objects.equals(date2, "")) ?
+                service.getAllFromDates(date, date2) :
+                service.getAllWithFilter(date, gateId);
     }
 
     @GET

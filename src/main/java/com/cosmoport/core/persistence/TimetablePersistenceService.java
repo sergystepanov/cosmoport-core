@@ -82,6 +82,36 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
     }
 
     /**
+     * Fetches all the events from the database by a date period.
+     *
+     * @param date  null or the start date in yyyy-mm-dd format.
+     * @param date2 null or the end date in yyyy-mm-dd format.
+     * @return A collection of {@code TimetableDto} objects or an empty list.
+     * @throws RuntimeException In case of any exception during fetch procedure.
+     * @since 0.1.3
+     */
+    public List<EventDto> getAllFromDates(final String date, final String date2) {
+        final boolean hasDate1 = date != null && !date.equals("");
+        final boolean hasDate2 = date2 != null && !date2.equals("");
+
+        final List<Object> params = new ArrayList<>();
+        if (hasDate1) {
+            params.add(date);
+        }
+        if (hasDate2) {
+            params.add(date2);
+        }
+
+        String sql = "SELECT * FROM TIMETABLE WHERE " +
+                (hasDate1 && hasDate2 ? "event_date BETWEEN ? AND ? " :
+                        hasDate2 ? "event_date <= ? " :
+                                hasDate1 ? "event_date >= ? " : "") +
+                defaultOrder;
+
+        return getAllByParams(sql, params.toArray());
+    }
+
+    /**
      * Fetches all events from the table with simple page * count params.
      *
      * @return A collection of {@code TimetableDto} objects or an empty list.
@@ -195,7 +225,7 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
      * Validates pre-event periods of an event object.
      * <p>
      * There's shouldn't be two events for one gate with:
-     * - overlapping pre-boarding and pre-return periods (value in settings)
+     * - overlapping pre-boarding and pre-return periods (the value in settings)
      * </p>
      *
      * @param event The event to validate.
