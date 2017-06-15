@@ -358,6 +358,37 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
     }
 
     /**
+     * Updates sold tickets in the database (for convenience).
+     *
+     * @param eventId An {@code id} of the record to update.
+     * @param value   A new value of tickets.
+     * @throws RuntimeException in case of any errors.
+     * @since 0.1.3
+     */
+    public void updateTickets(final long eventId, final int value) throws RuntimeException {
+        // Validation for tickets
+        // ...
+
+        Connection conn = null;
+        PreparedStatement statement = null;
+        try {
+            conn = getConnection();
+
+            statement = conn.prepareStatement("UPDATE TIMETABLE SET contestants = ? WHERE id = ?");
+            statement.setInt(1, value);
+            statement.setLong(2, eventId);
+
+            if (statement.executeUpdate() < 0) {
+                throw new Exception("Weren't updated.");
+            }
+        } catch (Exception e) {
+            throwServerApiException(e);
+        } finally {
+            close(statement, conn);
+        }
+    }
+
+    /**
      * Deletes an event.
      *
      * @param id The id number of the event to delete.

@@ -21,5 +21,6 @@ public class ApiV0Module extends AbstractModule {
         bind(SettingsEndpoint.class).asEagerSingleton();
         bind(ProxyEndpoint.class).asEagerSingleton();
         bind(AuthEndpoint.class).asEagerSingleton();
+        bind(SyncEndpoint.class).asEagerSingleton();
     }
 }
