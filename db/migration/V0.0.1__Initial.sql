@@ -180,11 +180,9 @@ CREATE TRIGGER TIMETABLE_RESTRICT_BUY
   BEFORE
   UPDATE
   ON TIMETABLE
+  WHEN NEW.event_state_id = 2 AND NEW.contestants <> OLD.contestants
 BEGIN
-  SELECT CASE
-         WHEN (NEW.event_state_id = 2 AND NEW.contestants <> OLD.contestants)
-           THEN RAISE(ABORT, 'Cannot sell tickets if closed.')
-         END;
+  SELECT RAISE(ABORT, 'Cannot sell tickets if closed.');
 END;
 
 CREATE TABLE SETTINGS (
