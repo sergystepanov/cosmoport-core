@@ -1,6 +1,7 @@
 package com.cosmoport.core.persistence;
 
 import com.cosmoport.core.dto.EventDto;
+import com.cosmoport.core.persistence.constant.EventState;
 import com.cosmoport.core.persistence.constant.EventStatus;
 import com.cosmoport.core.persistence.exception.UniqueConstraintException;
 import com.cosmoport.core.persistence.exception.ValidationException;
@@ -10,7 +11,11 @@ import org.slf4j.Logger;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -118,10 +123,14 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
      * @throws RuntimeException In case of any exception during the fetch procedure.
      * @since 0.1.2
      */
-    public List<EventDto> getAllPage(final int page, final int count) throws RuntimeException {
+    private List<EventDto> getAllPage(final int page, final int count, final String date) throws RuntimeException {
         //noinspection UnnecessaryBoxing
-        return getAllByParams("SELECT * FROM TIMETABLE" + defaultOrder + " LIMIT ?, ?",
-                new Integer((page - 1) * count), new Integer(count));
+        return getAllByParams("SELECT * FROM TIMETABLE WHERE event_date = ? " + defaultOrder + " LIMIT ?, ?",
+                date, new Integer((page - 1) * count), new Integer(count));
+    }
+
+    public List<EventDto> getAllPage(final int page, final int count) throws RuntimeException {
+      return getAllPage(page, count, new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
     }
 
     /**
@@ -164,6 +173,7 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
 
         return result;
     }
+
 
     /**
      * Validates times of an event object.
@@ -211,14 +221,48 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
                         .append("→")
                         .append(event0.getGate2Id())
                         .append("] start: ")
-                        .append(event0.getStartTime())
+                        .append(minutesToHm(event0.getStartTime()))
                         .append(", end: ")
-                        .append(event0.getStartTime() + event0.getDurationTime());
+                        .append(minutesToHm(event0.getStartTime() + event0.getDurationTime()));
                 divider = " | ";
             }
 
             throw new ValidationException(message.toString());
         }
+    }
+
+    @SuppressWarnings("UnnecessaryBoxing")
+    public int getLastTimeForGate(final long gateId, final String date) throws RuntimeException {
+        int result = -1;
+        Connection conn = null;
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            conn = getConnection();
+
+            statement = conn.prepareStatement("SELECT MAX(time) as time FROM " +
+                    "(SELECT start_time AS time FROM TIMETABLE WHERE gate_id = ? AND event_date = ?" +
+                    "UNION " +
+                    "SELECT (start_time + duration_time) AS time FROM TIMETABLE " +
+                    "WHERE gate2_id = ? AND event_date = ?)");
+            statement.setLong(1, gateId);
+            statement.setString(2, date);
+            statement.setLong(3, gateId);
+            statement.setString(4, date);
+
+            rs = statement.executeQuery();
+
+            if (rs.next()) {
+                final int value = rs.getInt("time");
+                result = rs.wasNull() ? -1 : value;
+            }
+        } catch (Exception e) {
+            throwServerApiException(e);
+        } finally {
+            close(rs, statement, conn);
+        }
+
+        return result;
     }
 
     /**
@@ -247,7 +291,7 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
                 "SELECT DISTINCT * FROM TIMETABLE WHERE id <> ? AND event_date = ? AND " +
                         "(" +
                         "(gate_id IN (?, ?) OR gate2_id IN (?, ?)) AND " +
-                        "(start_time BETWEEN ? AND ? OR start_time + duration_time BETWEEN ? AND ?)" +
+                        "(start_time > ? AND start_time < ? OR start_time + duration_time > ? AND start_time + duration_time < ?)" +
                         ")",
                 params);
 
@@ -266,11 +310,11 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
                         .append("→")
                         .append(event0.getGate2Id())
                         .append("] start: ")
-                        .append(event0.getStartTime())
+                        .append(minutesToHm(event0.getStartTime()))
                         .append(" - ")
                         .append(period)
                         .append(", end: ")
-                        .append(event0.getStartTime() + event0.getDurationTime())
+                        .append(minutesToHm(event0.getStartTime() + event0.getDurationTime()))
                         .append(" - ")
                         .append(period);
                 divider = " | ";
@@ -278,6 +322,10 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
 
             throw new ValidationException(message.toString());
         }
+    }
+
+    private String minutesToHm(final long minutes) {
+        return LocalTime.MIN.plus(Duration.ofMinutes(minutes)).toString();
     }
 
     /**
@@ -362,10 +410,11 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
      *
      * @param eventId An {@code id} of the record to update.
      * @param value   A new value of tickets.
+     * @param force   Force to reopen event.
      * @throws RuntimeException in case of any errors.
      * @since 0.1.3
      */
-    public void updateTickets(final long eventId, final int value) throws RuntimeException {
+    public void updateTicketsForced(final long eventId, final int value, final boolean force) throws RuntimeException {
         // Validation for tickets
         // ...
 
@@ -374,18 +423,34 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
         try {
             conn = getConnection();
 
-            statement = conn.prepareStatement("UPDATE TIMETABLE SET contestants = ? WHERE id = ?");
+            statement = conn.prepareStatement(
+                    force ? "UPDATE TIMETABLE SET contestants = ?, event_state_id = ? WHERE id = ?" :
+                            "UPDATE TIMETABLE SET contestants = ? WHERE id = ?"
+            );
             statement.setInt(1, value);
-            statement.setLong(2, eventId);
+            if (force) {
+                statement.setLong(2, EventState.OPENED.value());
+                statement.setLong(3, eventId);
+            } else {
+                statement.setLong(2, eventId);
+            }
 
             if (statement.executeUpdate() < 0) {
                 throw new Exception("Weren't updated.");
             }
+        } catch (SQLException sqlexception) {
+            throwConstrainViolation(sqlexception);
+            // if not than
+            throwServerApiException(sqlexception);
         } catch (Exception e) {
             throwServerApiException(e);
         } finally {
             close(statement, conn);
         }
+    }
+
+    public void updateTickets(final long eventId, final int value) throws RuntimeException {
+        updateTicketsForced(eventId, value, false);
     }
 
     /**
