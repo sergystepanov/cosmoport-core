@@ -1,9 +1,15 @@
 package com.cosmoport.core.api;
 
 import com.cosmoport.core.dto.EventDto;
+import com.cosmoport.core.dto.ResultDto;
+import com.cosmoport.core.dto.TimeSuggestionDto;
+import com.cosmoport.core.dto.request.TicketsUpdateRequestDto;
 import com.cosmoport.core.event.message.ReloadMessage;
 import com.cosmoport.core.event.message.SyncTimetablesMessage;
+import com.cosmoport.core.persistence.SettingsPersistenceService;
 import com.cosmoport.core.persistence.TimetablePersistenceService;
+import com.cosmoport.core.persistence.exception.ValidationException;
+import com.cosmoport.core.service.SuggestionService;
 import com.cosmoport.core.sync.RemoteSync;
 import com.cosmoport.core.sync.Types;
 import com.google.common.eventbus.EventBus;
@@ -12,6 +18,8 @@ import org.jboss.resteasy.annotations.GZIP;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,11 +29,18 @@ import java.util.Objects;
 @GZIP
 public final class TimetableEndpoint {
     private final TimetablePersistenceService service;
+    private final SettingsPersistenceService settings;
+    private final SuggestionService suggestionService;
     private final EventBus eventBus;
 
     @Inject
-    public TimetableEndpoint(TimetablePersistenceService service, EventBus eventBus) {
+    public TimetableEndpoint(TimetablePersistenceService service,
+                             SettingsPersistenceService settings,
+                             SuggestionService suggestionService,
+                             EventBus eventBus) {
         this.service = service;
+        this.settings = settings;
+        this.suggestionService = suggestionService;
         this.eventBus = eventBus;
     }
 
@@ -40,7 +55,10 @@ public final class TimetableEndpoint {
 
     @GET
     @Path("/all")
-    public List<EventDto> getAll(@QueryParam("page") int page, @QueryParam("count") int count) {
+    public List<EventDto> getAll(
+            @QueryParam("page") int page,
+            @QueryParam("count") int count,
+            @QueryParam("date") String date) {
         final List<EventDto> events = service.getAllPage(page, count);
         // We assume that this method will be called on every timetable app opening
         eventBus.post(new SyncTimetablesMessage());
@@ -65,7 +83,7 @@ public final class TimetableEndpoint {
     public EventDto create(final EventDto event) {
         final EventDto newEvent = service.save(event);
         eventBus.post(new ReloadMessage());
-        new RemoteSync().process("", Types.CREATE, newEvent);
+        new RemoteSync(settings.getSyncServerParams()).process(Types.CREATE, newEvent);
 
 
         return newEvent;
@@ -76,9 +94,24 @@ public final class TimetableEndpoint {
     public EventDto update(final EventDto event) {
         final EventDto newEvent = service.save(event);
         eventBus.post(new ReloadMessage());
-        new RemoteSync().process("", Types.UPDATE, newEvent);
+        new RemoteSync(settings.getSyncServerParams()).process(Types.UPDATE, newEvent);
 
         return newEvent;
+    }
+
+    /**
+     * Updates the number of sold tickets. Same as {@link SyncEndpoint::updateTickets}.
+     *
+     * @param request An object containing an events' id and its new tickets count value.
+     * @return A result object.
+     * @throws RuntimeException In case of any errors.
+     */
+    @POST
+    @Path("/tickets")
+    public ResultDto updateTickets(final TicketsUpdateRequestDto request) throws RuntimeException {
+        service.updateTicketsForced(request.getId(), request.getTickets(), request.isForceOpen());
+
+        return new ResultDto(true);
     }
 
     @DELETE
@@ -86,8 +119,23 @@ public final class TimetableEndpoint {
     public String delete(@PathParam("id") final long id) {
         final String deleted = "{\"deleted\": " + service.delete(id) + '}';
         eventBus.post(new ReloadMessage());
-        new RemoteSync().process("", Types.DELETE, new EventDto(id));
+        new RemoteSync(settings.getSyncServerParams()).process(Types.DELETE, new EventDto(id));
 
         return deleted;
+    }
+
+    // Suggestions
+    @GET
+    @Path("/suggest/next")
+    public TimeSuggestionDto getSuggestion(@QueryParam("gate") long gateId,
+                                           @QueryParam("date") final String date) throws RuntimeException {
+        if (!(gateId > 0)) {
+            throw new ValidationException("Set the gate number.");
+        }
+
+        final String date_ = date != null && !date.isEmpty() ? date :
+                new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+
+        return suggestionService.suggest(gateId, date_);
     }
 }

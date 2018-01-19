@@ -288,8 +288,17 @@ public abstract class PersistenceService<T> {
                 if ("UNIQUE".equals(m.group(1))) {
                     throw new UniqueConstraintException(name);
                 } else {
-                    if ("CHECK".equals(m.group(1)))
+                    if ("CHECK".equals(m.group(1))) {
                         throw new ValidationException(name);
+                    }
+                }
+            } else {
+                // Try to parse a trigger exception
+                final Matcher m2 = Pattern.compile(
+                        "\\[SQLITE_CONSTRAINT_TRIGGER].*?\\((.*)\\)$")
+                        .matcher(e.getMessage());
+                if (m2.find()) {
+                    throw new ValidationException(m2.group(1));
                 }
             }
         }
