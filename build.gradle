@@ -1,42 +1,39 @@
 buildscript {
-    ext {
-        ver = [
-                junitPlugin   : '1.0.0-M4',
-                versionsPlugin: '0.15.0'
-        ]
-    }
-
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-        jcenter()
-    }
-
     dependencies {
-        classpath "org.junit.platform:junit-platform-gradle-plugin:$ver.junitPlugin"
-        classpath "com.github.ben-manes:gradle-versions-plugin:$ver.versionsPlugin"
+        classpath "org.junit.platform:junit-platform-gradle-plugin:1.1.0-M1"
     }
+}
+
+plugins {
+    id "com.github.ben-manes.versions" version "0.17.0"
 }
 
 apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'org.junit.platform.gradle.plugin'
-apply plugin: 'com.github.ben-manes.versions'
 
 version = '0.1.3'
+wrapper.gradleVersion = '4.4.1'
 
 repositories {
     mavenCentral()
     jcenter()
 }
 
+compileTestJava {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 compileJava {
-    options.compilerArgs << '-Xlint:all'
+    options.compilerArgs << '-Xlint:-processing' << '-Xlint:all'
     options.warnings = true
     options.deprecation = true
-    options.encoding = 'utf-8'
-    options.incremental = true
+    options.encoding = 'UTF-8'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
 }
 
 mainClassName = 'com.cosmoport.core.App'
@@ -66,21 +63,22 @@ startScripts {
 
 ext {
     ver = [
-            resteasy    : '3.1.3.Final',
+            resteasy    : '4.0.0.Beta1',
             guice       : '4.1.0',
-            jackson     : '2.9.0.pr3',
-            sqlite      : '3.18.0',
-            hikaricp    : '2.6.3',
-            flyway      : '4.2.0',
+            jackson     : '2.9.3',
+            sqlite      : '3.21.0.1',
+            hikaricp    : '2.7.6',
+            flyway      : '5.0.6',
             logback     : '1.2.3',
-            slf4j       : '1.7.25',
-            log4j       : '2.8.2',
-            junitJupiter: '5.0.0-M4',
-            springJdbc  : '4.3.9.RELEASE',
+            slf4j       : '1.7.22',
+            log4j       : '2.10.0',
+            junitJupiter: '5.1.0-M1',
+            junitPlatform: '1.1.0-M1',
+            springJdbc  : '5.0.2.RELEASE',
             palomino    : '1.2.1',
-            jetty       : '9.4.6.v20170531',
+            jetty       : '9.4.8.v20171121',
             jbcrypt     : '0.4',
-            iocommons   : '2.5',
+            iocommons   : '2.6',
             websocketApi: '1.1'
     ]
 }
@@ -91,6 +89,7 @@ dependencies {
         exclude group: 'org.eclipse.jetty', module: 'jetty-servlet'
     }
     compile "org.eclipse.jetty:jetty-servlet:$ver.jetty"
+
     compile "org.eclipse.jetty.websocket:websocket-api:$ver.jetty"
     compile "org.eclipse.jetty.websocket:websocket-server:$ver.jetty"
     compile "org.eclipse.jetty.websocket:websocket-client:$ver.jetty"
@@ -101,7 +100,9 @@ dependencies {
     compile("org.jboss.resteasy:resteasy-guice:$ver.resteasy") {
         exclude group: "org.jboss.resteasy", module: "resteasy-client"
     }
-    compile "org.jboss.resteasy:resteasy-multipart-provider:$ver.resteasy"
+    compile("org.jboss.resteasy:resteasy-multipart-provider:$ver.resteasy") {
+        exclude group: "org.jboss.resteasy", module: "resteasy-jaxb-provider"
+    }
 
     // JSON
     compile "com.fasterxml.jackson.core:jackson-databind:$ver.jackson"
@@ -132,10 +133,15 @@ dependencies {
     compile "org.slf4j:jul-to-slf4j:$ver.slf4j"
 
     // Test
-    compile "org.springframework:spring-jdbc:$ver.springJdbc"
     testCompile "org.junit.jupiter:junit-jupiter-api:$ver.junitJupiter"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:$ver.junitJupiter"
+    testCompile "org.junit.platform:junit-platform-launcher:$ver.junitPlatform"
+    // For Junit - Intellij compatibility
+    testCompile 'org.apiguardian:apiguardian-api:1.0.0'
     testCompile "org.jboss.resteasy:resteasy-jackson2-provider:$ver.resteasy"
-    testCompile "org.apache.logging.log4j:log4j-core:$ver.log4j"
-    testCompile "org.apache.logging.log4j:log4j-jul:$ver.log4j"
+    // Database
+    // Migrations
+    testCompile "org.flywaydb:flyway-core:$ver.flyway"
+    // For Flyway's single db connection datasource
+    testCompile "org.springframework:spring-jdbc:$ver.springJdbc"
 }
