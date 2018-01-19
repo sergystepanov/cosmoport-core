@@ -1,7 +1,7 @@
 package com.cosmoport.core.sync;
 
-import com.cosmoport.core.config.Config;
 import com.cosmoport.core.dto.EventDto;
+import com.cosmoport.core.dto.SyncServerParamsDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,12 +12,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public final class RemoteSync {
-    private static final Logger logger = LoggerFactory.getLogger("");
+    private final SyncServerParamsDto settings;
+    private static final Logger logger = LoggerFactory.getLogger(RemoteSync.class);
 
-    public void process(String address, Types type, EventDto event) {
-        if (!Config.SYNC_ON) {
-            logger.info("[sync] [out] disabled");
-        } else {
+    public RemoteSync(SyncServerParamsDto settings) {
+        this.settings = settings;
+    }
+
+    public void process(Types type, EventDto event) {
+        if (settings.getSyncServerOn().equals("on")) {
             final RemoteSyncObj object = new RemoteSyncObj(type, event);
             // Convert to JSON
             ObjectMapper mapper = new ObjectMapper();
@@ -26,7 +29,7 @@ public final class RemoteSync {
                 String value = mapper.writeValueAsString(object);
 
                 // Request
-                URL url = new URL(address);
+                URL url = new URL(settings.getSyncServerAddress());
                 HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
                 httpCon.setDoOutput(true);
                 httpCon.setRequestMethod("POST");
@@ -45,6 +48,8 @@ public final class RemoteSync {
                     }
                 }
             }
+        } else {
+            logger.info("[sync] [out] disabled");
         }
     }
 }

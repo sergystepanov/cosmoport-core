@@ -1,6 +1,8 @@
 package com.cosmoport.core.persistence;
 
 import com.cosmoport.core.dto.SettingsDto;
+import com.cosmoport.core.dto.SyncServerParamsDto;
+import com.cosmoport.core.dto.SyncServerParamsDtoBuilder;
 import com.cosmoport.core.persistence.constant.Constants;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -30,7 +32,28 @@ public class SettingsPersistenceService extends PersistenceService<SettingsDto> 
     }
 
     public List<SettingsDto> getAllWithoutProtectedValues() {
-        return getAll("SELECT * FROM SETTINGS WHERE param <> 'password'");
+        return getAll("SELECT * FROM SETTINGS WHERE param NOT IN ('" + Constants.password + "', '" +
+                Constants.syncServerKey + "')");
+    }
+
+    public SyncServerParamsDto getSyncServerParams() {
+        List<SettingsDto> all = getAll("SELECT * FROM SETTINGS WHERE param LIKE 'sync_server_%'");
+
+        SyncServerParamsDtoBuilder builder = new SyncServerParamsDtoBuilder();
+        all.forEach(p -> {
+            switch (p.getParam()) {
+                case Constants.syncServerAddress:
+                    builder.setSyncServerAddress(p.getValue());
+                    break;
+                case Constants.syncServerKey:
+                    builder.setSyncServerKey(p.getValue());
+                    break;
+                case Constants.syncServerOn:
+                    builder.setSyncServerOn(p.getValue());
+            }
+        });
+
+        return builder.createSyncServerParamsDto();
     }
 
     int getPreEventPeriod() {

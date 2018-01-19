@@ -16,6 +16,7 @@
     <logger name="org.jboss.resteasy" level="info"/>
     <logger name="org.junit.platform" level="info"/>
     <logger name="org.springframework.jdbc" level="error" />
+    <logger name="com.cosmoport.core.sync" level="error" />
 
     <root>
         <level>INFO</level>
