@@ -4,10 +4,10 @@
 -- @encoding UTF-8
 --
 
-INSERT INTO LOCALE (id, code, is_default, locale_description, show) VALUES
-  (1, 'en', 1, 'English', 1),
-  (2, 'ru', 0, 'Русский', 1),
-  (3, 'el', 0, 'Ελληνική', 1);
+INSERT INTO LOCALE (id, code, is_default, locale_description, show, show_time) VALUES
+  (1, 'en', 1, 'English', 1, 15),
+  (2, 'ru', 0, 'Русский', 1, 10),
+  (3, 'el', 0, 'Ελληνική', 1, 10);
 
 INSERT INTO I18N (id, tag, external, description, params) VALUES
   (1, 'ui_caption_gate', 1, 'Interface caption for gate.', ''),
@@ -187,5 +187,7 @@ INSERT INTO SETTINGS (param, value) VALUES
   ('timetable_screen_lines', '20'),
   ('boarding_time', '5'),
   ('password', 'Abcd1234!'),
-  ('sync_server_address', 'sync.cosmoport.local'),
-  ('sync_server_key', 'HH3y=cD9dzXaT876');
+  ('sync_server_address', 'http://sync.cosmoport.local'),
+  ('sync_server_key', 'HH3y=cD9dzXaT876'),
+  ('sync_server_on', 'off'),
+  ('business_hours', '{"hours":[{"day":"mon","start":0,"end":0,"non":false},{"day":"tue","start":0,"end":0,"non":false},{"day":"wed","start":0,"end":0,"non":false},{"day":"thu","start":0,"end":0,"non":false},{"day":"fri","start":0,"end":0,"non":false},{"day":"sat","start":0,"end":0,"non":true},{"day":"sun","start":0,"end":0,"non":true}]}');
