@@ -4,6 +4,7 @@ import com.cosmoport.core.dto.EventDto;
 import com.cosmoport.core.persistence.PersistenceTest;
 import com.cosmoport.core.persistence.SettingsPersistenceService;
 import com.cosmoport.core.persistence.TimetablePersistenceService;
+import com.cosmoport.core.service.SuggestionService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
@@ -27,14 +28,16 @@ class TimetableEndpointTest extends PersistenceTest {
     public void before() {
         super.before();
 
+        final SettingsPersistenceService settings =
+                new SettingsPersistenceService(getLogger(), getDataSourceProvider());
         TimetablePersistenceService service = new TimetablePersistenceService(
-                getLogger(), getDataSourceProvider(),
-                new SettingsPersistenceService(getLogger(), getDataSourceProvider()));
+                getLogger(), getDataSourceProvider(), settings);
+        final SuggestionService suggestionService = new SuggestionService(service);
         EventBus eventBus = new EventBus();
         mapper = new ObjectMapper();
 
         dispatcher = MockDispatcherFactory.createDispatcher();
-        dispatcher.getRegistry().addSingletonResource(new TimetableEndpoint(service, eventBus));
+        dispatcher.getRegistry().addSingletonResource(new TimetableEndpoint(service, settings, suggestionService, eventBus));
     }
 
     @Test

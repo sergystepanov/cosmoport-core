@@ -128,5 +128,14 @@ final class TimetablePersistenceServiceTest extends PersistenceTest {
                     () -> service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 1, 1, 100, 1341, 20, 10, 1, 0, ""))
             ).getMessage());
         }
+
+        // stored 20:56 - 22:56
+        // new 21:01 - 23:01
+        // EventDto{eventDate='2017-06-13', eventTypeId=3, eventStatusId=2, eventStateId=1, eventDestinationId=1,
+        // gateId=1, gate2Id=1, startTime=1261, durationTime=120, repeatInterval=0, cost=1.0, peopleLimit=1,
+        // contestants=0, dateAdded='null'}
+        // EventDto{eventDate='2017-06-13', eventTypeId=3, eventStatusId=2, eventStateId=1, eventDestinationId=1,
+        // gateId=1, gate2Id=5, startTime=1256, durationTime=120, repeatInterval=0, cost=1.0, peopleLimit=1,
+        // contestants=0, dateAdded='2017-06-26 12:20:03'}
     }
 }
