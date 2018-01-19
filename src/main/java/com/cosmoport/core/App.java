@@ -8,6 +8,7 @@ import com.cosmoport.core.module.JsonModule;
 import com.cosmoport.core.module.LoggerModule;
 import com.cosmoport.core.node.NodesModule;
 import com.cosmoport.core.persistence.module.PersistenceModule;
+import com.cosmoport.core.service.ServicesModule;
 import com.cosmoport.core.socket.EventServlet;
 import com.cosmoport.core.socket.EventSocket;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -68,6 +69,7 @@ public class App {
             install(new PersistenceModule());
 //            install(new SchedulerModule());
             install(new NodesModule());
+            install(new ServicesModule());
 
             bind(EventBus.class).toInstance(eventBus);
             bind(EventServlet.class);
