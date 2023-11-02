@@ -4,11 +4,10 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.slf4j.Logger;
 
-import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -64,7 +63,7 @@ public class FileSystem {
     public static String getSHA1(final File file) throws IOException, NoSuchAlgorithmException {
         MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
 
-        try (InputStream input = new FileInputStream(file)) {
+        try (InputStream input = Files.newInputStream(file.toPath())) {
             byte[] buffer = new byte[8192];
             int len = input.read(buffer);
 
@@ -73,7 +72,8 @@ public class FileSystem {
                 len = input.read(buffer);
             }
 
-            return new HexBinaryAdapter().marshal(sha1.digest());
+
+            return new BigInteger(1, sha1.digest()).toString(16);
         }
     }
 }

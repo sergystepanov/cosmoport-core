@@ -81,7 +81,7 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
                     hasDate ? "event_date = ?" : "gate_id = ?");
         }
         sql.append(defaultOrder);
-        getLogger().debug("sql={}", sql.toString());
+        getLogger().debug("sql={}", sql);
 
         return getAllByParams(sql.toString(), params.toArray());
     }
@@ -231,7 +231,6 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
         }
     }
 
-    @SuppressWarnings("UnnecessaryBoxing")
     public int getLastTimeForGate(final long gateId, final String date) throws RuntimeException {
         int result = -1;
         Connection conn = null;

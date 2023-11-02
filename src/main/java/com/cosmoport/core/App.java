@@ -16,7 +16,6 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.*;
 import com.google.inject.servlet.ServletModule;
-import com.palominolabs.http.server.HttpServerWrapperModule;
 import de.skuzzle.inject.async.GuiceAsync;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -62,7 +61,6 @@ public class App {
 
             GuiceAsync.enableFor(binder());
 
-            install(new HttpServerWrapperModule());
             install(new JsonModule());
             install(new LoggerModule(App.class));
             install(new ApiV0Module());
