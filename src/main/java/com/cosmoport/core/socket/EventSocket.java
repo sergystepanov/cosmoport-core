@@ -22,8 +22,9 @@ import java.util.Set;
  * @since 0.1.0
  */
 public class EventSocket extends WebSocketAdapter {
-    private static Logger logger = LoggerFactory.getLogger(EventSocket.class.getCanonicalName());
-    private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
+    private static final Logger logger = LoggerFactory.getLogger(EventSocket.class.getCanonicalName());
+    private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<>());
+
     @Inject
     private NodesHolder nodesHolder;
 

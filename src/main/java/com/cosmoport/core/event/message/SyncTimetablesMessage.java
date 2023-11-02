@@ -6,5 +6,5 @@ package com.cosmoport.core.event.message;
  * @since 0.1.0
  */
 public final class SyncTimetablesMessage {
-    public static String token = ":sync_timetables";
+    public static final String token = ":sync_timetables";
 }

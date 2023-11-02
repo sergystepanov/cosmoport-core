@@ -8,10 +8,10 @@ import com.cosmoport.core.service.SuggestionService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
-import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockDispatcherFactory;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,9 +46,10 @@ class TimetableEndpointTest extends PersistenceTest {
         MockHttpResponse response = new MockHttpResponse();
         dispatcher.invoke(MockHttpRequest.get("/timetable"), response);
 
-        List<EventDto> result = mapper.readValue(response.getContentAsString(),
-                new TypeReference<List<EventDto>>() {
-                });
+        final String data = response.getContentAsString();
+
+        List<EventDto> result = mapper.readValue(data, new TypeReference<>() {
+        });
         assertEquals(10, result.size());
     }
 
@@ -60,9 +61,9 @@ class TimetableEndpointTest extends PersistenceTest {
         MockHttpResponse response = new MockHttpResponse();
         dispatcher.invoke(MockHttpRequest.get("/timetable"), response);
 
-        List<EventDto> result = mapper.readValue(response.getContentAsString(),
-                new TypeReference<List<EventDto>>() {
-                });
+        final String data = response.getContentAsString();
+        List<EventDto> result = mapper.readValue(data, new TypeReference<>() {
+        });
         assertEquals(9, result.size());
     }
 }

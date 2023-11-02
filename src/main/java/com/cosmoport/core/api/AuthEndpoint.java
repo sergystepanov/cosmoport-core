@@ -27,12 +27,12 @@ public final class AuthEndpoint {
     @POST
     @Path("/check")
     public ResultDto check(final PasswordDto password) {
-        return new ResultDto(service.paramEquals("password", password.getPwd()));
+        return new ResultDto(service.paramEquals("password", password.pwd()));
     }
 
     @POST
     @Path("/set")
     public ResultDto set(final PasswordDto password) {
-        return new ResultDto(service.updateSettingForParam("password", password.getPwd()));
+        return new ResultDto(service.updateSettingForParam("password", password.pwd()));
     }
 }

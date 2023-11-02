@@ -69,12 +69,9 @@ final class EventTypePersistenceServiceTest extends PersistenceTest {
                     () -> assertTrue(i18nService.findByTag("event_type_subname_" + newCount).isPresent()),
                     () -> assertTrue(i18nService.findByTag("event_type_description_" + newCount).isPresent()),
                     // has default translations
-                    () -> assertTrue(
-                            translationService.findAllByI18n(eventType.getI18nEventTypeName()).size() == localesCount),
-                    () -> assertTrue(
-                            translationService.findAllByI18n(eventType.getI18nEventTypeDescription()).size() == localesCount),
-                    () -> assertTrue(
-                            translationService.findAllByI18n(eventType.getI18nEventTypeSubname()).size() == localesCount)
+                    () -> assertEquals(localesCount, translationService.findAllByI18n(eventType.getI18nEventTypeName()).size()),
+                    () -> assertEquals(localesCount, translationService.findAllByI18n(eventType.getI18nEventTypeDescription()).size()),
+                    () -> assertEquals(localesCount, translationService.findAllByI18n(eventType.getI18nEventTypeSubname()).size())
             );
         }
     }

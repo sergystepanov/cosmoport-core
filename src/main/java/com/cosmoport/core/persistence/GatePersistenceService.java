@@ -12,7 +12,7 @@ import java.util.List;
 
 public final class GatePersistenceService extends PersistenceService<GateDto> {
     @Inject
-    protected GatePersistenceService(Logger logger, Provider<DataSource> provider) {
+    private GatePersistenceService(Logger logger, Provider<DataSource> provider) {
         super(logger, provider);
     }
 

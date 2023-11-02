@@ -18,7 +18,7 @@ import java.util.Optional;
  */
 public final class LocalePersistenceService extends PersistenceService<LocaleDto> {
     @Inject
-    protected LocalePersistenceService(Logger logger, Provider<DataSource> ds) {
+    LocalePersistenceService(Logger logger, Provider<DataSource> ds) {
         super(logger, ds);
     }
 

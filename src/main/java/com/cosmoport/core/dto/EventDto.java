@@ -3,17 +3,13 @@ package com.cosmoport.core.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.io.Serializable;
-
 /**
  * Data Transfer Object for an event.
  * It stores all references as ids on referenced objects.
  *
  * @since 0.1.0
  */
-@SuppressWarnings("unused")
-public final class EventDto extends Entity implements Serializable {
-    private static final long serialVersionUID = -5204432920845515270L;
+public final class EventDto extends Entity {
 
     private final String eventDate;
     private final long eventTypeId;

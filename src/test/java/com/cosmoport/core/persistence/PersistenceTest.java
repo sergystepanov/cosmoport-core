@@ -15,21 +15,23 @@ import javax.sql.DataSource;
  */
 public class PersistenceTest {
     private static final Logger logger = LoggerFactory.getLogger(PersistenceTest.class);
-    private Provider<DataSource> dataSourceProvider;
+    private final Provider<DataSource> dataSourceProvider;
     private final Flyway flyway;
 
     public PersistenceTest() {
-        flyway = new Flyway();
-        flyway.setLocations("filesystem:" + System.getProperty("user.dir") + "/db/migration");
-        flyway.setBaselineOnMigrate(true);
+        dataSourceProvider = new DatasourceServiceTestProvider();
+        flyway = Flyway.configure()
+                .locations("filesystem:" + System.getProperty("user.dir") + "/db/migration")
+                // Create new in-memory database before each test
+                .dataSource(dataSourceProvider.get())
+                .baselineOnMigrate(true)
+                .mixed(true)
+                .load();
     }
 
 
     public void before() {
-        // Create new in-memory database before each test
-        dataSourceProvider = new DatasourceServiceTestProvider();
-        // Apply all migrations
-        flyway.setDataSource(dataSourceProvider.get());
+        flyway.clean();
         flyway.migrate();
     }
 

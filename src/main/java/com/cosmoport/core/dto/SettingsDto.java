@@ -3,11 +3,7 @@ package com.cosmoport.core.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.io.Serializable;
-
-public final class SettingsDto extends Entity implements Serializable {
-    private static final long serialVersionUID = 8356775168611243497L;
-
+public final class SettingsDto extends Entity {
     private final String param;
     private final String value;
 

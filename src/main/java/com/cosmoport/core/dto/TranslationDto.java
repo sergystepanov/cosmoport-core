@@ -1,10 +1,6 @@
 package com.cosmoport.core.dto;
 
-import java.io.Serializable;
-
-public final class TranslationDto extends Entity implements Serializable {
-    private static final long serialVersionUID = 6700819328646792540L;
-
+public final class TranslationDto extends Entity {
     private final long i18nId;
     private final long localeId;
     private final String text;

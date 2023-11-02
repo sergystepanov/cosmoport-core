@@ -11,12 +11,12 @@ import com.cosmoport.core.persistence.module.PersistenceModule;
 import com.cosmoport.core.service.ServicesModule;
 import com.cosmoport.core.socket.EventServlet;
 import com.cosmoport.core.socket.EventSocket;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.eventbus.EventBus;
-import com.google.inject.*;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Scopes;
 import com.google.inject.servlet.ServletModule;
-import de.skuzzle.inject.async.GuiceAsync;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -59,7 +59,7 @@ public class App {
         protected void configure() {
             binder().requireExplicitBindings();
 
-            GuiceAsync.enableFor(binder());
+//            GuiceAsync.enableFor(binder());
 
             install(new JsonModule());
             install(new LoggerModule(App.class));
@@ -87,12 +87,6 @@ public class App {
                     serve("/*").with(HttpServletDispatcher.class);
                 }
             });
-        }
-
-        @Provides
-        @Singleton
-        JacksonJsonProvider getJacksonJsonProvider(ObjectMapper objectMapper) {
-            return new JacksonJsonProvider(objectMapper);
         }
     }
 }

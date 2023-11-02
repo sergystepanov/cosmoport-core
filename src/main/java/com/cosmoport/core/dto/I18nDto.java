@@ -1,10 +1,6 @@
 package com.cosmoport.core.dto;
 
-import java.io.Serializable;
-
-public final class I18nDto extends Entity implements Serializable {
-    private static final long serialVersionUID = -6637348368811862547L;
-
+public final class I18nDto extends Entity {
     private final String tag;
     private final boolean external;
     private final String description;

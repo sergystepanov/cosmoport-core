@@ -62,7 +62,7 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
     public List<EventDto> getAllWithFilter(final String date, final Long gateId) {
         getLogger().debug("date={}, gateId={}", date, gateId);
 
-        final boolean hasDate = date != null && !date.equals("");
+        final boolean hasDate = date != null && !date.isEmpty();
         final boolean hasGate = gateId != null && gateId != 0;
         final boolean hasParams = hasDate || hasGate;
 
@@ -96,8 +96,8 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
      * @since 0.1.3
      */
     public List<EventDto> getAllFromDates(final String date, final String date2) {
-        final boolean hasDate1 = date != null && !date.equals("");
-        final boolean hasDate2 = date2 != null && !date2.equals("");
+        final boolean hasDate1 = date != null && !date.isEmpty();
+        final boolean hasDate2 = date2 != null && !date2.isEmpty();
 
         final List<Object> params = new ArrayList<>();
         if (hasDate1) {
@@ -126,7 +126,7 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
     private List<EventDto> getAllPage(final int page, final int count, final String date) throws RuntimeException {
         //noinspection UnnecessaryBoxing
         return getAllByParams("SELECT * FROM TIMETABLE WHERE event_date = ? " + defaultOrder + " LIMIT ?, ?",
-                date, new Integer((page - 1) * count), new Integer(count));
+                date, Integer.valueOf((page - 1) * count), Integer.valueOf(count));
     }
 
     public List<EventDto> getAllPage(final int page, final int count) throws RuntimeException {
@@ -159,14 +159,14 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
                             "AND event_status_id <> ? AND id <> ? " +
                             defaultOrder + " LIMIT 1",
                     main.getEventDate(),
-                    new Long(main.getGateId()),
-                    new Long(main.getGate2Id()),
-                    new Long(main.getStartTime()),
-                    new Integer(EventStatus.CANCELED.value()),
-                    new Long(main.getId()));
+                    Long.valueOf(main.getGateId()),
+                    Long.valueOf(main.getGate2Id()),
+                    Long.valueOf(main.getStartTime()),
+                    Integer.valueOf(EventStatus.CANCELED.value()),
+                    Long.valueOf(main.getId()));
             // Compile the result
             result.add(main);
-            if (nextEvent.size() > 0) {
+            if (!nextEvent.isEmpty()) {
                 result.add(nextEvent.get(0));
             }
         }
@@ -206,7 +206,7 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
                         ")",
                 params);
 
-        if (overlapping.size() > 0) {
+        if (!overlapping.isEmpty()) {
             String divider = "";
             StringBuilder message = new StringBuilder();
             message.append("Overlapping events: ");
@@ -294,7 +294,7 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
                         ")",
                 params);
 
-        if (overlapping.size() > 0) {
+        if (!overlapping.isEmpty()) {
             String divider = "";
             StringBuilder message = new StringBuilder();
             message.append("Overlapping pre-periods of events: ");

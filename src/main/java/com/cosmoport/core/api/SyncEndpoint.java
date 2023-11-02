@@ -38,7 +38,7 @@ public final class SyncEndpoint {
     }
 
     private void auth(HasAuthKey syncRequest) throws ApiAuthError {
-        final boolean isKeyOk = settingsPersistenceService.paramEquals(Constants.syncServerKey, syncRequest.getKey());
+        final boolean isKeyOk = settingsPersistenceService.paramEquals(Constants.syncServerKey, syncRequest.key());
 
         if (!isKeyOk) {
             throw new ApiAuthError();
@@ -50,7 +50,7 @@ public final class SyncEndpoint {
     public ResultDto syncTickets(final SyncTicketsDto syncTickets) throws ApiAuthError, RuntimeException {
         auth(syncTickets);
 
-        timetable.updateTickets(syncTickets.getEventId(), syncTickets.getValue());
+        timetable.updateTickets(syncTickets.eventId(), syncTickets.value());
 
         return new ResultDto(true);
     }
@@ -58,7 +58,7 @@ public final class SyncEndpoint {
     @POST
     @Path("/add/event")
     public EventDto create(final SyncAddEventDto syncAddEvent) {
-        final EventDto newEvent = timetable.save(syncAddEvent.getEvent());
+        final EventDto newEvent = timetable.save(syncAddEvent.event());
         eventBus.post(new ReloadMessage());
 
         return newEvent;

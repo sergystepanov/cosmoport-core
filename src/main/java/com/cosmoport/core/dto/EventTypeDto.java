@@ -3,16 +3,12 @@ package com.cosmoport.core.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.io.Serializable;
-
-public final class EventTypeDto extends Entity implements Serializable {
-    private static final long serialVersionUID = 3477232786787312639L;
-
-    private long i18nEventTypeName;
-    private long i18nEventTypeSubname;
-    private long i18nEventTypeDescription;
-    private int defaultDuration;
-    private int defaultRepeatInterval;
+public final class EventTypeDto extends Entity {
+    private final long i18nEventTypeName;
+    private final long i18nEventTypeSubname;
+    private final long i18nEventTypeDescription;
+    private final int defaultDuration;
+    private final int defaultRepeatInterval;
 
     @JsonCreator
     public EventTypeDto(@JsonProperty("id") long id,
@@ -27,10 +23,6 @@ public final class EventTypeDto extends Entity implements Serializable {
         this.i18nEventTypeDescription = i18nEventTypeDescription;
         this.defaultDuration = defaultDuration;
         this.defaultRepeatInterval = defaultRepeatInterval;
-    }
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
     }
 
     public long getI18nEventTypeName() {

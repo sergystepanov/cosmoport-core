@@ -17,7 +17,7 @@ import java.util.Optional;
  */
 public final class I18nPersistenceService extends PersistenceService<I18nDto> {
     @Inject
-    protected I18nPersistenceService(Logger logger, Provider<DataSource> ds) {
+    I18nPersistenceService(Logger logger, Provider<DataSource> ds) {
         super(logger, ds);
     }
 
@@ -30,7 +30,7 @@ public final class I18nPersistenceService extends PersistenceService<I18nDto> {
     Optional<I18nDto> findByTag(final String tag) {
         final List<I18nDto> result = getAllByParams("SELECT * FROM I18N WHERE tag = ?", tag);
 
-        return result.size() > 0 ? Optional.of(result.get(0)) : Optional.empty();
+        return !result.isEmpty() ? Optional.of(result.get(0)) : Optional.empty();
     }
 
     I18nDto save(I18nDto i18n, final Connection extConn) throws RuntimeException {
@@ -80,7 +80,7 @@ public final class I18nPersistenceService extends PersistenceService<I18nDto> {
 
     private I18nDto mapRs(final ResultSet rs, final String idNameOverride) throws SQLException {
         return new I18nDto(
-                idNameOverride.equals("") ? rs.getLong("id") : rs.getLong(idNameOverride),
+                idNameOverride.isEmpty() ? rs.getLong("id") : rs.getLong(idNameOverride),
                 rs.getString("tag"),
                 rs.getBoolean("external"),
                 rs.getString("description"),

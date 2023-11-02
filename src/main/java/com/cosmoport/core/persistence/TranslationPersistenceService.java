@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.cosmoport.core.persistence.PersistenceService.throwConstrainViolation;
 
@@ -26,7 +25,7 @@ import static com.cosmoport.core.persistence.PersistenceService.throwConstrainVi
  * @since 0.1.0
  */
 public final class TranslationPersistenceService implements HasClosableResources {
-    private static Logger logger = LoggerFactory.getLogger(TranslationPersistenceService.class.getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(TranslationPersistenceService.class.getCanonicalName());
     private final Provider<DataSource> ds;
     private final I18nPersistenceService i18nPersistenceService;
     private final LocalePersistenceService localePersistenceService;
@@ -84,7 +83,7 @@ public final class TranslationPersistenceService implements HasClosableResources
     }
 
     Optional<TranslationDto> getById(final long id) {
-        Optional<TranslationDto> object = null;
+        Optional<TranslationDto> object = Optional.empty();
         Connection conn = null;
         PreparedStatement statement = null;
         ResultSet rs = null;
@@ -149,8 +148,8 @@ public final class TranslationPersistenceService implements HasClosableResources
 
             // Build uber object
             for (final TranslationRecord record : records) {
-                final TranslationLightDto translation = new TranslationLightDto(record.gettId(), getValues(record));
-                final String locale = record.getlCode();
+                final TranslationLightDto translation = new TranslationLightDto(record.tId(), getValues(record));
+                final String locale = record.lCode();
                 final String translationKey = getKey(record);
 
                 // Locale is first
@@ -219,7 +218,7 @@ public final class TranslationPersistenceService implements HasClosableResources
             List<LocaleDto> locales = localePersistenceService.getAll()
                     .stream()
                     .filter(locale -> locale.getId() != translation.getLocaleId())
-                    .collect(Collectors.toList());
+                    .toList();
 
             for (final LocaleDto loc : locales) {
                 statement = conn.prepareStatement(
@@ -321,7 +320,7 @@ public final class TranslationPersistenceService implements HasClosableResources
      * @since 0.1.0
      */
     private String getKey(final TranslationRecord record) {
-        return record.isI18nExternal() ? record.getI18nTag() : String.valueOf(record.getI18nId());
+        return record.i18nExternal() ? record.i18nTag() : String.valueOf(record.i18nId());
     }
 
     /**
@@ -337,67 +336,22 @@ public final class TranslationPersistenceService implements HasClosableResources
     private List<String> getValues(final TranslationRecord record) throws JsonConvertException {
         List<String> values;
 
-        if (record.getI18nParams().equals(Constants.jsonArray)) {
+        if (record.i18nParams().equals(Constants.jsonArray)) {
             try {
-                values = Arrays.asList(new ObjectMapper().readValue(record.gettText(), String[].class));
+                values = Arrays.asList(new ObjectMapper().readValue(record.tText(), String[].class));
             } catch (Exception e) {
-                logger.error("Could not convert a JSON value [{}], {}", record.gettText(), e.getMessage());
+                logger.error("Could not convert a JSON value [{}], {}", record.tText(), e.getMessage());
                 throw new JsonConvertException();
             }
         } else {
-            values = ImmutableList.of(record.gettText());
+            values = ImmutableList.of(record.tText());
         }
 
         return values;
     }
 
-    private final class TranslationRecord {
-        private final long tId;
-        private final String tText;
-        private final long i18nId;
-        private final String i18nTag;
-        private final boolean i18nExternal;
-        private final String i18nParams;
-        private final String lCode;
-
-        private TranslationRecord(long tId, String tText, long i18nId, String i18nTag, boolean i18nExternal,
-                                  String i18nParams, String lCode) {
-            this.tId = tId;
-            this.tText = tText;
-            this.i18nId = i18nId;
-            this.i18nTag = i18nTag;
-            this.i18nExternal = i18nExternal;
-            this.i18nParams = i18nParams;
-            this.lCode = lCode;
-        }
-
-        long gettId() {
-            return tId;
-        }
-
-        String gettText() {
-            return tText;
-        }
-
-        long getI18nId() {
-            return i18nId;
-        }
-
-        String getI18nTag() {
-            return i18nTag;
-        }
-
-        boolean isI18nExternal() {
-            return i18nExternal;
-        }
-
-        String getI18nParams() {
-            return i18nParams;
-        }
-
-        String getlCode() {
-            return lCode;
-        }
+    private record TranslationRecord(long tId, String tText, long i18nId, String i18nTag, boolean i18nExternal,
+                                     String i18nParams, String lCode) {
     }
 
     @Override

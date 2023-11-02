@@ -40,7 +40,7 @@ final class LocalePersistenceServiceTest extends PersistenceTest {
         final LocaleDto persistent = service.findById(1).orElse(new LocaleDto(2, "", false, "", true, 10));
 
         assertAll("data",
-                () -> assertEquals(false, persistent.isShow()),
+                () -> assertFalse(persistent.isShow()),
                 () -> assertEquals(20, persistent.getShowTime())
         );
     }

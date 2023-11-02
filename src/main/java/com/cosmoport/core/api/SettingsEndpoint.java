@@ -36,7 +36,7 @@ public final class SettingsEndpoint {
     @POST
     @Path("/update/{id}")
     public ResultDto updateSetting(@PathParam("id") long id, final TextValueUpdateRequestDto requestDto) {
-        final boolean updated = service.updateSettingForId(id, requestDto.getText());
+        final boolean updated = service.updateSettingForId(id, requestDto.text());
         if (updated) {
             eventBus.post(new ReloadMessage());
         }

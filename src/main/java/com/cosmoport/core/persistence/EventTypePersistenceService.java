@@ -63,7 +63,7 @@ public final class EventTypePersistenceService extends PersistenceService<EventT
      * @since 0.1.0
      */
     private void validate(final CreateEventTypeRequestDto eventType) throws ValidationException {
-        final Object[] params = {eventType.getName(), eventType.getSubname()};
+        final Object[] params = {eventType.name(), eventType.subname()};
 
         // TODO Be aware of default translation, mate
         // TODO Trim
@@ -76,8 +76,8 @@ public final class EventTypePersistenceService extends PersistenceService<EventT
                         "LIMIT 1",
                 params);
 
-        if (duplicates.size() > 0) {
-            throw new ValidationException("Duplicate with " + eventType.getName() + ", " + eventType.getSubname());
+        if (!duplicates.isEmpty()) {
+            throw new ValidationException("Duplicate with " + eventType.name() + ", " + eventType.subname());
         }
     }
 
@@ -118,7 +118,7 @@ public final class EventTypePersistenceService extends PersistenceService<EventT
             newEventType = new EventTypeDto(0,
                     eventTypeI18nName.getId(), eventTypeI18nSubname.getId(),
                     eventTypeI18nDescription.getId(),
-                    eventType.getDefaultDuration(), eventType.getDefaultRepeatInterval()
+                    eventType.defaultDuration(), eventType.defaultRepeatInterval()
             );
             statement = conn.prepareStatement(
                     "INSERT INTO EVENT_TYPE (i18n_event_type_name, i18n_event_type_subname," +
@@ -145,11 +145,11 @@ public final class EventTypePersistenceService extends PersistenceService<EventT
             // Make default translation and copy it all over the rest ones
             // Default
             final TranslationDto trName = translationPersistenceService.save(
-                    new TranslationDto(0, newEventType.getI18nEventTypeName(), 1, eventType.getName(), null), conn);
+                    new TranslationDto(0, newEventType.getI18nEventTypeName(), 1, eventType.name(), null), conn);
             final TranslationDto trSubname = translationPersistenceService.save(
-                    new TranslationDto(0, newEventType.getI18nEventTypeSubname(), 1, eventType.getSubname(), null), conn);
+                    new TranslationDto(0, newEventType.getI18nEventTypeSubname(), 1, eventType.subname(), null), conn);
             final TranslationDto trDescription = translationPersistenceService.save(
-                    new TranslationDto(0, newEventType.getI18nEventTypeDescription(), 1, eventType.getDescription(), null), conn);
+                    new TranslationDto(0, newEventType.getI18nEventTypeDescription(), 1, eventType.description(), null), conn);
 
             // Copy
             translationPersistenceService.copyOf(trName, conn);
@@ -173,7 +173,6 @@ public final class EventTypePersistenceService extends PersistenceService<EventT
 
     public int delete(final long id) throws RuntimeException {
         Connection conn = null;
-        PreparedStatement checkStatement = null;
         PreparedStatement statement0 = null;
         PreparedStatement statement = null;
         PreparedStatement statement2 = null;
@@ -242,7 +241,7 @@ public final class EventTypePersistenceService extends PersistenceService<EventT
             rollback(conn);
             throwServerApiException(e);
         } finally {
-            close(checkStatement, statement0, statement, statement2, conn);
+            close(statement0, statement, statement2, conn);
         }
 
         return deleted;

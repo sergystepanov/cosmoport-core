@@ -54,7 +54,7 @@ public class TranslationEndpoint {
     public ResultDto updateTranslation(@PathParam("translationId") long translationId,
                                        TextValueUpdateRequestDto requestDto) {
         final boolean updated =
-                translationPersistenceService.updateTranslationForId(translationId, requestDto.getText());
+                translationPersistenceService.updateTranslationForId(translationId, requestDto.text());
         if (updated) {
             eventBus.post(new ReloadMessage());
         }

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 
 public final class RemoteSync {
@@ -29,7 +30,7 @@ public final class RemoteSync {
                 String value = mapper.writeValueAsString(object);
 
                 // Request
-                URL url = new URL(settings.getSyncServerAddress());
+                URL url = URI.create(settings.getSyncServerAddress()).toURL();
                 HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
                 httpCon.setDoOutput(true);
                 httpCon.setRequestMethod("POST");

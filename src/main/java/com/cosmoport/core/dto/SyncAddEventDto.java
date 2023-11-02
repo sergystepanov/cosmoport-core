@@ -4,11 +4,7 @@ import com.cosmoport.core.dto.request.HasAuthKey;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class SyncAddEventDto implements HasAuthKey {
-    private final String key;
-    private final EventDto event;
-    private final String timestamp;
-
+public record SyncAddEventDto(String key, EventDto event, String timestamp) implements HasAuthKey {
     @JsonCreator
     public SyncAddEventDto(@JsonProperty("key") String key,
                            @JsonProperty("event") EventDto event,
@@ -18,16 +14,8 @@ public class SyncAddEventDto implements HasAuthKey {
         this.timestamp = timestamp;
     }
 
-    public EventDto getEvent() {
-        return event;
-    }
-
-    public String getTimestamp() {
-        return timestamp;
-    }
-
     @Override
-    public String getKey() {
+    public String key() {
         return null;
     }
 }

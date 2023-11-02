@@ -3,16 +3,12 @@ package com.cosmoport.core.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.io.Serializable;
-
 /**
  * Database LOCALE table entity.
  *
  * @since 0.1.0
  */
-public final class LocaleDto extends Entity implements Serializable {
-    private static final long serialVersionUID = 1200118022748392404L;
-
+public final class LocaleDto extends Entity {
     private final String code;
     private final boolean isDefault;
     private final String localeDescription;

@@ -45,6 +45,8 @@ public final class TimetableEndpoint {
     }
 
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/")
     public List<EventDto> get(@QueryParam("date") String date, @QueryParam("date2") String date2,
                               @QueryParam("gate") long gateId) {
@@ -109,7 +111,7 @@ public final class TimetableEndpoint {
     @POST
     @Path("/tickets")
     public ResultDto updateTickets(final TicketsUpdateRequestDto request) throws RuntimeException {
-        service.updateTicketsForced(request.getId(), request.getTickets(), request.isForceOpen());
+        service.updateTicketsForced(request.id(), request.tickets(), request.forceOpen());
 
         return new ResultDto(true);
     }

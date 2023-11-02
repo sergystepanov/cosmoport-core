@@ -6,5 +6,5 @@ package com.cosmoport.core.event.message;
  * @since 0.1.0
  */
 public final class ReloadMessage {
-    public static String token = ":reload";
+    public static final String token = ":reload";
 }

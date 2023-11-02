@@ -19,7 +19,7 @@ public abstract class PersistenceService<T> {
     private final Provider<DataSource> ds;
     private final Logger logger;
 
-    private boolean keepConnection;
+    private final boolean keepConnection;
 
     @Inject
     protected PersistenceService(Logger logger, Provider<DataSource> ds) {
@@ -210,11 +210,11 @@ public abstract class PersistenceService<T> {
 
     private void setStatementParam(final PreparedStatement statement,
                                    int i, final QueryParam param) throws SQLException {
-        if (param.getType().equals("long")) {
-            statement.setLong(i, (Long) param.getValue());
+        if (param.type().equals("long")) {
+            statement.setLong(i, (Long) param.value());
         } else {
-            if (param.getType().equals("string")) {
-                statement.setString(i, (String) param.getValue());
+            if (param.type().equals("string")) {
+                statement.setString(i, (String) param.value());
             }
         }
     }

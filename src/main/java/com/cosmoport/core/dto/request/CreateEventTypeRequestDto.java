@@ -3,17 +3,8 @@ package com.cosmoport.core.dto.request;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.io.Serializable;
-
-public final class CreateEventTypeRequestDto implements Serializable {
-    private static final long serialVersionUID = -6844418056508971397L;
-
-    private final String name;
-    private final String subname;
-    private final String description;
-    private final int defaultDuration;
-    private final int defaultRepeatInterval;
-
+public record CreateEventTypeRequestDto(String name, String subname, String description, int defaultDuration,
+                                        int defaultRepeatInterval) {
     @JsonCreator
     public CreateEventTypeRequestDto(@JsonProperty("name") String name,
                                      @JsonProperty("subname") String subname,
@@ -25,25 +16,5 @@ public final class CreateEventTypeRequestDto implements Serializable {
         this.description = description;
         this.defaultDuration = defaultDuration;
         this.defaultRepeatInterval = defaultRepeatInterval;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getSubname() {
-        return subname;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public int getDefaultDuration() {
-        return defaultDuration;
-    }
-
-    public int getDefaultRepeatInterval() {
-        return defaultRepeatInterval;
     }
 }
