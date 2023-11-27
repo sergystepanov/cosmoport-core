@@ -32,7 +32,7 @@ final class TimetablePersistenceServiceTest extends PersistenceTest {
         void save() {
             assertEquals(
                     total + 1,
-                    service.save(new EventDto(0, "2017-02-05", 2, 6, 1, 1, 1, 1, 1, 1, 20, 10, 1, 0, "")).getId()
+                    service.save(new EventDto(0, "2017-02-05", 2, 1, 6, 1, 1, 1, 1, 1, 20, 10, 1, 0, "")).getId()
             );
         }
 
