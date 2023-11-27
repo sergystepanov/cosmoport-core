@@ -24,11 +24,9 @@ public class PersistenceTest {
                 .locations("filesystem:" + System.getProperty("user.dir") + "/db/migration")
                 // Create new in-memory database before each test
                 .dataSource(dataSourceProvider.get())
-                .baselineOnMigrate(true)
-                .mixed(true)
+                .cleanDisabled(false)
                 .load();
     }
-
 
     public void before() {
         flyway.clean();

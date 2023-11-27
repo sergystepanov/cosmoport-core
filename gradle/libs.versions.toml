@@ -1,0 +1,52 @@
+[versions]
+apiguardian = "1.1.2"
+flyway = "10.1.0"
+guava = "32.1.3-jre"
+guice = "5.1.0"
+guiceAsync = "2.0.0"
+hikaricp = "5.1.0"
+jackson = "2.15.3"
+jetty = "9.4.53.v20231009"
+junit = "5.10.1"
+logback = "1.2.3"
+resteasy = "4.7.9.Final"
+slf4j = "1.7.22"
+springJdbc = "5.0.2.RELEASE"
+sqlite = "3.42.0.1"
+versionsPlugin = "0.27.0"
+
+[libraries]
+flyway = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+guice = { module = "com.google.inject:guice", version.ref = "guice" }
+guice-servlet = { module = "com.google.inject.extensions:guice-servlet", version.ref = "guice" }
+guice-async-extension = { module = "de.skuzzle.inject:guice-async-extension", version.ref = "guiceAsync" }
+hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
+jackson-jaxrs-json-provider = { module = "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider", version.ref = "jackson" }
+jetty-servlet = { module = "org.eclipse.jetty:jetty-servlet", version.ref = "jetty" }
+resteasy-guice = { module = "org.jboss.resteasy:resteasy-guice", version.ref = "resteasy" }
+resteasy-jackson2-provider = { module = "org.jboss.resteasy:resteasy-jackson2-provider", version.ref = "resteasy" }
+resteasy-multipart-provider = { module = "org.jboss.resteasy:resteasy-multipart-provider", version.ref = "resteasy" }
+sqlite = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite" }
+websocket-api = { module = "org.eclipse.jetty.websocket:websocket-api", version.ref = "jetty" }
+websocket-server = { module = "org.eclipse.jetty.websocket:websocket-server", version.ref = "jetty" }
+websocket-client = { module = "org.eclipse.jetty.websocket:websocket-client", version.ref = "jetty" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+slf4j-log4j = { module = "org.slf4j:log4j-over-slf4j", version.ref = "slf4j" }
+slf4j-jul = { module = "org.slf4j:jul-to-slf4j", version.ref = "slf4j" }
+junit = { module = "org.junit:junit-bom", version.ref = "junit" }
+apiguardian = { module = "org.apiguardian:apiguardian-api", version.ref = "apiguardian" }
+spring-jdbc = { module = "org.springframework:spring-jdbc", version.ref = "springJdbc" }
+
+[bundles]
+guice = ["guice", "guice-servlet"]
+jackson = ["jackson-databind", "jackson-datatype-jsr310", "jackson-jaxrs-json-provider"]
+jetty = ["jetty-servlet", "websocket-api", "websocket-server", "websocket-client"]
+
+[plugins]
+flyway = { id = "org.flywaydb.flyway", version.ref = "flyway" }
+versions = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }
+
+
