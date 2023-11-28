@@ -9,6 +9,7 @@ public final class EventTypeDto extends Entity {
     private final long i18nEventTypeDescription;
     private final int defaultDuration;
     private final int defaultRepeatInterval;
+    private final double defaultCost;
 
     @JsonCreator
     public EventTypeDto(@JsonProperty("id") long id,
@@ -16,13 +17,15 @@ public final class EventTypeDto extends Entity {
                         @JsonProperty("i18n_event_type_subname") long i18nEventTypeSubname,
                         @JsonProperty("i18n_event_type_description") long i18nEventTypeDescription,
                         @JsonProperty("default_duration") int defaultDuration,
-                        @JsonProperty("default_repeat_interval") int defaultRepeatInterval) {
+                        @JsonProperty("default_repeat_interval") int defaultRepeatInterval,
+                        @JsonProperty("default_cost") double defaultCost) {
         this.id = id;
         this.i18nEventTypeName = i18nEventTypeName;
         this.i18nEventTypeSubname = i18nEventTypeSubname;
         this.i18nEventTypeDescription = i18nEventTypeDescription;
         this.defaultDuration = defaultDuration;
         this.defaultRepeatInterval = defaultRepeatInterval;
+        this.defaultCost = defaultCost;
     }
 
     public long getI18nEventTypeName() {
@@ -43,5 +46,9 @@ public final class EventTypeDto extends Entity {
 
     public int getDefaultRepeatInterval() {
         return defaultRepeatInterval;
+    }
+
+    public double getDefaultCost() {
+        return defaultCost;
     }
 }

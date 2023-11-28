@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Event type entity database service.
@@ -43,12 +44,17 @@ public final class EventTypePersistenceService extends PersistenceService<EventT
                 rs.getLong("i18n_event_type_subname"),
                 rs.getLong("i18n_event_type_description"),
                 rs.getInt("default_duration"),
-                rs.getInt("default_repeat_interval")
+                rs.getInt("default_repeat_interval"),
+                rs.getDouble("default_cost")
         );
     }
 
     public List<EventTypeDto> getAll() {
         return getAll("SELECT * FROM EVENT_TYPE");
+    }
+
+    public Optional<EventTypeDto> getById(final long id) {
+        return findById("SELECT * FROM EVENT_TYPE WHERE id = ?", id);
     }
 
     /**
@@ -118,17 +124,18 @@ public final class EventTypePersistenceService extends PersistenceService<EventT
             newEventType = new EventTypeDto(0,
                     eventTypeI18nName.getId(), eventTypeI18nSubname.getId(),
                     eventTypeI18nDescription.getId(),
-                    eventType.defaultDuration(), eventType.defaultRepeatInterval()
+                    eventType.defaultDuration(), eventType.defaultRepeatInterval(), eventType.defaultCost()
             );
             statement = conn.prepareStatement(
                     "INSERT INTO EVENT_TYPE (i18n_event_type_name, i18n_event_type_subname," +
-                            "i18n_event_type_description, default_duration, default_repeat_interval) " +
-                            " VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                            "i18n_event_type_description, default_duration, default_repeat_interval, default_cost) " +
+                            " VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             statement.setLong(1, newEventType.getI18nEventTypeName());
             statement.setLong(2, newEventType.getI18nEventTypeSubname());
             statement.setLong(3, newEventType.getI18nEventTypeDescription());
             statement.setLong(4, newEventType.getDefaultDuration());
             statement.setLong(5, newEventType.getDefaultRepeatInterval());
+            statement.setDouble(6, newEventType.getDefaultCost());
 
             if (statement.executeUpdate() < 0) {
                 throw new Exception();

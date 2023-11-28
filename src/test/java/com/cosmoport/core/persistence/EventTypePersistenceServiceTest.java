@@ -43,7 +43,7 @@ final class EventTypePersistenceServiceTest extends PersistenceTest {
         void validateStart() {
             final Throwable exception = assertThrows(
                     ValidationException.class,
-                    () -> service.save(new CreateEventTypeRequestDto("Excursion", "Station lunch", "", 0, 0))
+                    () -> service.save(new CreateEventTypeRequestDto("Excursion", "Station lunch", "", 0, 0, 0))
             );
 
             assertEquals("Duplicate with Excursion, Station lunch", exception.getMessage());
@@ -60,7 +60,7 @@ final class EventTypePersistenceServiceTest extends PersistenceTest {
         @DisplayName("Should save new event type")
         void save() {
             final EventTypeDto eventType = service.save(
-                    new CreateEventTypeRequestDto("event_name", "event_subname", "event_description", 0, 0));
+                    new CreateEventTypeRequestDto("event_name", "event_subname", "event_description", 0, 0, 0));
             assertAll("checks",
                     // created
                     () -> assertEquals(newCount, eventType.getId()),
@@ -72,6 +72,19 @@ final class EventTypePersistenceServiceTest extends PersistenceTest {
                     () -> assertEquals(localesCount, translationService.findAllByI18n(eventType.getI18nEventTypeName()).size()),
                     () -> assertEquals(localesCount, translationService.findAllByI18n(eventType.getI18nEventTypeDescription()).size()),
                     () -> assertEquals(localesCount, translationService.findAllByI18n(eventType.getI18nEventTypeSubname()).size())
+            );
+        }
+
+        @Test
+        @DisplayName("Should be able to change the default cost value")
+        void defaultCost() {
+            final var eventType = service.save(
+                    new CreateEventTypeRequestDto("event_name", "event_subname", "event_description", 0, 0, 33.33));
+            assertAll("checks",
+                    // created
+                    () -> assertTrue(eventType.getId() > 0),
+                    // has not default cost
+                    () -> assertEquals(33.33, service.getById(eventType.getId()).orElseThrow().getDefaultCost())
             );
         }
     }
