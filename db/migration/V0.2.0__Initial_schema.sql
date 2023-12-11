@@ -57,23 +57,41 @@ CREATE TABLE TRANSLATION
 CREATE TABLE EVENT_TYPE
 (
     id                          INTEGER        NOT NULL PRIMARY KEY AUTOINCREMENT,
-    i18n_event_type_name        INTEGER,
-    i18n_event_type_subname     INTEGER,
+    category_id                 INTEGER,
+    i18n_event_type_name        INTEGER        NOT NULL,
     i18n_event_type_description INTEGER,
     default_duration            INTEGER        NOT NULL DEFAULT (1),
     default_repeat_interval     INTEGER        NOT NULL DEFAULT (0),
     default_cost                DECIMAL(10, 2) NOT NULL DEFAULT (0.00),
 
-    FOREIGN KEY (i18n_event_type_name) REFERENCES I18N (id)
+    CONSTRAINT unique_event_name_for_category UNIQUE (category_id, i18n_event_type_name),
+    CONSTRAINT not_empty_type_name CHECK (i18n_event_type_name <> ''),
+
+    FOREIGN KEY (category_id) REFERENCES EVENT_TYPE_CATEGORY (id)
         ON DELETE SET NULL
         ON UPDATE CASCADE,
-    FOREIGN KEY (i18n_event_type_subname) REFERENCES I18N (id)
+    FOREIGN KEY (i18n_event_type_name) REFERENCES I18N (id)
         ON DELETE SET NULL
         ON UPDATE CASCADE,
     FOREIGN KEY (i18n_event_type_description) REFERENCES I18N (id)
         ON DELETE SET NULL
         ON UPDATE CASCADE
+);
+--
+-- Stores multilevel event category hierarchy
+--
+CREATE TABLE EVENT_TYPE_CATEGORY
+(
+    id                            INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    i18n_event_type_category_name INTEGER,
+    parent                        INTEGER,
 
+    FOREIGN KEY (i18n_event_type_category_name) REFERENCES I18N (id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
+    FOREIGN KEY (parent) REFERENCES EVENT_TYPE_CATEGORY (id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 );
 -- The event status (to display)
 CREATE TABLE EVENT_STATUS
@@ -154,6 +172,39 @@ CREATE TABLE TIMETABLE
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
+
+-- Triggers for EVENTS
+--
+-- Delete all i18n links (reverse foreign key)
+---
+CREATE TRIGGER EVENT_TYPE_AD
+    AFTER
+        DELETE
+    ON EVENT_TYPE
+    FOR EACH ROW
+BEGIN
+    DELETE FROM I18N WHERE id = old.i18n_event_type_name;
+    DELETE FROM I18N WHERE id = old.i18n_event_type_description;
+    DELETE FROM TRANSLATION WHERE i18n_id = old.i18n_event_type_name;
+    DELETE FROM TRANSLATION WHERE i18n_id = old.i18n_event_type_description;
+
+    -- clear the empty subcategory if there are no more events
+    DELETE
+    FROM EVENT_TYPE_CATEGORY
+    WHERE old.category_id = id
+      AND NOT EXISTS(SELECT 1 FROM EVENT_TYPE WHERE category_id = old.category_id);
+END;
+
+CREATE TRIGGER EVENT_TYPE_CATEGORY_AD
+    AFTER
+        DELETE
+    ON EVENT_TYPE_CATEGORY
+    FOR EACH ROW
+BEGIN
+    DELETE FROM I18N WHERE id = old.i18n_event_type_category_name;
+    DELETE FROM TRANSLATION WHERE i18n_id = old.i18n_event_type_category_name;
+END;
+
 --
 -- Triggers for TIMETABLE
 --

@@ -1,12 +1,10 @@
 package com.cosmoport.core.api;
 
 import com.cosmoport.core.dto.*;
+import com.cosmoport.core.dto.request.CreateEventTypeCategoryRequestDto;
 import com.cosmoport.core.dto.request.CreateEventTypeRequestDto;
 import com.cosmoport.core.event.message.ReloadMessage;
-import com.cosmoport.core.persistence.EventDestinationPersistenceService;
-import com.cosmoport.core.persistence.EventStatePersistenceService;
-import com.cosmoport.core.persistence.EventStatusPersistenceService;
-import com.cosmoport.core.persistence.EventTypePersistenceService;
+import com.cosmoport.core.persistence.*;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import org.jboss.resteasy.annotations.GZIP;
@@ -21,6 +19,7 @@ import java.util.List;
 @GZIP
 public final class TimeEventsEndpoint {
     private final EventTypePersistenceService eventTypePersistenceService;
+    private final EventTypeCategoryPersistenceService eventTypeCategoryPersistenceService;
     private final EventStatusPersistenceService eventStatusPersistenceService;
     private final EventStatePersistenceService eventStatePersistenceService;
     private final EventDestinationPersistenceService eventDestinationPersistenceService;
@@ -28,11 +27,13 @@ public final class TimeEventsEndpoint {
 
     @Inject
     public TimeEventsEndpoint(EventTypePersistenceService eventTypePersistenceService,
+                              EventTypeCategoryPersistenceService eventTypeCategoryPersistenceService,
                               EventStatusPersistenceService eventStatusPersistenceService,
                               EventStatePersistenceService eventStatePersistenceService,
                               EventDestinationPersistenceService eventDestinationPersistenceService,
                               EventBus eventBus) {
         this.eventTypePersistenceService = eventTypePersistenceService;
+        this.eventTypeCategoryPersistenceService = eventTypeCategoryPersistenceService;
         this.eventStatusPersistenceService = eventStatusPersistenceService;
         this.eventStatePersistenceService = eventStatePersistenceService;
         this.eventDestinationPersistenceService = eventDestinationPersistenceService;
@@ -44,6 +45,7 @@ public final class TimeEventsEndpoint {
     public EventReferenceDataDto getEventReferenceData() {
         return new EventReferenceDataDto(
                 eventTypePersistenceService.getAll(),
+                eventTypeCategoryPersistenceService.getAll(),
                 eventStatusPersistenceService.getAll(),
                 eventStatePersistenceService.getAll(),
                 eventDestinationPersistenceService.getAll());
@@ -57,7 +59,7 @@ public final class TimeEventsEndpoint {
 
     @POST
     @Path("/types")
-    public EventTypeDto createEventType(final CreateEventTypeRequestDto eventType) {
+    public EventTypeSaveResultDto createEventType(final CreateEventTypeRequestDto eventType) {
         return eventTypePersistenceService.save(eventType);
     }
 
@@ -66,8 +68,13 @@ public final class TimeEventsEndpoint {
     public String delete(@PathParam("id") final long id) {
         final String result = "{\"deleted\": " + eventTypePersistenceService.delete(id) + '}';
         eventBus.post(new ReloadMessage());
-
         return result;
+    }
+
+    @POST
+    @Path("/types/categories")
+    public EventTypeCategoryDto createEventTypeCategory(final CreateEventTypeCategoryRequestDto cat) {
+        return eventTypeCategoryPersistenceService.create(cat);
     }
 
     @GET

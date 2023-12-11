@@ -14,6 +14,10 @@ public final class I18nDto extends Entity {
         this.params = params;
     }
 
+    public static I18nDto Short(String tag) {
+        return new I18nDto(0, tag, false, "", "");
+    }
+
     public String getTag() {
         return tag;
     }

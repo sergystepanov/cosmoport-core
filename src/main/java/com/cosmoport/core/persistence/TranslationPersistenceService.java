@@ -209,23 +209,23 @@ public final class TranslationPersistenceService implements HasClosableResources
         return translation;
     }
 
-    void copyOf(final TranslationDto translation, Connection extConn) throws RuntimeException {
-        Connection conn = null;
+    // !to move into a stored procedure
+    void saveWithDefaultTranslation(long i18nId, String name, Connection extConn) {
         PreparedStatement statement = null;
         try {
-            conn = extConn != null ? extConn : ds.get().getConnection();
+            final var trName = save(new TranslationDto(0, i18nId, 1, name, null), extConn);
 
             List<LocaleDto> locales = localePersistenceService.getAll()
                     .stream()
-                    .filter(locale -> locale.getId() != translation.getLocaleId())
+                    .filter(locale -> locale.getId() != trName.getLocaleId())
                     .toList();
 
             for (final LocaleDto loc : locales) {
-                statement = conn.prepareStatement(
+                statement = extConn.prepareStatement(
                         "INSERT INTO TRANSLATION (i18n_id, locale_id, tr_text) VALUES (?, ?, ?)");
-                statement.setLong(1, translation.getI18nId());
+                statement.setLong(1, trName.getI18nId());
                 statement.setLong(2, loc.getId());
-                statement.setString(3, translation.getText());
+                statement.setString(3, trName.getText());
 
                 if (statement.executeUpdate() < 0) {
                     throw new Exception();
@@ -238,9 +238,6 @@ public final class TranslationPersistenceService implements HasClosableResources
             throwServerApiException(e);
         } finally {
             close(statement);
-            if (extConn == null) {
-                close(conn);
-            }
         }
     }
 
