@@ -14,6 +14,7 @@ slf4j = "1.7.22"
 springJdbc = "5.0.2.RELEASE"
 sqlite = "3.42.0.1"
 versionsPlugin = "0.27.0"
+download = "5.5.0"
 
 [libraries]
 flyway = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
@@ -48,5 +49,4 @@ jetty = ["jetty-servlet", "websocket-api", "websocket-server", "websocket-client
 [plugins]
 flyway = { id = "org.flywaydb.flyway", version.ref = "flyway" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }
-
-
+download = { id = "de.undercouch.download", version.ref = "download" }

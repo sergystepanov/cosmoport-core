@@ -1,6 +1,6 @@
 # Cosmoport Core
 
-> The application core v0.1.4
+> The application core v0.2.0
 
 [API](./doc/API.md)
 
@@ -34,7 +34,16 @@ gradlew run
 
 ### Distribute
 
-For the app distribution use:
+For the portable app distribution:
+
+```text
+gradlew release
+```
+
+The `build/install/core` folder will contain the resulting files, including the automatically downloaded JRE (Java) for
+the current system.
+
+For the generic app distribution use:
 
 ```text
 gradlew distTar | distZip | installDist

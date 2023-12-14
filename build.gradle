@@ -1,7 +1,10 @@
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+
 plugins {
     id 'application'
     alias libs.plugins.flyway
     alias libs.plugins.versions
+    alias libs.plugins.download
 }
 
 version = '0.2.0'
@@ -12,6 +15,7 @@ repositories {
 
 application {
     mainClass = 'com.cosmoport.core.App'
+    executableDir = ''
 }
 
 java {
@@ -35,10 +39,13 @@ compileJava {
 distributions {
     main {
         contents {
-            from(file("$projectDir/db")) {
+            from(layout.ProjectDirectory.dir('db')) {
                 into 'db'
                 include('**/*.db')
                 includeEmptyDirs = false
+            }
+            from(layout.buildDirectory.dir('jre')) {
+                into 'jre'
             }
         }
     }
@@ -54,6 +61,67 @@ distZip {
 
 test {
     useJUnitPlatform()
+}
+
+tasks.register('release') {
+    dependsOn flywayMigrate
+    dependsOn getJre
+
+    tasks.startScripts.with {
+        executableDir = ""
+        doLast {
+            windowsScript.text = windowsScript.text.replace(
+                    'set DEFAULT_JVM_OPTS=',
+                    'set JAVA_EXE=%APP_HOME%jre\\bin\\java.exe\r\n' +
+                            '%JAVA_EXE% -version\r\n' +
+                            'if %ERRORLEVEL% equ 0 set JAVA_HOME=%APP_HOME%\\jre\r\n'
+            )
+            unixScript.text = unixScript.text.replaceFirst(
+                    '(# Determine the Java command.*)',
+                    '$1\nif command \\$APP_HOME/jre/bin/java -version; then JAVA_HOME=\\$APP_HOME/jre; fi\n\n'
+            )
+        }
+    }
+
+    dependsOn installDist
+}
+
+tasks.register('getJre') {
+    if (layout.buildDirectory.file('jre').get().asFile.exists()) {
+        println "JRE is present, please run clean if you want to extract it again"
+        return
+    }
+
+    def os = DefaultNativePlatform.currentOperatingSystem
+    def jreUrl = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.1%2B12/"
+
+    doLast {
+        def oss = ''
+        def ext = ''
+        switch (true) {
+            case os.isWindows(): oss = 'windows'; ext = 'zip'; break
+            case os.isLinux(): oss = 'linux'; ext = 'tar.gz'; break
+            default:
+                println "Not supported system for JRE download: ${os}"
+                return
+        }
+
+        def jre = "OpenJDK21U-jre_x64_${oss}_hotspot_21.0.1_12.${ext}"
+
+        download.run {
+            src jreUrl + jre
+            dest layout.buildDirectory
+            overwrite false
+        }
+        copy {
+            eachFile {
+                path -= ~/^.+?\//
+            }
+            from os.isWindows() ? zipTree(layout.buildDirectory.file(jre)) : tarTree(layout.buildDirectory.file(jre))
+            into layout.buildDirectory.dir('jre')
+            includeEmptyDirs = false
+        }
+    }
 }
 
 dependencies {
