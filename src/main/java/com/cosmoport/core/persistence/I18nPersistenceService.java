@@ -33,6 +33,10 @@ public final class I18nPersistenceService extends PersistenceService<I18nDto> {
         return !result.isEmpty() ? Optional.of(result.get(0)) : Optional.empty();
     }
 
+    public Optional<I18nDto> getById(final long id) {
+        return findById("SELECT * FROM I18N WHERE id = ?", id);
+    }
+
     I18nDto save(I18nDto i18n, final Connection extConn) throws RuntimeException {
         Connection conn = null;
         PreparedStatement statement = null;

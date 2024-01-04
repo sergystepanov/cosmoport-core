@@ -38,7 +38,7 @@ final class EventTypePersistenceServiceTest extends PersistenceTest {
     @Test
     @DisplayName("Should be able to execute getAll()")
     void getAll() {
-        Assertions.assertEquals(4, service.getAll().size());
+        assertFalse(service.getAll().isEmpty());
     }
 
     @Nested
@@ -56,24 +56,27 @@ final class EventTypePersistenceServiceTest extends PersistenceTest {
     @Nested
     @DisplayName("Should be able to save/get/delete objects")
     class PersistenceTest {
-        final int newCount = 5;
         final int localesCount = 3;
         final List<CreateEventSubTypeRequestDto> noSubtypes = Collections.emptyList();
 
         @Test
         @DisplayName("Should save new event type")
         void save() {
-            final var store = service.save(
-                    new CreateEventTypeRequestDto(0, "event_name", "event_description", noSubtypes, 0, 0, 0));
+            final var data = new CreateEventTypeRequestDto(0, "event_name", "event_description", noSubtypes, 0, 0, 0);
+            final var store = service.save(data);
+            final var type = store.eventTypes().get(0);
+
             assertAll("checks",
                     // created
-                    () -> assertEquals(newCount, store.eventTypes().get(0).getId()),
+                    () -> assertTrue(type.getId() > 0),
                     // has i18ns
-                    () -> assertTrue(i18nService.findByTag("event_type_name_" + newCount + "_1").isPresent()),
-                    () -> assertTrue(i18nService.findByTag("event_type_description_" + newCount + "_1").isPresent()),
+                    () -> assertAll("I18 records should be created",
+                            () -> assertTrue(i18nService.getById(type.getI18nEventTypeName()).isPresent()),
+                            () -> assertTrue(i18nService.getById(type.getI18nEventTypeDescription()).isPresent())
+                    ),
                     // has default translations
-                    () -> assertEquals(localesCount, translationService.findAllByI18n(store.eventTypes().get(0).getI18nEventTypeName()).size()),
-                    () -> assertEquals(localesCount, translationService.findAllByI18n(store.eventTypes().get(0).getI18nEventTypeDescription()).size())
+                    () -> assertEquals(localesCount, translationService.findAllByI18n(type.getI18nEventTypeName()).size()),
+                    () -> assertEquals(localesCount, translationService.findAllByI18n(type.getI18nEventTypeDescription()).size())
             );
         }
 

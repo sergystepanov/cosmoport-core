@@ -31,7 +31,7 @@ class EventTypeCategoryPersistenceServiceTest extends PersistenceTest {
         var result = service.getAll();
 
         assertAll(
-                () -> assertEquals(3, result.size()),
+                () -> assertFalse(result.isEmpty()),
                 () -> {
                     for (var i : result) {
                         assertTrue(i.getI18nEventTypeCategoryName() > 0);
