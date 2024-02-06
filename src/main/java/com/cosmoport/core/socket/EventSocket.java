@@ -113,11 +113,4 @@ public class EventSocket extends WebSocketAdapter {
             sendAll(":update-nodes:");
         }
     }
-
-    @Override
-    public void onWebSocketError(Throwable cause) {
-        super.onWebSocketError(cause);
-
-        cause.printStackTrace(System.err);
-    }
 }
