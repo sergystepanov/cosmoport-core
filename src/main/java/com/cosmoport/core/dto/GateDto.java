@@ -1,16 +1,12 @@
 package com.cosmoport.core.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAlias;
 
 public final class GateDto extends Entity {
     private final int number;
     private final String gateName;
 
-    @JsonCreator
-    public GateDto(@JsonProperty("id") long id,
-                   @JsonProperty("number") int number,
-                   @JsonProperty("gate_name") String gateName) {
+    public GateDto(long id, int number, @JsonAlias("gate_name") String gateName) {
         this.id = id;
         this.number = number;
         this.gateName = gateName;

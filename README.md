@@ -1,28 +1,20 @@
 # Cosmoport Core
 
-> The application core v0.2.0
+> The application core app
 
 [API](./doc/API.md)
 
 ### Uses
 
-- Java 21
-- Jetty 9 (Server)
-- Resteasy (JAX-RS)
-- Jackson (JSON)
-- Guice (DI)
-- Guice-async (Scheduler)
-- SQLite (Db)
-- HikariCP (Db pool)
-- Flyway (Db migrations)
-- SLF4J, Logback (Logging)
-- Junit (Testing)
+- Java 21 (LTS)
+- Spring Boot 3
+- SQLite (DB)
+- Flyway (DB migrations)
 
 ### Default settings
 
 - Host: **127.0.0.1** (localhost)
 - Port: **8081**
-- Socket timeout: **0** (Infinite)
 
 ### Run
 

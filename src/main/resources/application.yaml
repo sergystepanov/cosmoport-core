@@ -1,0 +1,21 @@
+server:
+  compression:
+    enabled: true
+    mime-types: application/json
+    min-response-size: 512
+  port: 8081
+spring:
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite:db/core0.db
+  flyway:
+    locations: classpath:db/migration
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+  #  jpa:
+  #    database-platform: org.hibernate.community.dialect.SQLiteDialect
+  #    open-in-view: false
+  main:
+    banner-mode: off
+

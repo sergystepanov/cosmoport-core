@@ -8,10 +8,9 @@ import com.cosmoport.core.persistence.exception.JsonConvertException;
 import com.cosmoport.core.persistence.trait.HasClosableResources;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -24,14 +23,14 @@ import static com.cosmoport.core.persistence.PersistenceService.throwConstrainVi
  *
  * @since 0.1.0
  */
+@Service
 public final class TranslationPersistenceService implements HasClosableResources {
     private static final Logger logger = LoggerFactory.getLogger(TranslationPersistenceService.class.getCanonicalName());
-    private final Provider<DataSource> ds;
+    private final DataSource ds;
     private final I18nPersistenceService i18nPersistenceService;
     private final LocalePersistenceService localePersistenceService;
 
-    @Inject
-    public TranslationPersistenceService(Provider<DataSource> ds,
+    public TranslationPersistenceService(DataSource ds,
                                          I18nPersistenceService i18nPersistenceService,
                                          LocalePersistenceService localePersistenceService) {
         this.ds = ds;
@@ -52,7 +51,7 @@ public final class TranslationPersistenceService implements HasClosableResources
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
-            conn = ds.get().getConnection();
+            conn = ds.getConnection();
 
             final String sql =
                     "SELECT t.*, i.id i_id, i.tag, i.external, i.description, i.params FROM TRANSLATION t " +
@@ -89,7 +88,7 @@ public final class TranslationPersistenceService implements HasClosableResources
         ResultSet rs = null;
 
         try {
-            conn = ds.get().getConnection();
+            conn = ds.getConnection();
 
             final String sql = "SELECT * FROM TRANSLATION WHERE id = ?";
             statement = conn.prepareStatement(sql);
@@ -128,7 +127,7 @@ public final class TranslationPersistenceService implements HasClosableResources
         Statement statement = null;
         ResultSet rs = null;
         try {
-            conn = ds.get().getConnection();
+            conn = ds.getConnection();
 
             statement = conn.createStatement();
             rs = statement.executeQuery("SELECT t.id t_id, tr_text t_text, " +
@@ -174,7 +173,7 @@ public final class TranslationPersistenceService implements HasClosableResources
         Connection conn = null;
         PreparedStatement statement = null;
         try {
-            conn = extConn != null ? extConn : ds.get().getConnection();
+            conn = extConn != null ? extConn : ds.getConnection();
 
             statement = conn.prepareStatement(
                     "INSERT INTO TRANSLATION (i18n_id, locale_id, tr_text) VALUES (?, ?, ?)",
@@ -254,7 +253,7 @@ public final class TranslationPersistenceService implements HasClosableResources
         ResultSet rs = null;
 
         try {
-            conn = ds.get().getConnection();
+            conn = ds.getConnection();
 
             statement = conn.prepareStatement("SELECT * FROM TRANSLATION WHERE i18n_id = ?");
             statement.setLong(1, i18nId);
@@ -288,7 +287,7 @@ public final class TranslationPersistenceService implements HasClosableResources
         Connection conn = null;
         PreparedStatement statement = null;
         try {
-            conn = ds.get().getConnection();
+            conn = ds.getConnection();
 
             statement = conn.prepareStatement("UPDATE TRANSLATION SET tr_text = ? WHERE id = ?");
             statement.setString(1, text);

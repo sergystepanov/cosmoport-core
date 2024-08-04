@@ -3,8 +3,6 @@ package com.cosmoport.core.persistence;
 import com.cosmoport.core.persistence.exception.UniqueConstraintException;
 import com.cosmoport.core.persistence.exception.ValidationException;
 import com.cosmoport.core.persistence.param.QueryParam;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import org.slf4j.Logger;
 
 import javax.sql.DataSource;
@@ -16,20 +14,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class PersistenceService<T> {
-    private final Provider<DataSource> ds;
+    private final DataSource ds;
     private final Logger logger;
 
     private final boolean keepConnection;
 
-    @Inject
-    protected PersistenceService(Logger logger, Provider<DataSource> ds) {
+    protected PersistenceService(Logger logger, DataSource ds) {
         this.ds = ds;
         this.logger = logger;
         this.keepConnection = false;
     }
 
     Connection getConnection() throws SQLException {
-        return ds.get().getConnection();
+        return ds.getConnection();
     }
 
     List<T> getAll(final String sql) {
@@ -143,44 +140,6 @@ public abstract class PersistenceService<T> {
 
         return result != null ? Optional.of(result) : Optional.empty();
     }
-
-    /*protected long insertStringById(final String sql, final String value, final long id)
-            throws UniqueConstraintException {
-        long newId = 0;
-        Connection conn = null;
-        PreparedStatement statement = null;
-
-        try {
-            conn = getConnection();
-
-            statement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            statement.setString(1, value);
-            statement.setLong(2, id);
-
-            if (statement.executeUpdate() < 0) {
-                throw new Exception();
-            }
-
-            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    newId = generatedKeys.getLong(1);
-                } else {
-                    throw new Exception();
-                }
-            }
-        } catch (SQLException sqlexception) {
-            if (isUniqueViolation(sqlexception)) {
-                throw new UniqueConstraintException(value);
-            }
-            throwServerApiException(sqlexception);
-        } catch (Exception e) {
-            throwServerApiException(e);
-        } finally {
-            close(statement, conn);
-        }
-
-        return newId;
-    }*/
 
     int deleteByIdWithParams(final String sql, final long id, final QueryParam... params) {
         int deleted = 0;

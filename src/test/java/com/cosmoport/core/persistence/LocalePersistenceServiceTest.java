@@ -2,21 +2,19 @@ package com.cosmoport.core.persistence;
 
 import com.cosmoport.core.dto.LocaleDto;
 import com.cosmoport.core.persistence.exception.UniqueConstraintException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-final class LocalePersistenceServiceTest extends PersistenceTest {
+@SpringBootTest
+@ClearDatabase
+final class LocalePersistenceServiceTest {
+
+    @Autowired
     private LocalePersistenceService service;
-
-    @BeforeEach
-    void setService() {
-        super.before();
-
-        service = new LocalePersistenceService(getLogger(), getDataSourceProvider());
-    }
 
     @Test
     @DisplayName("Should be able to execute getAll()")

@@ -1,9 +1,8 @@
 package com.cosmoport.core.persistence;
 
 import com.cosmoport.core.dto.EventDestinationDto;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import org.slf4j.Logger;
+import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -15,9 +14,9 @@ import java.util.List;
  *
  * @since 0.1.0
  */
+@Service
 public final class EventDestinationPersistenceService extends PersistenceService<EventDestinationDto> {
-    @Inject
-    EventDestinationPersistenceService(Logger logger, Provider<DataSource> ds) {
+    EventDestinationPersistenceService(Logger logger, DataSource ds) {
         super(logger, ds);
     }
 

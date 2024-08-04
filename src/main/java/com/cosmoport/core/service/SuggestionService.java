@@ -2,12 +2,12 @@ package com.cosmoport.core.service;
 
 import com.cosmoport.core.dto.TimeSuggestionDto;
 import com.cosmoport.core.persistence.TimetablePersistenceService;
-import com.google.inject.Inject;
+import org.springframework.stereotype.Service;
 
+@Service
 public final class SuggestionService {
     private final TimetablePersistenceService db;
 
-    @Inject
     public SuggestionService(TimetablePersistenceService db) {
         this.db = db;
     }

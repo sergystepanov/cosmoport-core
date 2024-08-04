@@ -4,27 +4,27 @@ public final class NodesHolder {
     private int tables = 0;
     private int gates = 0;
 
-    public int getTables() {
+    public synchronized int getTables() {
         return tables;
     }
 
-    public int getGates() {
+    public synchronized int getGates() {
         return gates;
     }
 
-    public void incTables() {
+    public synchronized void incTables() {
         this.tables++;
     }
 
-    public void incGates() {
+    public synchronized void incGates() {
         this.gates++;
     }
 
-    public void decTables() {
+    public synchronized void decTables() {
         this.tables--;
     }
 
-    public void decGates() {
+    public synchronized void decGates() {
         this.gates--;
     }
 }

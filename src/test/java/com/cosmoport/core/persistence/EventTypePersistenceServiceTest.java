@@ -4,6 +4,8 @@ import com.cosmoport.core.dto.request.CreateEventSubTypeRequestDto;
 import com.cosmoport.core.dto.request.CreateEventTypeRequestDto;
 import com.cosmoport.core.persistence.exception.ValidationException;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,29 +13,21 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-final class EventTypePersistenceServiceTest extends PersistenceTest {
+@SpringBootTest
+@ClearDatabase
+final class EventTypePersistenceServiceTest {
+
+    @Autowired
     private EventTypePersistenceService service;
+
+    @Autowired
     private EventTypeCategoryPersistenceService eventTypeCategoryPersistenceService;
+
+    @Autowired
     private TranslationPersistenceService translationService;
+
+    @Autowired
     private I18nPersistenceService i18nService;
-
-    @BeforeEach
-    void createPersistenceService() {
-        super.before();
-
-        i18nService = new I18nPersistenceService(getLogger(), getDataSourceProvider());
-        translationService = new TranslationPersistenceService(
-                getDataSourceProvider(),
-                i18nService,
-                new LocalePersistenceService(getLogger(), getDataSourceProvider())
-        );
-        eventTypeCategoryPersistenceService = new EventTypeCategoryPersistenceService(getLogger(), getDataSourceProvider(), i18nService, translationService);
-        final var timetablePersistenceService =
-                new TimetablePersistenceService(getLogger(), getDataSourceProvider(),
-                        new SettingsPersistenceService(getLogger(), getDataSourceProvider()));
-        service = new EventTypePersistenceService(getLogger(), getDataSourceProvider(),
-                i18nService, translationService, timetablePersistenceService, eventTypeCategoryPersistenceService);
-    }
 
     @Test
     @DisplayName("Should be able to execute getAll()")
@@ -54,6 +48,7 @@ final class EventTypePersistenceServiceTest extends PersistenceTest {
     }
 
     @Nested
+    @ClearDatabase
     @DisplayName("Should be able to save/get/delete objects")
     class PersistenceTest {
         final int localesCount = 3;
@@ -64,7 +59,7 @@ final class EventTypePersistenceServiceTest extends PersistenceTest {
         void save() {
             final var data = new CreateEventTypeRequestDto(0, "event_name", "event_description", noSubtypes, 0, 0, 0);
             final var store = service.save(data);
-            final var type = store.eventTypes().get(0);
+            final var type = store.eventTypes().getFirst();
 
             assertAll("checks",
                     // created
@@ -100,7 +95,8 @@ final class EventTypePersistenceServiceTest extends PersistenceTest {
             assertEquals(1, store.eventTypeCategories().size());
 
             // query the results in the database
-            var cat = eventTypeCategoryPersistenceService.findById(store.eventTypeCategories().get(0).getId()).orElseThrow();
+            var cat = eventTypeCategoryPersistenceService.
+                    findById(store.eventTypeCategories().getFirst().getId()).orElseThrow();
 
             assertAll("",
                     // for the hierarchical type:
@@ -113,7 +109,7 @@ final class EventTypePersistenceServiceTest extends PersistenceTest {
                     // it should:
                     () -> assertEquals(0, cat.getParent(), "oof, should not have no parent categories in the persisted top category"),
                     () -> assertEquals("event1",
-                            translationService.findAllByI18n(cat.getI18nEventTypeCategoryName()).get(0).getText(),
+                            translationService.findAllByI18n(cat.getI18nEventTypeCategoryName()).getFirst().getText(),
                             "oof, should have the top level category name persisted"),
                     () -> assertEquals(subtypes.size(), store.eventTypes().size(), "oof, should have the correct number of types persisted"),
                     () -> {
@@ -121,11 +117,11 @@ final class EventTypePersistenceServiceTest extends PersistenceTest {
                         for (var t : store.eventTypes()) {
                             assertTrue(t.getId() > 0, "oof, one of the event types wasn't persisted");
                             assertEquals(cat.getId(), t.getCategoryId(), "oof, the category for the event type is off");
-                            var name = translationService.findAllByI18n(t.getI18nEventTypeName()).get(0);
-                            var desc = translationService.findAllByI18n(t.getI18nEventTypeDescription()).get(0);
+                            var name = translationService.findAllByI18n(t.getI18nEventTypeName()).getFirst();
+                            var desc = translationService.findAllByI18n(t.getI18nEventTypeDescription()).getFirst();
 
                             assertEquals(subtypes.get(i).name(), name.getText(), "oof, the name " + subtypes.get(i).name() + " was not persisted");
-                            assertEquals(subtypes.get(i).description(), desc.getText(), "oof, the description " + subtypes.get(0).description() + " was not persisted");
+                            assertEquals(subtypes.get(i).description(), desc.getText(), "oof, the description " + subtypes.getFirst().description() + " was not persisted");
 
                             var event = service.getById(t.getId()).orElseThrow();
 
@@ -157,7 +153,7 @@ final class EventTypePersistenceServiceTest extends PersistenceTest {
 
                             assertTrue(deleted > 0, "oof, nothing was deleted");
                             assertEquals(0, name.size(), "oof, the name " + subtypes.get(i).name() + " was not deleted");
-                            assertEquals(0, desc.size(), "oof, the description " + subtypes.get(0).description() + " was not deleted");
+                            assertEquals(0, desc.size(), "oof, the description " + subtypes.getFirst().description() + " was not deleted");
 
                             i++;
                         }
@@ -173,9 +169,9 @@ final class EventTypePersistenceServiceTest extends PersistenceTest {
                     new CreateEventTypeRequestDto(0, "event_name", "event_description", noSubtypes, 0, 0, 33.33));
             assertAll("checks",
                     // created
-                    () -> assertTrue(store.eventTypes().get(0).getId() > 0),
+                    () -> assertTrue(store.eventTypes().getFirst().getId() > 0),
                     // has not default cost
-                    () -> assertEquals(33.33, service.getById(store.eventTypes().get(0).getId()).orElseThrow().getDefaultCost())
+                    () -> assertEquals(33.33, service.getById(store.eventTypes().getFirst().getId()).orElseThrow().getDefaultCost())
             );
         }
     }

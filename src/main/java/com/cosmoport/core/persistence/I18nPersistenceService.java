@@ -1,9 +1,8 @@
 package com.cosmoport.core.persistence;
 
 import com.cosmoport.core.dto.I18nDto;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import org.slf4j.Logger;
+import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -15,9 +14,10 @@ import java.util.Optional;
  *
  * @since 0.1.0
  */
+@Service
 public final class I18nPersistenceService extends PersistenceService<I18nDto> {
-    @Inject
-    I18nPersistenceService(Logger logger, Provider<DataSource> ds) {
+
+    I18nPersistenceService(Logger logger, DataSource ds) {
         super(logger, ds);
     }
 

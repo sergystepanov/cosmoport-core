@@ -1,7 +1,5 @@
 package com.cosmoport.core.file;
 
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -24,8 +22,7 @@ public class FileSystem {
      *
      * @param context An absolute root path
      */
-    @Inject
-    public FileSystem(Logger logger, @Named("fileSystemRoot") String context) {
+    public FileSystem(Logger logger, String context) {
         this.logger = logger;
 
         root = Paths.get(context).normalize();

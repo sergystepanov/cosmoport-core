@@ -13,27 +13,21 @@ import com.cosmoport.core.service.SuggestionService;
 import com.cosmoport.core.sync.RemoteSync;
 import com.cosmoport.core.sync.Types;
 import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
-import org.jboss.resteasy.annotations.GZIP;
+import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-@Path("/timetable")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
-@GZIP
+@RestController
+@RequestMapping("/timetable")
 public final class TimetableEndpoint {
     private final TimetablePersistenceService service;
     private final SettingsPersistenceService settings;
     private final SuggestionService suggestionService;
     private final EventBus eventBus;
 
-    @Inject
     public TimetableEndpoint(TimetablePersistenceService service,
                              SettingsPersistenceService settings,
                              SuggestionService suggestionService,
@@ -44,23 +38,20 @@ public final class TimetableEndpoint {
         this.eventBus = eventBus;
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/")
-    public List<EventDto> get(@QueryParam("date") String date, @QueryParam("date2") String date2,
-                              @QueryParam("gate") long gateId) {
+    @GetMapping
+    public List<EventDto> get(@RequestParam(value = "date", required = false) String date,
+                              @RequestParam(value = "date2", required = false)String date2,
+                              @RequestParam(value = "gate", defaultValue = "0") long gateId) {
         return date2 != null && (!Objects.equals(date2, "")) ?
                 service.getAllFromDates(date, date2) :
                 service.getAllWithFilter(date, gateId);
     }
 
-    @GET
-    @Path("/all")
+    @GetMapping("/all")
     public List<EventDto> getAll(
-            @QueryParam("page") int page,
-            @QueryParam("count") int count,
-            @QueryParam("date") String date) {
+            @RequestParam("page") int page,
+            @RequestParam("count") int count,
+            @RequestParam(value = "date", required = false) String date) {
         final List<EventDto> events = service.getAllPage(page, count);
         // We assume that this method will be called on every timetable app opening
         eventBus.post(new SyncTimetablesMessage());
@@ -74,26 +65,22 @@ public final class TimetableEndpoint {
      * @param id long An id of event.
      * @return Two events.
      */
-    @GET
-    @Path("/byIdAndOneAfter")
-    public List<EventDto> getEvents(@QueryParam("id") long id) {
+    @GetMapping("/byIdAndOneAfter")
+    public List<EventDto> getEvents(@RequestParam("id") long id) {
         return service.getCustomByIdForGate(id);
     }
 
-    @POST
-    @Path("/")
-    public EventDto create(final EventDto event) {
+    @PostMapping
+    public EventDto create(@RequestBody EventDto event) {
         final EventDto newEvent = service.save(event);
         eventBus.post(new ReloadMessage());
         new RemoteSync(settings.getSyncServerParams()).process(Types.CREATE, newEvent);
 
-
         return newEvent;
     }
 
-    @POST
-    @Path("/update/event")
-    public EventDto update(final EventDto event) {
+    @PostMapping("/update/event")
+    public EventDto update(@RequestBody EventDto event) {
         final EventDto newEvent = service.save(event);
         eventBus.post(new ReloadMessage());
         new RemoteSync(settings.getSyncServerParams()).process(Types.UPDATE, newEvent);
@@ -108,17 +95,15 @@ public final class TimetableEndpoint {
      * @return A result object.
      * @throws RuntimeException In case of any errors.
      */
-    @POST
-    @Path("/tickets")
-    public ResultDto updateTickets(final TicketsUpdateRequestDto request) throws RuntimeException {
+    @PostMapping("/tickets")
+    public ResultDto updateTickets(@RequestBody TicketsUpdateRequestDto request) throws RuntimeException {
         service.updateTicketsForced(request.id(), request.tickets(), request.forceOpen());
 
         return new ResultDto(true);
     }
 
-    @DELETE
-    @Path("/{id}")
-    public String delete(@PathParam("id") final long id) {
+    @DeleteMapping("/{id}")
+    public String delete(@PathVariable("id") final long id) {
         final String deleted = "{\"deleted\": " + service.delete(id) + '}';
         eventBus.post(new ReloadMessage());
         new RemoteSync(settings.getSyncServerParams()).process(Types.DELETE, new EventDto(id));
@@ -127,10 +112,9 @@ public final class TimetableEndpoint {
     }
 
     // Suggestions
-    @GET
-    @Path("/suggest/next")
-    public TimeSuggestionDto getSuggestion(@QueryParam("gate") long gateId,
-                                           @QueryParam("date") final String date) throws RuntimeException {
+    @GetMapping("/suggest/next")
+    public TimeSuggestionDto getSuggestion(@RequestParam("gate") long gateId,
+                                           @RequestParam("date") final String date) throws RuntimeException {
         if (!(gateId > 0)) {
             throw new ValidationException("Set the gate number.");
         }

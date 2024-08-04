@@ -1,18 +1,17 @@
 package com.cosmoport.core.persistence;
 
 import com.cosmoport.core.dto.GateDto;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import org.slf4j.Logger;
+import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+@Service
 public final class GatePersistenceService extends PersistenceService<GateDto> {
-    @Inject
-    private GatePersistenceService(Logger logger, Provider<DataSource> provider) {
+    private GatePersistenceService(Logger logger, DataSource provider) {
         super(logger, provider);
     }
 

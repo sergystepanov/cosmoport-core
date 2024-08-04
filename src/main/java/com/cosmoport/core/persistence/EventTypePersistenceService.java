@@ -4,9 +4,8 @@ import com.cosmoport.core.dto.*;
 import com.cosmoport.core.dto.request.CreateEventTypeRequestDto;
 import com.cosmoport.core.persistence.exception.UniqueConstraintException;
 import com.cosmoport.core.persistence.exception.ValidationException;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import org.slf4j.Logger;
+import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.nio.ByteBuffer;
@@ -21,14 +20,14 @@ import java.util.UUID;
  *
  * @since 0.1.0
  */
+@Service
 public final class EventTypePersistenceService extends PersistenceService<EventTypeDto> {
     private final I18nPersistenceService i18nPersistenceService;
     private final TranslationPersistenceService translationPersistenceService;
     private final TimetablePersistenceService timetablePersistenceService;
     private final EventTypeCategoryPersistenceService eventTypeCategoryPersistenceService;
 
-    @Inject
-    EventTypePersistenceService(Logger logger, Provider<DataSource> ds,
+    EventTypePersistenceService(Logger logger, DataSource ds,
                                 I18nPersistenceService i18nPersistenceService,
                                 TranslationPersistenceService translationPersistenceService,
                                 TimetablePersistenceService timetablePersistenceService,

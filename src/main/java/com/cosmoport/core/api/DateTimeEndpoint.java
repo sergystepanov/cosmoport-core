@@ -1,11 +1,10 @@
 package com.cosmoport.core.api;
 
 import com.cosmoport.core.dto.DateTimeDto;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import java.time.Instant;
 
 /**
@@ -13,11 +12,10 @@ import java.time.Instant;
  *
  * @since 0.0.1
  */
-@Path("/time")
-@Produces(MediaType.APPLICATION_JSON)
+@RestController
+@RequestMapping("/time")
 public class DateTimeEndpoint {
-    @GET
-    @Path("/")
+    @GetMapping
     public DateTimeDto getDateTime() {
         return new DateTimeDto(Instant.now().getEpochSecond());
     }

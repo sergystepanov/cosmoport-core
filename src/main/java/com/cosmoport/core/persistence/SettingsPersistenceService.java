@@ -4,9 +4,8 @@ import com.cosmoport.core.dto.SettingsDto;
 import com.cosmoport.core.dto.SyncServerParamsDto;
 import com.cosmoport.core.dto.SyncServerParamsDtoBuilder;
 import com.cosmoport.core.persistence.constant.Constants;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import org.slf4j.Logger;
+import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -16,9 +15,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class SettingsPersistenceService extends PersistenceService<SettingsDto> {
-    @Inject
-    public SettingsPersistenceService(Logger logger, Provider<DataSource> ds) {
+    public SettingsPersistenceService(Logger logger, DataSource ds) {
         super(logger, ds);
     }
 

@@ -2,9 +2,8 @@ package com.cosmoport.core.persistence;
 
 import com.cosmoport.core.dto.LocaleDto;
 import com.cosmoport.core.persistence.exception.UniqueConstraintException;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import org.slf4j.Logger;
+import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -16,9 +15,9 @@ import java.util.Optional;
  *
  * @since 0.1.0
  */
+@Service
 public final class LocalePersistenceService extends PersistenceService<LocaleDto> {
-    @Inject
-    LocalePersistenceService(Logger logger, Provider<DataSource> ds) {
+    LocalePersistenceService(Logger logger, DataSource ds) {
         super(logger, ds);
     }
 

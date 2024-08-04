@@ -1,7 +1,6 @@
 package com.cosmoport.core.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAlias;
 
 public final class EventTypeDto extends Entity {
     private final long categoryId;
@@ -11,14 +10,13 @@ public final class EventTypeDto extends Entity {
     private final int defaultRepeatInterval;
     private final double defaultCost;
 
-    @JsonCreator
-    public EventTypeDto(@JsonProperty("id") long id,
-                        @JsonProperty("category_id") long categoryId,
-                        @JsonProperty("i18n_event_type_name") long i18nEventTypeName,
-                        @JsonProperty("i18n_event_type_description") long i18nEventTypeDescription,
-                        @JsonProperty("default_duration") int defaultDuration,
-                        @JsonProperty("default_repeat_interval") int defaultRepeatInterval,
-                        @JsonProperty("default_cost") double defaultCost) {
+    public EventTypeDto(long id,
+                        @JsonAlias("category_id") long categoryId,
+                        @JsonAlias("i18n_event_type_name") long i18nEventTypeName,
+                        @JsonAlias("i18n_event_type_description") long i18nEventTypeDescription,
+                        @JsonAlias("default_duration") int defaultDuration,
+                        @JsonAlias("default_repeat_interval") int defaultRepeatInterval,
+                        @JsonAlias("default_cost") double defaultCost) {
         this.id = id;
         this.categoryId = categoryId;
         this.i18nEventTypeName = i18nEventTypeName;

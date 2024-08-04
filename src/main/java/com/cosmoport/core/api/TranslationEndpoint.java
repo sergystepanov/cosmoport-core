@@ -11,48 +11,42 @@ import com.cosmoport.core.persistence.LocalePersistenceService;
 import com.cosmoport.core.persistence.TranslationPersistenceService;
 import com.cosmoport.core.persistence.exception.UniqueConstraintException;
 import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
-import org.jboss.resteasy.annotations.GZIP;
+import org.slf4j.Logger;
+import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.Map;
 
-@Path("/translations")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
-@GZIP
+@RestController
+@RequestMapping("/translations")
 public class TranslationEndpoint {
     private final TranslationPersistenceService translationPersistenceService;
     private final LocalePersistenceService localePersistenceService;
     private final EventBus eventBus;
+    private final Logger logger;
 
-    @Inject
     public TranslationEndpoint(TranslationPersistenceService translationPersistenceService,
                                LocalePersistenceService localePersistenceService,
-                               EventBus eventBus) {
+                               EventBus eventBus, Logger logger) {
         this.translationPersistenceService = translationPersistenceService;
         this.localePersistenceService = localePersistenceService;
         this.eventBus = eventBus;
+        this.logger = logger;
     }
 
-    @GET
-    @Path("/")
+    @GetMapping
     public Map<String, Map<String, TranslationLightDto>> get() {
         return translationPersistenceService.getAll();
     }
 
-    @GET
-    @Path("/localeId={localeId}")
-    public List<TranslationDto> getTranslations(@PathParam("localeId") long localeId) {
+    @GetMapping("/localeId={localeId}")
+    public List<TranslationDto> getTranslations(@PathVariable("localeId") long localeId) {
         return translationPersistenceService.getAllByLocaleId(localeId);
     }
 
-    @POST
-    @Path("/update/{translationId}")
-    public ResultDto updateTranslation(@PathParam("translationId") long translationId,
-                                       TextValueUpdateRequestDto requestDto) {
+    @PostMapping("/update/{translationId}")
+    public ResultDto updateTranslation(@PathVariable("translationId") long translationId,
+                                       @RequestBody TextValueUpdateRequestDto requestDto) {
         final boolean updated =
                 translationPersistenceService.updateTranslationForId(translationId, requestDto.text());
         if (updated) {
@@ -62,29 +56,27 @@ public class TranslationEndpoint {
         return new ResultDto(updated);
     }
 
-    @GET
-    @Path("/locales")
+    @GetMapping("/locales")
     public List<LocaleDto> getLocales() {
         return localePersistenceService.getAll();
     }
 
-    @GET
-    @Path("/locales/visible")
+    @GetMapping("/locales/visible")
     public List<LocaleDto> getVisibleLocales() {
         return localePersistenceService.getAllVisible();
     }
 
-    @POST
-    @Path("/locale")
-    public LocaleDto createLocale(final LocaleDto locale) throws UniqueConstraintException {
+    @PostMapping("/locale")
+    public LocaleDto createLocale(@RequestBody LocaleDto locale) throws UniqueConstraintException {
         return localePersistenceService.createLocale(locale);
     }
 
-    @POST
-    @Path("/locale/show")
-    public LocaleDto setLocaleShowData(final LocaleDto locale) {
+    @PostMapping("/locale/show")
+    public LocaleDto setLocaleShowData(@RequestBody LocaleDto locale) {
         final LocaleDto newLocale = localePersistenceService.updateLocaleShowData(locale);
         eventBus.post(new TimeoutUpdateMessage());
+
+        logger.info("{}", eventBus.identifier());
 
         return newLocale;
     }

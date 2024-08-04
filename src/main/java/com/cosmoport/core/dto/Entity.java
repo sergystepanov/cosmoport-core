@@ -1,7 +1,5 @@
 package com.cosmoport.core.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * Super type for database entities.
  *
@@ -13,7 +11,6 @@ public class Entity {
     protected Entity() {
     }
 
-    @JsonProperty
     public long getId() {
         return id;
     }

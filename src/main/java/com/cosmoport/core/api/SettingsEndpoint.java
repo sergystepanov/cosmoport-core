@@ -6,36 +6,28 @@ import com.cosmoport.core.dto.request.TextValueUpdateRequestDto;
 import com.cosmoport.core.event.message.ReloadMessage;
 import com.cosmoport.core.persistence.SettingsPersistenceService;
 import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
-import org.jboss.resteasy.annotations.GZIP;
+import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import java.util.List;
 
-@Path("/settings")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
-@GZIP
+@RestController
+@RequestMapping("/settings")
 public final class SettingsEndpoint {
     private final SettingsPersistenceService service;
     private final EventBus eventBus;
 
-    @Inject
     public SettingsEndpoint(SettingsPersistenceService settingsPersistenceService, EventBus eventBus) {
         this.service = settingsPersistenceService;
         this.eventBus = eventBus;
     }
 
-    @GET
-    @Path("/")
+    @GetMapping
     public List<SettingsDto> getSettings() {
         return service.getAllWithoutProtectedValues();
     }
 
-    @POST
-    @Path("/update/{id}")
-    public ResultDto updateSetting(@PathParam("id") long id, final TextValueUpdateRequestDto requestDto) {
+    @PostMapping("/update/{id}")
+    public ResultDto updateSetting(@PathVariable("id") long id, @RequestBody TextValueUpdateRequestDto requestDto) {
         final boolean updated = service.updateSettingForId(id, requestDto.text());
         if (updated) {
             eventBus.post(new ReloadMessage());

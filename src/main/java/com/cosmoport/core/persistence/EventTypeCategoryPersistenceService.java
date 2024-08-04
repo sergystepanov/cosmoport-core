@@ -3,9 +3,8 @@ package com.cosmoport.core.persistence;
 import com.cosmoport.core.dto.EventTypeCategoryDto;
 import com.cosmoport.core.dto.I18nDto;
 import com.cosmoport.core.dto.request.CreateEventTypeCategoryRequestDto;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import org.slf4j.Logger;
+import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -17,12 +16,12 @@ import java.util.Optional;
  *
  * @since 0.2.0
  */
+@Service
 public class EventTypeCategoryPersistenceService extends PersistenceService<EventTypeCategoryDto> {
     private final I18nPersistenceService i18nPersistenceService;
     private final TranslationPersistenceService translationPersistenceService;
 
-    @Inject
-    protected EventTypeCategoryPersistenceService(Logger logger, Provider<DataSource> ds,
+    protected EventTypeCategoryPersistenceService(Logger logger, DataSource ds,
                                                   I18nPersistenceService i18nPersistenceService,
                                                   TranslationPersistenceService translationPersistenceService) {
         super(logger, ds);

@@ -2,24 +2,28 @@ package com.cosmoport.core.persistence;
 
 import com.cosmoport.core.dto.EventDto;
 import com.cosmoport.core.persistence.exception.ValidationException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-final class TimetablePersistenceServiceTest extends PersistenceTest {
+@SpringBootTest
+@ClearDatabase
+final class TimetablePersistenceServiceTest {
+
+    @Autowired
     private TimetablePersistenceService service;
 
-    @BeforeEach
-    void createPersistenceService() {
-        super.before();
-
-        service = new TimetablePersistenceService(getLogger(), getDataSourceProvider(),
-                new SettingsPersistenceService(getLogger(), getDataSourceProvider()));
+    @Test
+    @DisplayName("Should be able to execute getAll()")
+    void getAll() {
+        var events = service.getAll();
+        assertEquals(10, events.size());
     }
 
     @Nested
@@ -34,12 +38,6 @@ final class TimetablePersistenceServiceTest extends PersistenceTest {
                     total + 1,
                     service.save(new EventDto(0, "2017-02-05", 2, 1, 6, 1, 1, 1, 1, 1, 20, 10, 1, 0, "")).getId()
             );
-        }
-
-        @Test
-        @DisplayName("Should be able to execute getAll()")
-        void getAll() {
-            assertEquals(total, service.getAll().size());
         }
 
         @Test
@@ -72,7 +70,7 @@ final class TimetablePersistenceServiceTest extends PersistenceTest {
         final List<EventDto> events = service.getCustomByIdForGate(5);
 
         assertAll("events",
-                () -> assertEquals(5, events.get(0).getId()),
+                () -> assertEquals(5, events.getFirst().getId()),
                 () -> assertEquals(7, events.get(1).getId())
         );
     }

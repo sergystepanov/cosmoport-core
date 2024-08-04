@@ -1,7 +1,6 @@
 package com.cosmoport.core.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAlias;
 
 /**
  * Database LOCALE table entity.
@@ -15,13 +14,12 @@ public final class LocaleDto extends Entity {
     private final boolean show;
     private final int showTime;
 
-    @JsonCreator
-    public LocaleDto(@JsonProperty("id") long id,
-                     @JsonProperty("code") String code,
-                     @JsonProperty("is_default") boolean isDefault,
-                     @JsonProperty("locale_description") String localeDescription,
-                     @JsonProperty("show") boolean show,
-                     @JsonProperty("show_time") int showTime) {
+    public LocaleDto(long id,
+                     String code,
+                     @JsonAlias("is_default") boolean isDefault,
+                     @JsonAlias("locale_description") String localeDescription,
+                     boolean show,
+                     @JsonAlias("show_time") int showTime) {
         this.show = show;
         this.showTime = showTime;
         this.id = id;

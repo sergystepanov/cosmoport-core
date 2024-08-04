@@ -5,9 +5,8 @@ import com.cosmoport.core.persistence.constant.EventState;
 import com.cosmoport.core.persistence.constant.EventStatus;
 import com.cosmoport.core.persistence.exception.UniqueConstraintException;
 import com.cosmoport.core.persistence.exception.ValidationException;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import org.slf4j.Logger;
+import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -24,14 +23,14 @@ import java.util.Optional;
  *
  * @since 0.1.0
  */
+@Service
 public class TimetablePersistenceService extends PersistenceService<EventDto> {
     private final SettingsPersistenceService settingsPersistenceService;
     private static final String defaultOrder = " ORDER BY event_date, start_time";
 
-    @Inject
     public TimetablePersistenceService(
             Logger logger,
-            Provider<DataSource> ds,
+            DataSource ds,
             SettingsPersistenceService settingsPersistenceService) {
         super(logger, ds);
 
@@ -130,7 +129,7 @@ public class TimetablePersistenceService extends PersistenceService<EventDto> {
     }
 
     public List<EventDto> getAllPage(final int page, final int count) throws RuntimeException {
-      return getAllPage(page, count, new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        return getAllPage(page, count, new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
     }
 
     /**

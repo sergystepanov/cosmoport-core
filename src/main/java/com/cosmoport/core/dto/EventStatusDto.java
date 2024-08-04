@@ -1,7 +1,6 @@
 package com.cosmoport.core.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAlias;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -12,8 +11,7 @@ public final class EventStatusDto extends Entity implements Serializable {
 
     private final long i18nStatus;
 
-    @JsonCreator
-    public EventStatusDto(@JsonProperty("id") long id, @JsonProperty("i18n_status") long i18nStatus) {
+    public EventStatusDto(long id, @JsonAlias("i18n_status") long i18nStatus) {
         this.id = id;
         this.i18nStatus = i18nStatus;
     }

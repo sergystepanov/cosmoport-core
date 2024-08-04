@@ -1,14 +1,12 @@
 package com.cosmoport.core.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAlias;
 
 public final class EventDestinationDto extends Entity {
     private final long i18nEventDestinationName;
 
-    @JsonCreator
-    public EventDestinationDto(@JsonProperty("id") long id,
-                               @JsonProperty("i18n_event_destination_name") long i18nEventDestinationName) {
+    public EventDestinationDto(long id,
+                               @JsonAlias("i18n_event_destination_name") long i18nEventDestinationName) {
         this.id = id;
         this.i18nEventDestinationName = i18nEventDestinationName;
     }

@@ -1,20 +1,18 @@
-package com.cosmoport.core.api.error;
+package com.cosmoport.core.config;
 
+import com.cosmoport.core.api.error.ApiError;
 import com.cosmoport.core.dto.ApiErrorDto;
 import com.cosmoport.core.persistence.exception.UniqueConstraintException;
 import com.cosmoport.core.persistence.exception.ValidationException;
-import com.google.inject.Singleton;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+@ControllerAdvice
+class GlobalExceptionHandler {
 
-@Provider
-@Singleton
-public class ApiExceptionMapper implements ExceptionMapper<Exception> {
-    @Override
-    public Response toResponse(Exception e) {
+    @ExceptionHandler({RuntimeException.class})
+    public ResponseEntity<Object> handleRuntimeException(RuntimeException e) {
         ApiErrorDto error = new ApiErrorDto("e-1", e.getMessage());
 
         int status = 500;
@@ -34,9 +32,8 @@ public class ApiExceptionMapper implements ExceptionMapper<Exception> {
             status = 400;
         }
 
-        return Response.status(status).
-                entity(error).
-                type(MediaType.APPLICATION_JSON).
-                build();
+        return ResponseEntity.
+                status(status).
+                body(error);
     }
 }

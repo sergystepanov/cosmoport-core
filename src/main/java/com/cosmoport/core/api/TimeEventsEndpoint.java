@@ -6,17 +6,12 @@ import com.cosmoport.core.dto.request.CreateEventTypeRequestDto;
 import com.cosmoport.core.event.message.ReloadMessage;
 import com.cosmoport.core.persistence.*;
 import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
-import org.jboss.resteasy.annotations.GZIP;
+import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import java.util.List;
 
-@Path("/t_events")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
-@GZIP
+@RestController
+@RequestMapping("/t_events")
 public final class TimeEventsEndpoint {
     private final EventTypePersistenceService eventTypePersistenceService;
     private final EventTypeCategoryPersistenceService eventTypeCategoryPersistenceService;
@@ -25,7 +20,6 @@ public final class TimeEventsEndpoint {
     private final EventDestinationPersistenceService eventDestinationPersistenceService;
     private final EventBus eventBus;
 
-    @Inject
     public TimeEventsEndpoint(EventTypePersistenceService eventTypePersistenceService,
                               EventTypeCategoryPersistenceService eventTypeCategoryPersistenceService,
                               EventStatusPersistenceService eventStatusPersistenceService,
@@ -40,8 +34,7 @@ public final class TimeEventsEndpoint {
         this.eventBus = eventBus;
     }
 
-    @GET
-    @Path("/reference_data")
+    @GetMapping("/reference_data")
     public EventReferenceDataDto getEventReferenceData() {
         return new EventReferenceDataDto(
                 eventTypePersistenceService.getAll(),
@@ -51,46 +44,39 @@ public final class TimeEventsEndpoint {
                 eventDestinationPersistenceService.getAll());
     }
 
-    @GET
-    @Path("/types")
+    @GetMapping("/types")
     public List<EventTypeDto> getEventTypes() {
         return eventTypePersistenceService.getAll();
     }
 
-    @POST
-    @Path("/types")
-    public EventTypeSaveResultDto createEventType(final CreateEventTypeRequestDto eventType) {
+    @PostMapping("/types")
+    public EventTypeSaveResultDto createEventType(@RequestBody CreateEventTypeRequestDto eventType) {
         return eventTypePersistenceService.save(eventType);
     }
 
-    @DELETE
-    @Path("/types/{id}")
-    public String delete(@PathParam("id") final long id) {
+    @DeleteMapping("/types/{id}")
+    public String delete(@PathVariable("id") long id) {
         final String result = "{\"deleted\": " + eventTypePersistenceService.delete(id) + '}';
         eventBus.post(new ReloadMessage());
         return result;
     }
 
-    @POST
-    @Path("/types/categories")
-    public EventTypeCategoryDto createEventTypeCategory(final CreateEventTypeCategoryRequestDto cat) {
+    @PostMapping("/types/categories")
+    public EventTypeCategoryDto createEventTypeCategory(@RequestBody CreateEventTypeCategoryRequestDto cat) {
         return eventTypeCategoryPersistenceService.create(cat);
     }
 
-    @GET
-    @Path("/statuses")
+    @GetMapping("/statuses")
     public List<EventStatusDto> getEventStatuses() {
         return eventStatusPersistenceService.getAll();
     }
 
-    @GET
-    @Path("/states")
+    @GetMapping("/states")
     public List<EventStateDto> getEventStates() {
         return eventStatePersistenceService.getAll();
     }
 
-    @GET
-    @Path("/destinations")
+    @GetMapping("/destinations")
     public List<EventDestinationDto> getEventDestinations() {
         return eventDestinationPersistenceService.getAll();
     }

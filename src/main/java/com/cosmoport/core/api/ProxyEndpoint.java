@@ -1,36 +1,28 @@
 package com.cosmoport.core.api;
 
 import com.cosmoport.core.dto.ProxyRequestDto;
+import com.cosmoport.core.dto.ResultSuccessDto;
 import com.cosmoport.core.event.message.FireUpGateMessage;
 import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
-import org.jboss.resteasy.annotations.GZIP;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-@Path("/proxy")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
-@GZIP
+@RestController
+@RequestMapping("/proxy")
 public final class ProxyEndpoint {
     private final EventBus eventBus;
 
-    @Inject
     public ProxyEndpoint(EventBus eventBus) {
         this.eventBus = eventBus;
     }
 
-    @POST
-    @Path("/")
-    public String reactOn(final ProxyRequestDto request) {
+    @PostMapping
+    public ResultSuccessDto reactOn(@RequestBody ProxyRequestDto request) {
         if (request.name().equals("fire_gate")) {
             eventBus.post(new FireUpGateMessage(request.event(), request.type()));
         }
-
-        return "{\"result\": \"success\"}";
+        return new ResultSuccessDto("success");
     }
 }
