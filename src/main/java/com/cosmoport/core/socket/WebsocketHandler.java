@@ -1,10 +1,12 @@
 package com.cosmoport.core.socket;
 
-import com.cosmoport.core.event.message.*;
+import com.cosmoport.core.event.FireUpGateMessage;
+import com.cosmoport.core.event.ReloadMessage;
+import com.cosmoport.core.event.SyncTimetablesMessage;
+import com.cosmoport.core.event.TimeoutUpdateMessage;
 import com.cosmoport.core.node.NodesHolder;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import org.slf4j.Logger;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -21,11 +23,9 @@ public class WebsocketHandler extends TextWebSocketHandler {
     private final Logger logger;
     private final NodesHolder nodesHolder;
 
-    public WebsocketHandler(Logger logger, NodesHolder nodesHolder, EventBus eventBus) {
+    public WebsocketHandler(Logger logger, NodesHolder nodesHolder) {
         this.logger = logger;
         this.nodesHolder = nodesHolder;
-
-        eventBus.register(this);
     }
 
     @Override
@@ -69,25 +69,25 @@ public class WebsocketHandler extends TextWebSocketHandler {
         logger.error("{} - {}", session, exception.getMessage());
     }
 
-    @Subscribe
+    @EventListener
     public void onReloadMessage(ReloadMessage m) {
         logger.info("[socket] {}", ReloadMessage.token);
         sendAll(ReloadMessage.token);
     }
 
-    @Subscribe
+    @EventListener
     public void onTimeoutUpdateMessage(TimeoutUpdateMessage m) {
         logger.info("[socket] {}", TimeoutUpdateMessage.token);
         sendAll(TimeoutUpdateMessage.token);
     }
 
-    @Subscribe
+    @EventListener
     public void onSyncTimetablesMessage(SyncTimetablesMessage m) {
         logger.info("[socket] {}", SyncTimetablesMessage.token);
         sendAll(SyncTimetablesMessage.token);
     }
 
-    @Subscribe
+    @EventListener
     public void onFireGateMessage(FireUpGateMessage m) {
         logger.info("[socket] {}", m.toString());
         sendAll(m.toString());

@@ -1,14 +1,21 @@
-package com.cosmoport.core.event.message;
+package com.cosmoport.core.event;
 
 import com.cosmoport.core.dto.EventDto;
+import org.springframework.context.ApplicationEvent;
 
-public final class FireUpGateMessage {
+import java.io.Serial;
+
+public final class FireUpGateMessage extends ApplicationEvent {
+    @Serial
+    private static final long serialVersionUID = -5418408431565956052L;
+
     private static final char div = '|';
     private static final String token = ":fire_gate";
     private final EventDto event;
     private final String type;
 
-    public FireUpGateMessage(EventDto event, String type) {
+    public FireUpGateMessage(Object source, EventDto event, String type) {
+        super(source);
         this.event = event;
         this.type = type;
     }

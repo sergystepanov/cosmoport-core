@@ -7,7 +7,6 @@ import com.cosmoport.core.persistence.constant.Constants;
 import com.cosmoport.core.persistence.exception.JsonConvertException;
 import com.cosmoport.core.persistence.trait.HasClosableResources;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -340,7 +339,7 @@ public final class TranslationPersistenceService implements HasClosableResources
                 throw new JsonConvertException();
             }
         } else {
-            values = ImmutableList.of(record.tText());
+            values = Collections.singletonList(record.tText());
         }
 
         return values;

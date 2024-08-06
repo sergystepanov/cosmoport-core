@@ -6,11 +6,11 @@ import com.cosmoport.core.dto.ResultDto;
 import com.cosmoport.core.dto.SyncAddEventDto;
 import com.cosmoport.core.dto.SyncTicketsDto;
 import com.cosmoport.core.dto.request.HasAuthKey;
-import com.cosmoport.core.event.message.ReloadMessage;
+import com.cosmoport.core.event.ReloadMessage;
 import com.cosmoport.core.persistence.SettingsPersistenceService;
 import com.cosmoport.core.persistence.TimetablePersistenceService;
 import com.cosmoport.core.persistence.constant.Constants;
-import com.google.common.eventbus.EventBus;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,13 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 public final class SyncEndpoint {
     private final TimetablePersistenceService timetable;
     private final SettingsPersistenceService settingsPersistenceService;
-    private final EventBus eventBus;
+    private final ApplicationEventPublisher bus;
 
-    public SyncEndpoint(TimetablePersistenceService timetable, SettingsPersistenceService settingsPersistenceService,
-                        EventBus eventBus) {
+    public SyncEndpoint(TimetablePersistenceService timetable,
+                        SettingsPersistenceService settingsPersistenceService,
+                        ApplicationEventPublisher bus) {
         this.timetable = timetable;
         this.settingsPersistenceService = settingsPersistenceService;
-        this.eventBus = eventBus;
+        this.bus = bus;
     }
 
     private void auth(HasAuthKey syncRequest) throws ApiAuthError {
@@ -50,7 +51,7 @@ public final class SyncEndpoint {
     @PostMapping("/add/event")
     public EventDto create(@RequestBody SyncAddEventDto syncAddEvent) {
         final EventDto newEvent = timetable.save(syncAddEvent.event());
-        eventBus.post(new ReloadMessage());
+        bus.publishEvent(new ReloadMessage(this));
 
         return newEvent;
     }

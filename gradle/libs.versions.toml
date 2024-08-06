@@ -1,7 +1,6 @@
 [versions]
 boot = "3.3.2"
 flyway = "10.17.0"
-guava = "33.2.1-jre"
 hikaricp = "5.1.0"
 springDepMan = "1.1.6"
 sqlite = "3.46.0.1"
@@ -10,7 +9,6 @@ download = "5.6.0"
 
 [libraries]
 flyway = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
-guava = { module = "com.google.guava:guava", version.ref = "guava" }
 hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
 sqlite = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite" }
 

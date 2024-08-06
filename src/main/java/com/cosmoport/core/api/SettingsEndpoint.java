@@ -3,9 +3,9 @@ package com.cosmoport.core.api;
 import com.cosmoport.core.dto.ResultDto;
 import com.cosmoport.core.dto.SettingsDto;
 import com.cosmoport.core.dto.request.TextValueUpdateRequestDto;
-import com.cosmoport.core.event.message.ReloadMessage;
+import com.cosmoport.core.event.ReloadMessage;
 import com.cosmoport.core.persistence.SettingsPersistenceService;
-import com.google.common.eventbus.EventBus;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,11 +14,12 @@ import java.util.List;
 @RequestMapping("/settings")
 public final class SettingsEndpoint {
     private final SettingsPersistenceService service;
-    private final EventBus eventBus;
+    private final ApplicationEventPublisher bus;
 
-    public SettingsEndpoint(SettingsPersistenceService settingsPersistenceService, EventBus eventBus) {
+    public SettingsEndpoint(SettingsPersistenceService settingsPersistenceService,
+                            ApplicationEventPublisher bus) {
         this.service = settingsPersistenceService;
-        this.eventBus = eventBus;
+        this.bus = bus;
     }
 
     @GetMapping
@@ -30,7 +31,7 @@ public final class SettingsEndpoint {
     public ResultDto updateSetting(@PathVariable("id") long id, @RequestBody TextValueUpdateRequestDto requestDto) {
         final boolean updated = service.updateSettingForId(id, requestDto.text());
         if (updated) {
-            eventBus.post(new ReloadMessage());
+            bus.publishEvent(new ReloadMessage(this));
         }
 
         return new ResultDto(updated);

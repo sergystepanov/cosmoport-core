@@ -5,13 +5,12 @@ import com.cosmoport.core.dto.ResultDto;
 import com.cosmoport.core.dto.TranslationDto;
 import com.cosmoport.core.dto.TranslationLightDto;
 import com.cosmoport.core.dto.request.TextValueUpdateRequestDto;
-import com.cosmoport.core.event.message.ReloadMessage;
-import com.cosmoport.core.event.message.TimeoutUpdateMessage;
+import com.cosmoport.core.event.ReloadMessage;
+import com.cosmoport.core.event.TimeoutUpdateMessage;
 import com.cosmoport.core.persistence.LocalePersistenceService;
 import com.cosmoport.core.persistence.TranslationPersistenceService;
 import com.cosmoport.core.persistence.exception.UniqueConstraintException;
-import com.google.common.eventbus.EventBus;
-import org.slf4j.Logger;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,16 +21,14 @@ import java.util.Map;
 public class TranslationEndpoint {
     private final TranslationPersistenceService translationPersistenceService;
     private final LocalePersistenceService localePersistenceService;
-    private final EventBus eventBus;
-    private final Logger logger;
+    private final ApplicationEventPublisher bus;
 
     public TranslationEndpoint(TranslationPersistenceService translationPersistenceService,
                                LocalePersistenceService localePersistenceService,
-                               EventBus eventBus, Logger logger) {
+                               ApplicationEventPublisher bus) {
         this.translationPersistenceService = translationPersistenceService;
         this.localePersistenceService = localePersistenceService;
-        this.eventBus = eventBus;
-        this.logger = logger;
+        this.bus = bus;
     }
 
     @GetMapping
@@ -50,7 +47,7 @@ public class TranslationEndpoint {
         final boolean updated =
                 translationPersistenceService.updateTranslationForId(translationId, requestDto.text());
         if (updated) {
-            eventBus.post(new ReloadMessage());
+            bus.publishEvent(new ReloadMessage(this));
         }
 
         return new ResultDto(updated);
@@ -74,10 +71,7 @@ public class TranslationEndpoint {
     @PostMapping("/locale/show")
     public LocaleDto setLocaleShowData(@RequestBody LocaleDto locale) {
         final LocaleDto newLocale = localePersistenceService.updateLocaleShowData(locale);
-        eventBus.post(new TimeoutUpdateMessage());
-
-        logger.info("{}", eventBus.identifier());
-
+        bus.publishEvent(new TimeoutUpdateMessage(this));
         return newLocale;
     }
 }

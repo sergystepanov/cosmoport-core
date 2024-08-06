@@ -4,15 +4,15 @@ import com.cosmoport.core.dto.EventDto;
 import com.cosmoport.core.dto.ResultDto;
 import com.cosmoport.core.dto.TimeSuggestionDto;
 import com.cosmoport.core.dto.request.TicketsUpdateRequestDto;
-import com.cosmoport.core.event.message.ReloadMessage;
-import com.cosmoport.core.event.message.SyncTimetablesMessage;
+import com.cosmoport.core.event.ReloadMessage;
+import com.cosmoport.core.event.SyncTimetablesMessage;
 import com.cosmoport.core.persistence.SettingsPersistenceService;
 import com.cosmoport.core.persistence.TimetablePersistenceService;
 import com.cosmoport.core.persistence.exception.ValidationException;
 import com.cosmoport.core.service.SuggestionService;
 import com.cosmoport.core.sync.RemoteSync;
 import com.cosmoport.core.sync.Types;
-import com.google.common.eventbus.EventBus;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
@@ -26,16 +26,16 @@ public final class TimetableEndpoint {
     private final TimetablePersistenceService service;
     private final SettingsPersistenceService settings;
     private final SuggestionService suggestionService;
-    private final EventBus eventBus;
+    private final ApplicationEventPublisher bus;
 
     public TimetableEndpoint(TimetablePersistenceService service,
                              SettingsPersistenceService settings,
                              SuggestionService suggestionService,
-                             EventBus eventBus) {
+                             ApplicationEventPublisher bus) {
         this.service = service;
         this.settings = settings;
         this.suggestionService = suggestionService;
-        this.eventBus = eventBus;
+        this.bus = bus;
     }
 
     @GetMapping
@@ -54,7 +54,7 @@ public final class TimetableEndpoint {
             @RequestParam(value = "date", required = false) String date) {
         final List<EventDto> events = service.getAllPage(page, count);
         // We assume that this method will be called on every timetable app opening
-        eventBus.post(new SyncTimetablesMessage());
+        bus.publishEvent(new SyncTimetablesMessage(this));
 
         return events;
     }
@@ -73,7 +73,7 @@ public final class TimetableEndpoint {
     @PostMapping
     public EventDto create(@RequestBody EventDto event) {
         final EventDto newEvent = service.save(event);
-        eventBus.post(new ReloadMessage());
+        bus.publishEvent(new ReloadMessage(this));
         new RemoteSync(settings.getSyncServerParams()).process(Types.CREATE, newEvent);
 
         return newEvent;
@@ -82,7 +82,7 @@ public final class TimetableEndpoint {
     @PostMapping("/update/event")
     public EventDto update(@RequestBody EventDto event) {
         final EventDto newEvent = service.save(event);
-        eventBus.post(new ReloadMessage());
+        bus.publishEvent(new ReloadMessage(this));
         new RemoteSync(settings.getSyncServerParams()).process(Types.UPDATE, newEvent);
 
         return newEvent;
@@ -105,7 +105,7 @@ public final class TimetableEndpoint {
     @DeleteMapping("/{id}")
     public String delete(@PathVariable("id") final long id) {
         final String deleted = "{\"deleted\": " + service.delete(id) + '}';
-        eventBus.post(new ReloadMessage());
+        bus.publishEvent(new ReloadMessage(this));
         new RemoteSync(settings.getSyncServerParams()).process(Types.DELETE, new EventDto(id));
 
         return deleted;

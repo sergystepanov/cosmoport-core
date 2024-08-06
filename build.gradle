@@ -96,11 +96,11 @@ tasks.register('getJre') {
     }
 
     def os = DefaultNativePlatform.currentOperatingSystem
-    def jreUrl = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.1%2B12/"
+    def jreUrl = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.4%2B7/"
 
     doLast {
-        def oss = ''
-        def ext = ''
+        def oss
+        def ext
         switch (true) {
             case os.isWindows(): oss = 'windows'; ext = 'zip'; break
             case os.isLinux(): oss = 'linux'; ext = 'tar.gz'; break
@@ -109,7 +109,7 @@ tasks.register('getJre') {
                 return
         }
 
-        def jre = "OpenJDK21U-jre_x64_${oss}_hotspot_21.0.1_12.${ext}"
+        def jre = "OpenJDK21U-jre_x64_${oss}_hotspot_21.0.4_7.${ext}"
 
         download.run {
             src jreUrl + jre
@@ -133,9 +133,7 @@ dependencies {
         exclude module: 'spring-boot-starter-tomcat'
     }
     testImplementation libs.spring.boot.test
-
-    // Pub/Sub
-    implementation libs.guava
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // Database
     implementation libs.sqlite

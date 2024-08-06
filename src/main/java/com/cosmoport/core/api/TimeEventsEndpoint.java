@@ -3,9 +3,9 @@ package com.cosmoport.core.api;
 import com.cosmoport.core.dto.*;
 import com.cosmoport.core.dto.request.CreateEventTypeCategoryRequestDto;
 import com.cosmoport.core.dto.request.CreateEventTypeRequestDto;
-import com.cosmoport.core.event.message.ReloadMessage;
+import com.cosmoport.core.event.ReloadMessage;
 import com.cosmoport.core.persistence.*;
-import com.google.common.eventbus.EventBus;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,20 +18,20 @@ public final class TimeEventsEndpoint {
     private final EventStatusPersistenceService eventStatusPersistenceService;
     private final EventStatePersistenceService eventStatePersistenceService;
     private final EventDestinationPersistenceService eventDestinationPersistenceService;
-    private final EventBus eventBus;
+    private final ApplicationEventPublisher bus;
 
     public TimeEventsEndpoint(EventTypePersistenceService eventTypePersistenceService,
                               EventTypeCategoryPersistenceService eventTypeCategoryPersistenceService,
                               EventStatusPersistenceService eventStatusPersistenceService,
                               EventStatePersistenceService eventStatePersistenceService,
                               EventDestinationPersistenceService eventDestinationPersistenceService,
-                              EventBus eventBus) {
+                              ApplicationEventPublisher bus) {
         this.eventTypePersistenceService = eventTypePersistenceService;
         this.eventTypeCategoryPersistenceService = eventTypeCategoryPersistenceService;
         this.eventStatusPersistenceService = eventStatusPersistenceService;
         this.eventStatePersistenceService = eventStatePersistenceService;
         this.eventDestinationPersistenceService = eventDestinationPersistenceService;
-        this.eventBus = eventBus;
+        this.bus = bus;
     }
 
     @GetMapping("/reference_data")
@@ -57,7 +57,7 @@ public final class TimeEventsEndpoint {
     @DeleteMapping("/types/{id}")
     public String delete(@PathVariable("id") long id) {
         final String result = "{\"deleted\": " + eventTypePersistenceService.delete(id) + '}';
-        eventBus.post(new ReloadMessage());
+        bus.publishEvent(new ReloadMessage(this));
         return result;
     }
 
